@@ -18,6 +18,7 @@ substitutions:
 
 external_components:
   - source: github://felixstorm/esphome-custom-components
+    components: [ zehnder_comfoair_q, canbus ]
 
 logger:
   logs:
