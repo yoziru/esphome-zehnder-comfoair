@@ -1,0 +1,50 @@
+substitutions:
+  device_name: weatherstation
+
+
+external_components:
+  - source: github://felixstorm/esphome-custom-components
+    components: [ elsner_weather_station ]
+
+
+uart:
+  - id: uart_weather_station_rs485
+    rx_pin: 16       # weather station will send continously, no TX pin required
+    baud_rate: 19200 # 8N1 => default
+
+
+elsner_weather_station:
+  uart_id: uart_weather_station_rs485 # optional, default is first uart
+  watchdog_timeout: 5s                # optional, default is 5s
+
+  temperature:
+    name: ${device_name} temperature
+
+  sun_south:
+    name: ${device_name} sun_south
+
+  sun_west:
+    name: ${device_name} sun_west
+
+  sun_east:
+    name: ${device_name} sun_east
+
+  is_dark:
+    name: ${device_name} is_dark
+
+  illuminance:
+    name: ${device_name} illuminance
+
+  wind_speed:
+    name: ${device_name} wind_speed
+    filters:
+      - multiply: 3.6 # m/s => km/h
+    unit_of_measurement: 'km/h'
+    accuracy_decimals: 0
+
+  is_raining:
+    name: ${device_name} is_raining
+
+  # binary sensor which gets activated if no messages are received within watchdog_timeout
+  alarm:
+    name: ${device_name} alarm
