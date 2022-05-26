@@ -9,6 +9,12 @@ substitutions:
   - filter_out: nan
   - sliding_window_moving_average: {send_every: '${filter_send_every}', window_size: '${filter_window_size}'}
 
+.throttle-filter-round-tens: &throttle-filter-round-tens
+  - throttle_average: '${filter_time}'
+  - filter_out: nan
+  - sliding_window_moving_average: {send_every: '${filter_send_every}', window_size: '${filter_window_size}'}
+  - lambda: return round(x/10)*10;
+
 .throttle-filter-e-3: &throttle-filter-e-3
   - throttle_average: '${filter_time}'
   - filter_out: nan
@@ -18,11 +24,11 @@ substitutions:
 
 external_components:
   - source: github://felixstorm/esphome-custom-components
-    components: [ zehnder_comfoair_q, canbus ]
+    components: [ zehnder_comfoair_q ]
 
 logger:
   logs:
-    comfoair_dump: INFO
+    canbus: INFO
 
 
 zehnder_comfoair_q:
@@ -42,9 +48,9 @@ canbus:
       - lambda: |-
           auto data_pretty = remote_transmission_request ? "n/a" : format_hex_pretty(x).c_str();
           if ((can_id & 0b11111000000000011111111000000) == 0b00000000000000000000001000000)
-            ESP_LOGI("comfoair_dump", "Node: %d, PDO: %d, rtr: %d, length: %d, content: %s (can_id: 0x%08x)", can_id & 0x3f, can_id >> 14, remote_transmission_request, x.size(), data_pretty, can_id);
+            ESP_LOGD("comfoair_dump", "Node: %d, PDO: %d, rtr: %d, length: %d, content: %s (can_id: 0x%08x)", can_id & 0x3f, can_id >> 14, remote_transmission_request, x.size(), data_pretty, can_id);
           else
-            ESP_LOGD("comfoair_dump", "can_id: 0x%08x, rtr: %d, length: %d, content: %s", can_id, remote_transmission_request, x.size(), data_pretty);
+            ESP_LOGV("comfoair_dump", "can_id: 0x%08x, rtr: %d, length: %d, content: %s", can_id, remote_transmission_request, x.size(), data_pretty);
     - can_id:      0b00000000000000000000001000000
       can_id_mask: 0b11111000000000011111111000000
       use_extended_id: true
@@ -172,7 +178,7 @@ sensor:
     accuracy_decimals: 0
     unit_of_measurement: 'rpm'
     state_class: measurement
-    filters: *throttle-filter
+    filters: *throttle-filter-round-tens
 
   - platform: template
     id: supply_fan_speed # PDO 122
@@ -180,7 +186,7 @@ sensor:
     accuracy_decimals: 0
     unit_of_measurement: 'rpm'
     state_class: measurement
-    filters: *throttle-filter
+    filters: *throttle-filter-round-tens
 
   - platform: template
     id: power_consumption_current # PDO 128
@@ -499,14 +505,14 @@ text_sensor:
 
 button:
   - platform: template
-    id: boost_15min
+    name: '${device_name} boost_15min'
     on_press:
       - lambda: id(comfoair)->set_boost(15 * 60);
   - platform: template
-    id: boost_30min
+    name: '${device_name} boost_30min'
     on_press:
       - lambda: id(comfoair)->set_boost(30 * 60);
   - platform: template
-    id: boost_off
+    name: '${device_name} boost_off'
     on_press:
       - lambda: id(comfoair)->set_boost(0);
