@@ -1,6 +1,6 @@
 esphome:
   name: comfoair
-  friendly_name: ComfoAir
+  friendly_name: Zehnder ComfoAir Q350
   comment: Zehnder ComfoAir Q350
 
 esp32:
@@ -173,29 +173,23 @@ sensor:
       then:
         - lambda: id(cooling_season).publish_state(x == 1);
 
-
   - platform: template
     id: fan_level_raw # PDO 65
     accuracy_decimals: 0
     on_value:
       then:
-        - if:
-            condition:
-              lambda: 'return int(x) == 0;'
-            then:
-              - fan.turn_on:
-                  id: comfoair_fan
-                  speed: !lambda 'return int(x);'
-              - fan.turn_off: comfoair_fan
-            else:
-              - fan.turn_on:
-                  id: comfoair_fan
-                  speed: !lambda 'return int(x);'
         - lambda: id(fan_level).publish_state(std::to_string(int(x)));
-
+        - output.set_level:
+            id: comfoair_fan_output
+            level: !lambda 'return int(x);'
+        # - if:
+        #     condition:
+        #       lambda: 'return int(x) == 0;'
+        #     then:
+        #     - fan.turn_off: comfoair_fan
   - platform: template
     id: next_fan_change_in_raw # PDO 81
-    name: '${device_name} next_fan_change_in_raw'
+    name: 'next_fan_change_in_raw'
     accuracy_decimals: 0
     device_class: duration
     unit_of_measurement: 's'
@@ -206,7 +200,7 @@ sensor:
 
   - platform: template
     id: next_bypass_change_in_raw # PDO 82
-    name: '${device_name} next_bypass_change_in_raw'
+    name: 'next_bypass_change_in_raw'
     accuracy_decimals: 0
     device_class: duration
     unit_of_measurement: 's'
@@ -217,7 +211,7 @@ sensor:
 
   - platform: template
     id: exhaust_fan_duty # PDO 117
-    name: '${device_name} Exhaust Fan Duty'
+    name: 'Exhaust Fan Duty'
     accuracy_decimals: 0
     unit_of_measurement: '%'
     state_class: measurement
@@ -225,7 +219,7 @@ sensor:
 
   - platform: template
     id: supply_fan_duty # PDO 118
-    name: '${device_name} Supply Fan Duty'
+    name: 'Supply Fan Duty'
     accuracy_decimals: 0
     unit_of_measurement: '%'
     state_class: measurement
@@ -233,15 +227,18 @@ sensor:
 
   - platform: template
     id: supply_fan_flow # PDO 119
-    name: '${device_name} Supply Fan Flow'
+    name: 'Supply Fan Flow'
+    icon: mdi:gauge
     accuracy_decimals: 0
     unit_of_measurement: 'm³/h'
     state_class: measurement
     filters: *throttle-filter
 
+
   - platform: template
     id: exhaust_fan_flow # PDO 120
-    name: '${device_name} Exhaust Fan Flow'
+    name: 'Exhaust Fan Flow'
+    icon: mdi:gauge
     accuracy_decimals: 0
     unit_of_measurement: 'm³/h'
     state_class: measurement
@@ -249,7 +246,8 @@ sensor:
 
   - platform: template
     id: exhaust_fan_speed # PDO 121
-    name: '${device_name} Exhaust Fan Speed'
+    name: 'Exhaust Fan Speed'
+    icon: mdi:speedometer
     accuracy_decimals: 0
     unit_of_measurement: 'rpm'
     state_class: measurement
@@ -257,7 +255,8 @@ sensor:
 
   - platform: template
     id: supply_fan_speed # PDO 122
-    name: '${device_name} Supply Fan Speed'
+    name: 'Supply Fan Speed'
+    icon: mdi:speedometer
     accuracy_decimals: 0
     unit_of_measurement: 'rpm'
     state_class: measurement
@@ -265,7 +264,7 @@ sensor:
 
   - platform: template
     id: power # PDO 128
-    name: '${device_name} Power'
+    name: 'Power'
     accuracy_decimals: 0
     unit_of_measurement: 'W'
     device_class: power
@@ -274,7 +273,7 @@ sensor:
 
   - platform: template
     id: energy_ytd # PDO 129
-    name: '${device_name} Energy YTD'
+    name: 'Energy YTD'
     accuracy_decimals: 0
     unit_of_measurement: 'kWh'
     device_class: energy
@@ -282,7 +281,7 @@ sensor:
 
   - platform: template
     id: energy_since_start # PDO 130
-    name: '${device_name} Energy Since Start'
+    name: 'Energy Since Start'
     accuracy_decimals: 0
     unit_of_measurement: 'kWh'
     device_class: energy
@@ -290,13 +289,14 @@ sensor:
 
   - platform: template
     id: filter_replacement_remaining_days # PDO 192
-    name: '${device_name} Filter Replacement Remaining Days'
+    name: 'Filter Replacement Remaining Days'
+    icon: mdi:air-filter
     accuracy_decimals: 0
     unit_of_measurement: 'days'
 
   - platform: template
     id: running_mean_outdoor_temp # PDO 209
-    name: '${device_name} Running Mean Outdoor Temperature'
+    name: 'Running Mean Outdoor Temperature'
     filters: [multiply: 0.1]
     accuracy_decimals: 1
     unit_of_measurement: '°C'
@@ -305,7 +305,7 @@ sensor:
 
   - platform: template
     id: profile_target_temp # PDO 212
-    name: '${device_name} Profile Target Temperature'
+    name: 'Profile Target Temperature'
     filters: [multiply: 0.1]
     accuracy_decimals: 1
     unit_of_measurement: '°C'
@@ -314,7 +314,7 @@ sensor:
 
   - platform: template
     id: avoided_heating_actual # PDO 213
-    name: '${device_name} Avoided Heating Actual'
+    name: 'Avoided Heating Actual'
     filters: *throttle-filter-e-3
     accuracy_decimals: 3
     unit_of_measurement: 'kW'
@@ -323,7 +323,7 @@ sensor:
 
   - platform: template
     id: avoided_heating_ytd # PDO 214
-    name: '${device_name} Avoided Heating YTD'
+    name: 'Avoided Heating YTD'
     accuracy_decimals: 0
     unit_of_measurement: 'kWh'
     device_class: energy
@@ -331,7 +331,7 @@ sensor:
 
   - platform: template
     id: avoided_heating_total # PDO 215
-    name: '${device_name} Avoided Heating Total'
+    name: 'Avoided Heating Total'
     accuracy_decimals: 0
     unit_of_measurement: 'kWh'
     device_class: energy
@@ -339,7 +339,7 @@ sensor:
 
   - platform: template
     id: avoided_cooling_actual # PDO 216
-    name: '${device_name} Avoided Cooling Actual'
+    name: 'Avoided Cooling Actual'
     filters: *throttle-filter-e-3
     accuracy_decimals: 3
     unit_of_measurement: 'kW'
@@ -348,7 +348,7 @@ sensor:
 
   - platform: template
     id: avoided_cooling_ytd # PDO 217
-    name: '${device_name} Avoided Cooling YTD'
+    name: 'Avoided Cooling YTD'
     accuracy_decimals: 0
     unit_of_measurement: 'kWh'
     device_class: energy
@@ -356,7 +356,7 @@ sensor:
 
   - platform: template
     id: avoided_cooling_total # PDO 218
-    name: '${device_name} Avoided Cooling Total'
+    name: 'Avoided Cooling Total'
     accuracy_decimals: 0
     unit_of_measurement: 'kWh'
     device_class: energy
@@ -364,7 +364,7 @@ sensor:
 
   - platform: template
     id: pre_heater_temp_before # PDO 220
-    name: '${device_name} Pre-heater Temperature Before'
+    name: 'Pre-heater Temperature Before'
     filters: [multiply: 0.1]
     accuracy_decimals: 1
     unit_of_measurement: '°C'
@@ -373,7 +373,7 @@ sensor:
 
   - platform: template
     id: post_heater_temp_after # PDO 221
-    name: '${device_name} Post-heater Temperature After'
+    name: 'Post-heater Temperature After'
     filters: [multiply: 0.1]
     accuracy_decimals: 1
     unit_of_measurement: '°C'
@@ -382,14 +382,14 @@ sensor:
 
   - platform: template
     id: bypass_state # PDO 227
-    name: '${device_name} Bypass State'
+    name: 'Bypass State'
     accuracy_decimals: 0
     unit_of_measurement: '%'
     state_class: measurement
 
   - platform: template
     id: extract_air_temp # PDO 274
-    name: '${device_name} Extract Air Temperature'
+    name: 'Extract Air Temperature'
     filters: [multiply: 0.1]
     accuracy_decimals: 1
     unit_of_measurement: '°C'
@@ -398,7 +398,7 @@ sensor:
 
   - platform: template
     id: exhaust_air_temp # PDO 275
-    name: '${device_name} Exhaust Air Temperature'
+    name: 'Exhaust Air Temperature'
     filters: [multiply: 0.1]
     accuracy_decimals: 1
     unit_of_measurement: '°C'
@@ -407,7 +407,7 @@ sensor:
 
   - platform: template
     id: outdoor_air_temp # PDO 276
-    name: '${device_name} Outdoor Air Temperature'
+    name: 'Outdoor Air Temperature'
     filters: [multiply: 0.1]
     accuracy_decimals: 1
     unit_of_measurement: '°C'
@@ -416,7 +416,7 @@ sensor:
 
   - platform: template
     id: pre_heater_temp_after # PDO 277, after ComfoFond/GHE
-    name: '${device_name} Pre-heater Temp After'
+    name: 'Pre-heater Temp After'
     filters: [multiply: 0.1]
     accuracy_decimals: 1
     unit_of_measurement: '°C'
@@ -425,7 +425,7 @@ sensor:
 
   - platform: template
     id: supply_air_temp # PDO 278
-    name: '${device_name} Supply Air Temperature'
+    name: 'Supply Air Temperature'
     filters: [multiply: 0.1]
     accuracy_decimals: 1
     unit_of_measurement: '°C'
@@ -434,7 +434,7 @@ sensor:
 
   - platform: template
     id: extract_air_humidity # PDO 290
-    name: '${device_name} Extract Air Humidity'
+    name: 'Extract Air Humidity'
     accuracy_decimals: 0
     unit_of_measurement: '%'
     device_class: humidity
@@ -442,7 +442,7 @@ sensor:
 
   - platform: template
     id: exhaust_air_humidity # PDO 291
-    name: '${device_name} Exhaust Air Humidity'
+    name: 'Exhaust Air Humidity'
     accuracy_decimals: 0
     unit_of_measurement: '%'
     device_class: humidity
@@ -450,7 +450,7 @@ sensor:
 
   - platform: template
     id: outdoor_air_humidity # PDO 292, is this really still correct with ComfoFond/GHE installed?
-    name: '${device_name} Outdoor Air Humidity'
+    name: 'Outdoor Air Humidity'
     accuracy_decimals: 0
     unit_of_measurement: '%'
     device_class: humidity
@@ -458,7 +458,7 @@ sensor:
 
   - platform: template
     id: pre_heater_humidity_after # PDO 293
-    name: '${device_name} Pre-heater Humidity After'
+    name: 'Pre-heater Humidity After'
     accuracy_decimals: 0
     unit_of_measurement: '%'
     device_class: humidity
@@ -466,7 +466,7 @@ sensor:
 
   - platform: template
     id: supply_air_humidity # PDO 294
-    name: '${device_name} Supply Air Humidity'
+    name: 'Supply Air Humidity'
     accuracy_decimals: 0
     unit_of_measurement: '%'
     device_class: humidity
@@ -477,22 +477,26 @@ binary_sensor:
 
   - platform: template
     id: away_indicator # PDO 16 (raw)
-    name: '${device_name} Away Indicator'
+    name: 'Away Indicator'
+    icon: mdi:airplane
 
   - platform: template
     id: heating_season # PDO 210 (raw)
-    name: '${device_name} Heating Season'
+    name: 'Heating Season'
+    icon: mdi:snowflake-thermometer
 
   - platform: template
     id: cooling_season # PDO 211 (raw)
-    name: '${device_name} Cooling Season'
+    name: 'Cooling Season'
+    icon: mdi:sun-thermometer
 
 
 text_sensor:
 
   - platform: template
     id: fan_level # PDO 65 (raw)
-    name: '${device_name} Fan Level'
+    name: 'Fan Level'
+    icon: mdi:fan
     filters:
       - map:
         - 0 -> Away
@@ -502,7 +506,7 @@ text_sensor:
 
   - platform: template
     id: operating_mode # PDO 49
-    name: '${device_name} Operating Mode'
+    name: 'Operating Mode'
     filters:
       - map:
         - 1 -> Manual (limited)
@@ -515,10 +519,20 @@ text_sensor:
         - 8 -> Bathroom Switch
         - 11 -> Away
         - 255 -> Auto
+    on_value:
+      then:
+        - if:
+            condition:
+              lambda: 'return x == "Auto";'
+            then:
+              - switch.turn_on: auto_ventilation
+            else:
+              - switch.turn_off: auto_ventilation
 
   - platform: template
     id: supply_fan_mode # PDO 54
-    name: '${device_name} Supply Fan Mode'
+    name: 'Supply Fan Mode'
+    icon: mdi:arrow-split-vertical
     filters:
       - map:
         - 1 -> Supply Only
@@ -526,7 +540,8 @@ text_sensor:
 
   - platform: template
     id: exhaust_fan_mode # PDO 55
-    name: '${device_name} Exhaust Fan Mode'
+    name: 'Exhaust Fan Mode'
+    icon: mdi:arrow-split-vertical
     filters:
       - map:
         - 1 -> Exhaust Only
@@ -534,7 +549,7 @@ text_sensor:
 
   - platform: template
     id: bypass_activation_mode # PDO 66
-    name: '${device_name} Bypass Activation Mode'
+    name: 'Bypass Activation Mode'
     filters:
       - map:
         - 0 -> Auto
@@ -543,7 +558,7 @@ text_sensor:
 
   - platform: template
     id: temperature_profile # PDO 67
-    name: '${device_name} Temperature Profile'
+    name: 'Temperature Profile'
     filters:
       - map:
         - 0 -> Normal
@@ -552,16 +567,17 @@ text_sensor:
 
   - platform: template
     id: next_fan_change_in # PDO 81 (raw)
-    name: '${device_name} Next Fan Change In'
+    name: 'Next Fan Change In'
 
   - platform: template
     id: next_bypass_change_in # PDO 81 (raw)
-    name: '${device_name} Next Bypass Change In'
+    name: 'Next Bypass Change In'
 
 switch:
   - platform: template
-    name: '${device_name} Auto Ventilation'
+    name: 'Auto Ventilation'
     id: auto_ventilation
+    icon: mdi:toggle-switch
     lambda: |-
       if (id(operating_mode).state == "Auto") {
         return true;
@@ -582,52 +598,51 @@ switch:
           then:
             - lambda: id(comfoair)->set_boost(0);
       - lambda: id(comfoair)->set_manual_mode(false);
-      - delay: 750ms
     turn_off_action:
       - lambda: id(comfoair)->set_manual_mode(true);
-      - delay: 750ms
 
 button:
   - platform: template
-    name: '${device_name} Boost 15min'
+    name: 'Boost 15min'
     icon: mdi:fast-forward-15
     on_press:
       - lambda: id(comfoair)->set_boost(15 * 60);
   - platform: template
-    name: '${device_name} Boost 30min'
+    name: 'Boost 30min'
     icon: mdi:fast-forward-30
     on_press:
       - lambda: id(comfoair)->set_boost(30 * 60);
   - platform: template
-    name: '${device_name} Boost 60min'
+    name: 'Boost 60min'
     icon: mdi:fast-forward-60
     on_press:
       - lambda: id(comfoair)->set_boost(60 * 60);
   - platform: template
-    name: '${device_name} Boost off'
-    icon: mdi:fan-minus
+    name: 'Boost off'
+    icon: mdi:stop
     on_press:
       - lambda: id(comfoair)->set_boost(0);
   - platform: template
-    name: '${device_name} Bypass On (1h)'
+    name: 'Bypass On (1h)'
     icon: mdi:fan-chevron-up
     on_press:
       - lambda: id(comfoair)->set_bypass_mode(zehnder_comfoair_q::BYPASS_ACTIVATE, 60 * 60);
   - platform: template
-    name: '${device_name} Bypass Auto'
+    name: 'Bypass Auto'
     icon: mdi:fan-auto
     on_press:
       - lambda: id(comfoair)->set_bypass_mode(zehnder_comfoair_q::BYPASS_AUTO, 0);
   - platform: template
-    name: '${device_name} Bypass Off (1h)'
+    name: 'Bypass Off (1h)'
     icon: mdi:fan-chevron-down
     on_press:
       - lambda: id(comfoair)->set_bypass_mode(zehnder_comfoair_q::BYPASS_DEACTIVATE, 60 * 60);
 
 select:
   - platform: template
-    name: '${device_name} Temperature Profile'
+    name: 'Temperature Profile'
     id: temperature_profile_select
+    icon: mdi:thermometer
     lambda: return id(temperature_profile).state;
     options:
      - "Normal"
@@ -645,8 +660,9 @@ select:
             id(comfoair)->set_temp_profile(zehnder_comfoair_q::TEMP_PROFILE_NORMAL);
           }
   - platform: template
-    name: '${device_name} Temperature Passive'
+    name: 'Temperature Passive'
     id: temperature_passive_select
+    icon: mdi:thermometer-minus
     options:
      - "On"
      - "Auto only"
@@ -666,12 +682,15 @@ select:
             id(comfoair)->set_temperature_passive(zehnder_comfoair_q::OAO_ON);
           }
   - platform: template
-    name: '${device_name} Humidity Comfort'
+    name: 'Humidity Comfort'
     id: humidity_comfort_select
+    icon: mdi:water-percent
     options:
      - "On"
      - "Auto only"
      - "Off"
+    initial_option: "On"
+    restore_value: true
     set_action: 
       - lambda: |
           if (x == "Off") {
@@ -684,8 +703,9 @@ select:
             id(comfoair)->set_humidity_comfort(zehnder_comfoair_q::OAO_ON);
           }
   - platform: template
-    name: '${device_name} Humidity Protection'
+    name: 'Humidity Protection'
     id: humidity_protection_select
+    icon: mdi:water-percent
     options:
      - "On"
      - "Auto only"
@@ -706,27 +726,35 @@ select:
 
 fan:
   - platform: speed
-    name: '${device_name} Fan'
+    name: 'Fan'
     id: "comfoair_fan"
     icon: mdi:air-filter
     output: comfoair_fan_output
     speed_count: 3
     # restore_mode: RESTORE_DEFAULT_ON
     on_turn_on:
-      - lambda: id(comfoair)->set_manual_mode(false);
+      # if operating mode is not auto, set it to auto
+      - if:
+          condition:
+            lambda: return id(operating_mode).state == "Auto";
+          then:
+            - lambda: id(comfoair)->set_manual_mode(false);
     on_turn_off:
       - lambda: id(comfoair)->set_level(0);
     on_speed_set:
-      - lambda: id(comfoair)->set_level(id(comfoair_fan).speed);
+      # only set fan speed if speed is not to set to 0
+      - if:
+          condition:
+            lambda: return id(comfoair_fan).speed != 0;
+          then:
+            - lambda: id(comfoair)->set_level(id(comfoair_fan).speed);
   
 climate:
   - platform: thermostat
-    name: "${device_name} Climate"
+    name: 'Climate'
     id: comfoair_climate
     sensor: extract_air_temp
     icon: mdi:air-filter
-    # target_temperature: comfoair_profile_target_temp
-    # target_temperature_state_topic: "comfoair/sensor/comfoair_profile_target_temp/state"
     visual:
       min_temperature: 18
       max_temperature: 25
