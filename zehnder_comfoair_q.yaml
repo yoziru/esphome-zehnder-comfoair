@@ -593,11 +593,25 @@ switch:
       # if boost is on, turn it off first
       - if:
           condition:
+            or:
+              - text_sensor.state:
+                  id: operating_mode
+                  state: 'Boost'
+              - text_sensor.state:  
+                  id: operating_mode
+                  state: 'Boost (RF)'
+          then:
+            - lambda: id(comfoair)->set_boost(0);
+            - delay: 1s
+      # hack: if current mode is manual (limited), switch to manual (permanent) first
+      - if:
+          condition:
             text_sensor.state:
               id: operating_mode
               state: 'Manual (limited)'
           then:
             - lambda: id(comfoair)->set_manual_mode(true);
+            - delay: 1s
       - lambda: id(comfoair)->set_manual_mode(false);
     turn_off_action:
       - lambda: id(comfoair)->set_manual_mode(true);
