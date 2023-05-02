@@ -525,9 +525,13 @@ text_sensor:
             condition:
               lambda: 'return x == "Auto";'
             then:
-              - switch.turn_on: auto_ventilation
+              - switch.template.publish:
+                  id: auto_ventilation
+                  state: ON
             else:
-              - switch.turn_off: auto_ventilation
+              - switch.template.publish:
+                  id: auto_ventilation
+                  state: OFF
 
   - platform: template
     id: supply_fan_mode # PDO 54
@@ -581,12 +585,6 @@ switch:
     name: 'Auto Ventilation'
     id: auto_ventilation
     icon: mdi:toggle-switch
-    lambda: |-
-      if (id(operating_mode).state == "Auto") {
-        return true;
-      } else {
-        return false;
-      }
     turn_on_action:
         # if boost is on, turn it off first
       - if:
