@@ -703,11 +703,17 @@ climate:
         default_target_temperature_low: 21 °C
         default_target_temperature_high: 22 °C
     heat_action:
-      - lambda: id(comfoair)->set_temp_profile(zehnder_comfoair_q::TEMP_PROFILE_WARM);
+      - mqtt.publish:
+          topic: "comfoair/sensor/comfoair_temperature_profile/command"
+          payload: "Warm"
     idle_action:
-      - lambda: id(comfoair)->set_temp_profile(zehnder_comfoair_q::TEMP_PROFILE_NORMAL);
+      - mqtt.publish:
+          topic: "comfoair/sensor/comfoair_temperature_profile/command"
+          payload: "Normal"
     cool_action:
-      - lambda: id(comfoair)->set_temp_profile(zehnder_comfoair_q::TEMP_PROFILE_COOL);
+      - mqtt.publish:
+          topic: "comfoair/sensor/comfoair_temperature_profile/command"
+          payload: "Cool"
 
 # Example configuration entry
 output:
