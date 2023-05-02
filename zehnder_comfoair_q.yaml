@@ -1,6 +1,7 @@
 esphome:
   name: comfoair
-  friendly_name: Zehnder ComfoAir Q350
+  friendly_name: ComfoAir
+  comment: Zehnder ComfoAir Q350
 
 esp32:
   board: esp32-evb
@@ -49,7 +50,7 @@ web_server:
   port: 80
 
 substitutions:
-  device_name: comfoair
+  device_name: ComfoAir
   filter_time: 5s
   filter_send_every: '1'
   filter_window_size: '3'
@@ -76,10 +77,10 @@ external_components:
   - source: components
     components: [ zehnder_comfoair_q ]
 
-
+# See docs: https://github.com/michaelarnauts/aiocomfoconnect/blob/master/docs/PROTOCOL-PDO.md
 zehnder_comfoair_q:
   id: comfoair
-  request_ids: [16, 49, 65, 66, 67, 81, 82, 117, 118, 119, 120, 121, 122, 128, 129, 130, 144, 145, 146, 192, 209, 212, 213, 214, 215, 216, 217, 218, 220, 221, 227, 274, 275, 276, 277, 278, 290, 291, 292, 293, 294, 416, 417, 418]
+  request_ids: [16, 49, 54, 55, 65, 66, 67, 81, 82, 117, 118, 119, 120, 121, 122, 128, 129, 130, 192, 209, 210, 211, 212, 212, 213, 214, 215, 216, 217, 218, 220, 221, 227, 274, 275, 276, 277, 278, 290, 291, 292, 293, 294]
 
 canbus:
   - platform: esp32_can
@@ -109,6 +110,8 @@ canbus:
             {
                 comfoair_on_frame_case( 16, id(comfoair), away_indicator_raw,                true);
                 comfoair_on_frame_case( 49, id(comfoair), operating_mode,                    true);
+                comfoair_on_frame_case( 54, id(comfoair), supply_fan_mode,                   true);
+                comfoair_on_frame_case( 55, id(comfoair), exhaust_fan_mode,                  true);
                 comfoair_on_frame_case( 65, id(comfoair), fan_level_raw,                     true);
                 comfoair_on_frame_case( 66, id(comfoair), bypass_activation_mode,            true);
                 comfoair_on_frame_case( 67, id(comfoair), temperature_profile,                true);
@@ -125,6 +128,8 @@ canbus:
                 comfoair_on_frame_case(130, id(comfoair), energy_since_start,                true);
                 comfoair_on_frame_case(192, id(comfoair), filter_replacement_remaining_days, false);
                 comfoair_on_frame_case(209, id(comfoair), running_mean_outdoor_temp,        false);
+                comfoair_on_frame_case(210, id(comfoair), heating_season_raw,                true);
+                comfoair_on_frame_case(211, id(comfoair), cooling_season_raw,                true);
                 comfoair_on_frame_case(212, id(comfoair), profile_target_temp,               false);
                 comfoair_on_frame_case(213, id(comfoair), avoided_heating_actual,            true);
                 comfoair_on_frame_case(214, id(comfoair), avoided_heating_ytd,               true);
@@ -149,13 +154,24 @@ canbus:
 
 
 sensor:
-
   - platform: template
     id: away_indicator_raw # PDO 16
     accuracy_decimals: 0
     on_value:
       then:
         - lambda: id(away_indicator).publish_state(x == 7);
+  - platform: template
+    id: heating_season_raw # PDO 210
+    accuracy_decimals: 0
+    on_value:
+      then:
+        - lambda: id(heating_season).publish_state(x == 1);
+  - platform: template
+    id: cooling_season_raw # PDO 211
+    accuracy_decimals: 0
+    on_value:
+      then:
+        - lambda: id(cooling_season).publish_state(x == 1);
 
 
   - platform: template
@@ -201,7 +217,7 @@ sensor:
 
   - platform: template
     id: exhaust_fan_duty # PDO 117
-    name: '${device_name} exhaust_fan_duty'
+    name: '${device_name} Exhaust Fan Duty'
     accuracy_decimals: 0
     unit_of_measurement: '%'
     state_class: measurement
@@ -209,7 +225,7 @@ sensor:
 
   - platform: template
     id: supply_fan_duty # PDO 118
-    name: '${device_name} supply_fan_duty'
+    name: '${device_name} Supply Fan Duty'
     accuracy_decimals: 0
     unit_of_measurement: '%'
     state_class: measurement
@@ -217,7 +233,7 @@ sensor:
 
   - platform: template
     id: supply_fan_flow # PDO 119
-    name: '${device_name} supply_fan_flow'
+    name: '${device_name} Supply Fan Flow'
     accuracy_decimals: 0
     unit_of_measurement: 'm³/h'
     state_class: measurement
@@ -225,7 +241,7 @@ sensor:
 
   - platform: template
     id: exhaust_fan_flow # PDO 120
-    name: '${device_name} exhaust_fan_flow'
+    name: '${device_name} Exhaust Fan Flow'
     accuracy_decimals: 0
     unit_of_measurement: 'm³/h'
     state_class: measurement
@@ -233,7 +249,7 @@ sensor:
 
   - platform: template
     id: exhaust_fan_speed # PDO 121
-    name: '${device_name} exhaust_fan_speed'
+    name: '${device_name} Exhaust Fan Speed'
     accuracy_decimals: 0
     unit_of_measurement: 'rpm'
     state_class: measurement
@@ -241,7 +257,7 @@ sensor:
 
   - platform: template
     id: supply_fan_speed # PDO 122
-    name: '${device_name} supply_fan_speed'
+    name: '${device_name} Supply Fan Speed'
     accuracy_decimals: 0
     unit_of_measurement: 'rpm'
     state_class: measurement
@@ -249,7 +265,7 @@ sensor:
 
   - platform: template
     id: power # PDO 128
-    name: '${device_name} power'
+    name: '${device_name} Power'
     accuracy_decimals: 0
     unit_of_measurement: 'W'
     device_class: power
@@ -258,7 +274,7 @@ sensor:
 
   - platform: template
     id: energy_ytd # PDO 129
-    name: '${device_name} energy_ytd'
+    name: '${device_name} Energy YTD'
     accuracy_decimals: 0
     unit_of_measurement: 'kWh'
     device_class: energy
@@ -266,32 +282,7 @@ sensor:
 
   - platform: template
     id: energy_since_start # PDO 130
-    name: '${device_name} energy_since_start'
-    accuracy_decimals: 0
-    unit_of_measurement: 'kWh'
-    device_class: energy
-    state_class: total_increasing
-
-  - platform: template
-    id: pre_heater_power_cons_current # PDO 144
-    name: '${device_name} pre_heater_power_cons_current'
-    accuracy_decimals: 0
-    unit_of_measurement: 'W'
-    device_class: power
-    state_class: measurement
-    filters: *throttle-filter
-
-  - platform: template
-    id: pre_heater_power_cons_ytd # PDO 145
-    name: '${device_name} pre_heater_power_cons_ytd'
-    accuracy_decimals: 0
-    unit_of_measurement: 'kWh'
-    device_class: energy
-    state_class: total_increasing
-
-  - platform: template
-    id: pre_heater_power_cons_since_start # PDO 146
-    name: '${device_name} pre_heater_power_cons_since_start'
+    name: '${device_name} Energy Since Start'
     accuracy_decimals: 0
     unit_of_measurement: 'kWh'
     device_class: energy
@@ -299,13 +290,13 @@ sensor:
 
   - platform: template
     id: filter_replacement_remaining_days # PDO 192
-    name: '${device_name} filter_replacement_remaining_days'
+    name: '${device_name} Filter Replacement Remaining Days'
     accuracy_decimals: 0
     unit_of_measurement: 'days'
 
   - platform: template
     id: running_mean_outdoor_temp # PDO 209
-    name: '${device_name} running_mean_outdoor_temp'
+    name: '${device_name} Running Mean Outdoor Temperature'
     filters: [multiply: 0.1]
     accuracy_decimals: 1
     unit_of_measurement: '°C'
@@ -314,7 +305,7 @@ sensor:
 
   - platform: template
     id: profile_target_temp # PDO 212
-    name: '${device_name} profile_target_temp'
+    name: '${device_name} Profile Target Temperature'
     filters: [multiply: 0.1]
     accuracy_decimals: 1
     unit_of_measurement: '°C'
@@ -323,7 +314,7 @@ sensor:
 
   - platform: template
     id: avoided_heating_actual # PDO 213
-    name: '${device_name} avoided_heating_actual'
+    name: '${device_name} Avoided Heating Actual'
     filters: *throttle-filter-e-3
     accuracy_decimals: 3
     unit_of_measurement: 'kW'
@@ -332,7 +323,7 @@ sensor:
 
   - platform: template
     id: avoided_heating_ytd # PDO 214
-    name: '${device_name} avoided_heating_ytd'
+    name: '${device_name} Avoided Heating YTD'
     accuracy_decimals: 0
     unit_of_measurement: 'kWh'
     device_class: energy
@@ -340,7 +331,7 @@ sensor:
 
   - platform: template
     id: avoided_heating_total # PDO 215
-    name: '${device_name} avoided_heating_total'
+    name: '${device_name} Avoided Heating Total'
     accuracy_decimals: 0
     unit_of_measurement: 'kWh'
     device_class: energy
@@ -348,7 +339,7 @@ sensor:
 
   - platform: template
     id: avoided_cooling_actual # PDO 216
-    name: '${device_name} avoided_cooling_actual'
+    name: '${device_name} Avoided Cooling Actual'
     filters: *throttle-filter-e-3
     accuracy_decimals: 3
     unit_of_measurement: 'kW'
@@ -357,7 +348,7 @@ sensor:
 
   - platform: template
     id: avoided_cooling_ytd # PDO 217
-    name: '${device_name} avoided_cooling_ytd'
+    name: '${device_name} Avoided Cooling YTD'
     accuracy_decimals: 0
     unit_of_measurement: 'kWh'
     device_class: energy
@@ -365,7 +356,7 @@ sensor:
 
   - platform: template
     id: avoided_cooling_total # PDO 218
-    name: '${device_name} avoided_cooling_total'
+    name: '${device_name} Avoided Cooling Total'
     accuracy_decimals: 0
     unit_of_measurement: 'kWh'
     device_class: energy
@@ -373,7 +364,7 @@ sensor:
 
   - platform: template
     id: pre_heater_temp_before # PDO 220
-    name: '${device_name} pre_heater_temp_before'
+    name: '${device_name} Pre-heater Temperature Before'
     filters: [multiply: 0.1]
     accuracy_decimals: 1
     unit_of_measurement: '°C'
@@ -382,7 +373,7 @@ sensor:
 
   - platform: template
     id: post_heater_temp_after # PDO 221
-    name: '${device_name} post_heater_temp_after'
+    name: '${device_name} Post-heater Temperature After'
     filters: [multiply: 0.1]
     accuracy_decimals: 1
     unit_of_measurement: '°C'
@@ -391,14 +382,14 @@ sensor:
 
   - platform: template
     id: bypass_state # PDO 227
-    name: '${device_name} bypass_state'
+    name: '${device_name} Bypass State'
     accuracy_decimals: 0
     unit_of_measurement: '%'
     state_class: measurement
 
   - platform: template
     id: extract_air_temp # PDO 274
-    name: '${device_name} extract_air_temp'
+    name: '${device_name} Extract Air Temperature'
     filters: [multiply: 0.1]
     accuracy_decimals: 1
     unit_of_measurement: '°C'
@@ -407,7 +398,7 @@ sensor:
 
   - platform: template
     id: exhaust_air_temp # PDO 275
-    name: '${device_name} exhaust_air_temp'
+    name: '${device_name} Exhaust Air Temperature'
     filters: [multiply: 0.1]
     accuracy_decimals: 1
     unit_of_measurement: '°C'
@@ -416,7 +407,7 @@ sensor:
 
   - platform: template
     id: outdoor_air_temp # PDO 276
-    name: '${device_name} outdoor_air_temp'
+    name: '${device_name} Outdoor Air Temperature'
     filters: [multiply: 0.1]
     accuracy_decimals: 1
     unit_of_measurement: '°C'
@@ -425,7 +416,7 @@ sensor:
 
   - platform: template
     id: pre_heater_temp_after # PDO 277, after ComfoFond/GHE
-    name: '${device_name} pre_heater_temp_after'
+    name: '${device_name} Pre-heater Temp After'
     filters: [multiply: 0.1]
     accuracy_decimals: 1
     unit_of_measurement: '°C'
@@ -434,7 +425,7 @@ sensor:
 
   - platform: template
     id: supply_air_temp # PDO 278
-    name: '${device_name} supply_air_temp'
+    name: '${device_name} Supply Air Temperature'
     filters: [multiply: 0.1]
     accuracy_decimals: 1
     unit_of_measurement: '°C'
@@ -443,7 +434,7 @@ sensor:
 
   - platform: template
     id: extract_air_humidity # PDO 290
-    name: '${device_name} extract_air_humidity'
+    name: '${device_name} Extract Air Humidity'
     accuracy_decimals: 0
     unit_of_measurement: '%'
     device_class: humidity
@@ -451,7 +442,7 @@ sensor:
 
   - platform: template
     id: exhaust_air_humidity # PDO 291
-    name: '${device_name} exhaust_air_humidity'
+    name: '${device_name} Exhaust Air Humidity'
     accuracy_decimals: 0
     unit_of_measurement: '%'
     device_class: humidity
@@ -459,7 +450,7 @@ sensor:
 
   - platform: template
     id: outdoor_air_humidity # PDO 292, is this really still correct with ComfoFond/GHE installed?
-    name: '${device_name} outdoor_air_humidity'
+    name: '${device_name} Outdoor Air Humidity'
     accuracy_decimals: 0
     unit_of_measurement: '%'
     device_class: humidity
@@ -467,7 +458,7 @@ sensor:
 
   - platform: template
     id: pre_heater_humidity_after # PDO 293
-    name: '${device_name} pre_heater_humidity_after'
+    name: '${device_name} Pre-heater Humidity After'
     accuracy_decimals: 0
     unit_of_measurement: '%'
     device_class: humidity
@@ -475,7 +466,7 @@ sensor:
 
   - platform: template
     id: supply_air_humidity # PDO 294
-    name: '${device_name} supply_air_humidity'
+    name: '${device_name} Supply Air Humidity'
     accuracy_decimals: 0
     unit_of_measurement: '%'
     device_class: humidity
@@ -486,14 +477,22 @@ binary_sensor:
 
   - platform: template
     id: away_indicator # PDO 16 (raw)
-    name: '${device_name} away_indicator'
+    name: '${device_name} Away Indicator'
+
+  - platform: template
+    id: heating_season # PDO 210 (raw)
+    name: '${device_name} Heating Season'
+
+  - platform: template
+    id: cooling_season # PDO 211 (raw)
+    name: '${device_name} Cooling Season'
 
 
 text_sensor:
 
   - platform: template
     id: fan_level # PDO 65 (raw)
-    name: '${device_name} fan_level'
+    name: '${device_name} Fan Level'
     filters:
       - map:
         - 0 -> Away
@@ -503,7 +502,7 @@ text_sensor:
 
   - platform: template
     id: operating_mode # PDO 49
-    name: '${device_name} operating_mode'
+    name: '${device_name} Operating Mode'
     filters:
       - map:
         - 1 -> Manual (limited)
@@ -518,8 +517,24 @@ text_sensor:
         - 255 -> Auto
 
   - platform: template
+    id: supply_fan_mode # PDO 54
+    name: '${device_name} Supply Fan Mode'
+    filters:
+      - map:
+        - 1 -> Supply Only
+        - 255 -> Balanced
+
+  - platform: template
+    id: exhaust_fan_mode # PDO 55
+    name: '${device_name} Exhaust Fan Mode'
+    filters:
+      - map:
+        - 1 -> Exhaust Only
+        - 255 -> Balanced
+
+  - platform: template
     id: bypass_activation_mode # PDO 66
-    name: '${device_name} bypass_activation_mode'
+    name: '${device_name} Bypass Activation Mode'
     filters:
       - map:
         - 0 -> Auto
@@ -528,7 +543,7 @@ text_sensor:
 
   - platform: template
     id: temperature_profile # PDO 67
-    name: '${device_name} temperature_profile'
+    name: '${device_name} Temperature Profile'
     filters:
       - map:
         - 0 -> Normal
@@ -537,11 +552,11 @@ text_sensor:
 
   - platform: template
     id: next_fan_change_in # PDO 81 (raw)
-    name: '${device_name} next_fan_change_in'
+    name: '${device_name} Next Fan Change In'
 
   - platform: template
     id: next_bypass_change_in # PDO 81 (raw)
-    name: '${device_name} next_bypass_change_in'
+    name: '${device_name} Next Bypass Change In'
 
 switch:
   - platform: template
