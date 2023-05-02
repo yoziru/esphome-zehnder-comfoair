@@ -57,11 +57,13 @@ namespace zehnder_comfoair_q
         void set_boost(uint32_t duration_secs) { send_command_set_timer(duration_secs > 0, 0x01, 0x06, 3, duration_secs); }
         void set_manual_mode(bool enable)
         {
+            // always enable manual mode first: hack to force `auto` when `limited_manual` or boost is active: `limited_manual` / `boost` -> `manual` -> `auto`
             if (!enable)
             {
-                // hack to force `auto` when `limited_manual` or boost is active: `limited_manual` / `boost` -> `manual` -> `auto`
                 send_command_set_timer(!enable, 0x08, 0x01, !enable ? 1 : 0);
-            }
+                // need a small delay to ensure the command is processed before the next one
+                esphome::delay_microseconds_safe(750 * 1000);
+            };
             send_command_set_timer(enable, 0x08, 0x01, enable ? 1 : 0);
         }
         void set_ventilation_level(VentilationLevel ventilation_level) { set_level(ventilation_level); }
