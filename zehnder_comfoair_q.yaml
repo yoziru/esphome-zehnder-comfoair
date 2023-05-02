@@ -630,8 +630,6 @@ select:
     id: temperature_profile_select
     command_topic: "comfoair/sensor/comfoair_temperature_profile/command"
     state_topic: "comfoair/sensor/comfoair_temperature_profile/state"
-    availability:
-      topic: "comfoair/status"
     options:
      - "Normal"
      - "Cool"
@@ -647,6 +645,73 @@ select:
           } else {
             id(comfoair)->set_temp_profile(zehnder_comfoair_q::TEMP_PROFILE_NORMAL);
           }
+  - platform: template
+    name: '${device_name} Temperature Passive'
+    id: temperature_passive_select
+    options:
+     - "On"
+     - "Auto only"
+     - "Off"
+    set_action:
+      # map options to enum
+      - lambda: |
+          if (x == "Off") {
+            id(comfoair)->set_temperature_passive(zehnder_comfoair_q::OAO_OFF);
+          } else if (x == "Auto only") {
+            id(comfoair)->set_temperature_passive(zehnder_comfoair_q::OAO_AUTO);
+          } else if (x == "On") {
+            id(comfoair)->set_temperature_passive(zehnder_comfoair_q::OAO_ON);
+          } else {
+            id(comfoair)->set_temperature_passive(zehnder_comfoair_q::OAO_ON);
+          }
+      - mqtt.publish:
+          topic: comfoair/select/comfoair_temperature_passive/state
+          payload: !lambda return x;
+          retain: true
+  - platform: template
+    name: '${device_name} Humidity Comfort'
+    id: humidity_comfort_select
+    options:
+     - "On"
+     - "Auto only"
+     - "Off"
+    set_action: 
+      - lambda: |
+          if (x == "Off") {
+            id(comfoair)->set_humidity_comfort(zehnder_comfoair_q::OAO_OFF);
+          } else if (x == "Auto only") {
+            id(comfoair)->set_humidity_comfort(zehnder_comfoair_q::OAO_AUTO);
+          } else if (x == "On") {
+            id(comfoair)->set_humidity_comfort(zehnder_comfoair_q::OAO_ON);
+          } else {
+            id(comfoair)->set_humidity_comfort(zehnder_comfoair_q::OAO_ON);
+          }
+      - mqtt.publish:
+          topic: comfoair/select/comfoair_humidity_comfort/state
+          payload: !lambda return x;
+          retain: true
+  - platform: template
+    name: '${device_name} Humidity Protection'
+    id: humidity_protection_select
+    options:
+     - "On"
+     - "Auto only"
+     - "Off"
+    set_action: 
+      - lambda: |
+          if (x == "Off") {
+            id(comfoair)->set_humidity_protection(zehnder_comfoair_q::OAO_OFF);
+          } else if (x == "Auto only") {
+            id(comfoair)->set_humidity_protection(zehnder_comfoair_q::OAO_AUTO);
+          } else if (x == "On") {
+            id(comfoair)->set_humidity_protection(zehnder_comfoair_q::OAO_ON);
+          } else {
+            id(comfoair)->set_humidity_protection(zehnder_comfoair_q::OAO_ON);
+          }
+      - mqtt.publish:
+          topic: comfoair/select/comfoair_humidity_protection/state
+          payload: !lambda return x;
+          retain: true
 
 fan:
   - platform: speed
@@ -655,7 +720,7 @@ fan:
     icon: mdi:air-filter
     output: comfoair_fan_output
     speed_count: 3
-    restore_mode: ALWAYS_ON
+    restore_mode: RESTORE_DEFAULT_ON
     on_turn_on:
       - lambda: id(comfoair)->set_manual_mode(false);
     on_turn_off:
@@ -670,10 +735,6 @@ climate:
     id: comfoair_climate
     sensor: extract_air_temp
     icon: mdi:air-filter
-    availability:
-      topic: "comfoair/status"
-      payload_available: "online"
-      payload_not_available: "offline"
     target_temperature_state_topic: "comfoair/sensor/comfoair_profile_target_temp/state"
     visual:
       min_temperature: 18
@@ -684,14 +745,19 @@ climate:
     min_cooling_off_time: 1s
     min_cooling_run_time: 1s
     min_idle_time: 1s
-    supplemental_cooling_delta: 0.5
+    supplemental_cooling_delta: 0.3
     max_cooling_run_time: 14min
     supplemental_cooling_action: 
       # only boost if outdoor_air_temperature is 2 or more degrees lower than extract_air_temperature
+      # - lambda: |-
+      #     if (id(outdoor_air_temp).state > id(extract_air_temp).state + 2) {
+      #       id(comfoair)->set_boost(15 * 60);
+      #     }
+      # only boost if bypass is open, bypass_state > 0 
       - lambda: |-
-          if (id(outdoor_air_temp).state > id(extract_air_temp).state + 2) {
+          if (id(bypass_state).state > 0) {
             id(comfoair)->set_boost(15 * 60);
-          }      
+          }
       # - lambda: id(comfoair)->set_boost(15 * 60);
     cool_deadband: 0.1
     cool_overrun: 0.1
