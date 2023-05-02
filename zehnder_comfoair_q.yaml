@@ -13,17 +13,17 @@ logger:
   logs:
     canbus: INFO
 
-
+api:
 # Enable Home Assistant MQTT discovery
-mqtt:
-  broker: 192.168.188.10
-  port: 1883
-  on_message:
-    - topic: comfoair/sensor/comfoair_fan_level_raw/command
-      qos: 0
-      then:
-        - lambda: |
-            id(comfoair)->set_level(atoi(x.c_str()));
+# mqtt:
+#   broker: 192.168.188.10
+#   port: 1883
+#   on_message:
+#     - topic: comfoair/sensor/comfoair_fan_level_raw/command
+#       qos: 0
+#       then:
+#         - lambda: |
+#             id(comfoair)->set_level(atoi(x.c_str()));
 
 ota:
   password: !secret ota_password
@@ -628,8 +628,7 @@ select:
   - platform: template
     name: '${device_name} Temperature Profile'
     id: temperature_profile_select
-    command_topic: "comfoair/sensor/comfoair_temperature_profile/command"
-    state_topic: "comfoair/sensor/comfoair_temperature_profile/state"
+    lambda: return id(temperature_profile).state;
     options:
      - "Normal"
      - "Cool"
@@ -652,6 +651,8 @@ select:
      - "On"
      - "Auto only"
      - "Off"
+    initial_option: "On"
+    restore_value: true
     set_action:
       # map options to enum
       - lambda: |
@@ -664,10 +665,6 @@ select:
           } else {
             id(comfoair)->set_temperature_passive(zehnder_comfoair_q::OAO_ON);
           }
-      - mqtt.publish:
-          topic: comfoair/select/comfoair_temperature_passive/state
-          payload: !lambda return x;
-          retain: true
   - platform: template
     name: '${device_name} Humidity Comfort'
     id: humidity_comfort_select
@@ -686,10 +683,6 @@ select:
           } else {
             id(comfoair)->set_humidity_comfort(zehnder_comfoair_q::OAO_ON);
           }
-      - mqtt.publish:
-          topic: comfoair/select/comfoair_humidity_comfort/state
-          payload: !lambda return x;
-          retain: true
   - platform: template
     name: '${device_name} Humidity Protection'
     id: humidity_protection_select
@@ -697,6 +690,8 @@ select:
      - "On"
      - "Auto only"
      - "Off"
+    initial_option: "On"
+    restore_value: true
     set_action: 
       - lambda: |
           if (x == "Off") {
@@ -708,10 +703,6 @@ select:
           } else {
             id(comfoair)->set_humidity_protection(zehnder_comfoair_q::OAO_ON);
           }
-      - mqtt.publish:
-          topic: comfoair/select/comfoair_humidity_protection/state
-          payload: !lambda return x;
-          retain: true
 
 fan:
   - platform: speed
@@ -724,10 +715,9 @@ fan:
     on_turn_on:
       - lambda: id(comfoair)->set_manual_mode(false);
     on_turn_off:
-      - mqtt.publish:
-          topic: "comfoair/sensor/comfoair_fan_level_raw/command"
-          payload: 0
-    speed_level_command_topic: "comfoair/sensor/comfoair_fan_level_raw/command"
+      - lambda: id(comfoair)->set_level(0);
+    on_speed_set:
+      - lambda: id(comfoair)->set_level(id(comfoair_fan).speed);
   
 climate:
   - platform: thermostat
@@ -735,7 +725,8 @@ climate:
     id: comfoair_climate
     sensor: extract_air_temp
     icon: mdi:air-filter
-    target_temperature_state_topic: "comfoair/sensor/comfoair_profile_target_temp/state"
+    # target_temperature: comfoair_profile_target_temp
+    # target_temperature_state_topic: "comfoair/sensor/comfoair_profile_target_temp/state"
     visual:
       min_temperature: 18
       max_temperature: 25
@@ -779,17 +770,17 @@ climate:
         default_target_temperature_low: 19 °C
         default_target_temperature_high: 20 °C
     heat_action:
-      - mqtt.publish:
-          topic: "comfoair/sensor/comfoair_temperature_profile/command"
-          payload: "Warm"
+      - select.set:
+          id: temperature_profile_select
+          option: "Warm"
     idle_action:
-      - mqtt.publish:
-          topic: "comfoair/sensor/comfoair_temperature_profile/command"
-          payload: "Normal"
+      - select.set:
+          id: temperature_profile_select
+          option: "Normal"
     cool_action:
-      - mqtt.publish:
-          topic: "comfoair/sensor/comfoair_temperature_profile/command"
-          payload: "Cool"
+      - select.set:
+          id: temperature_profile_select
+          option: "Cool"
 
 # Example configuration entry
 output:
