@@ -179,14 +179,15 @@ sensor:
     on_value:
       then:
         - lambda: id(fan_level).publish_state(std::to_string(int(x)));
-        - output.set_level:
-            id: comfoair_fan_output
-            level: !lambda 'return int(x);'
-        # - if:
-        #     condition:
-        #       lambda: 'return int(x) == 0;'
-        #     then:
-        #     - fan.turn_off: comfoair_fan
+        - if:
+            condition:
+              lambda: 'return int(x) == 0;'
+            then:
+              - fan.turn_off: comfoair_fan
+            else:
+              - fan.turn_on:
+                  id: comfoair_fan
+                  speed: !lambda 'return int(x);'
   - platform: template
     id: next_fan_change_in_raw # PDO 81
     name: 'next_fan_change_in_raw'
@@ -503,6 +504,9 @@ text_sensor:
         - 1 -> Low
         - 2 -> Medium
         - 3 -> High
+    on_value:
+      then:
+        - lambda: id(fan_level_select).publish_state(x);
 
   - platform: template
     id: operating_mode # PDO 49
@@ -641,6 +645,35 @@ button:
 
 select:
   - platform: template
+    name: 'Fan Speed'
+    id: fan_level_select
+    icon: mdi:fan
+    options:
+     - Away
+     - Low
+     - Medium
+     - High
+    set_action:
+      - if:
+          condition:
+            not:
+              text_sensor.state:
+                id: fan_level
+                state: !lambda 'return x;'
+          then:
+          - lambda: |
+              if (x == "Away") {
+                id(comfoair)->set_ventilation_level(zehnder_comfoair_q::VENTILATION_LEVEL_AWAY);
+              } else if (x == "Low") {
+                id(comfoair)->set_ventilation_level(zehnder_comfoair_q::VENTILATION_LEVEL_LOW);
+              } else if (x == "Medium") {
+                id(comfoair)->set_ventilation_level(zehnder_comfoair_q::VENTILATION_LEVEL_MEDIUM);
+              } else if (x == "High") {
+                id(comfoair)->set_ventilation_level(zehnder_comfoair_q::VENTILATION_LEVEL_HIGH);
+              } else {
+                id(comfoair)->set_ventilation_level(zehnder_comfoair_q::VENTILATION_LEVEL_LOW);
+              }
+  - platform: template
     name: 'Temperature Profile'
     id: temperature_profile_select
     icon: mdi:thermometer
@@ -736,21 +769,33 @@ fan:
     speed_count: 3
     # restore_mode: RESTORE_DEFAULT_ON
     on_turn_on:
-      # if operating mode is not auto, set it to auto
-      # - if:
-      #     condition:
-      #       lambda: return id(operating_mode).state != "Auto";
-      #     then:
-      #       - lambda: id(comfoair)->set_manual_mode(false);
+      - switch.turn_on: auto_ventilation
     on_turn_off:
-      - lambda: id(comfoair)->set_level(0);
+      - select.set:
+          id: fan_level_select
+          option: "Away"
     on_speed_set:
-      # only set fan speed if speed is not to set to 0
       - if:
           condition:
-            lambda: return id(comfoair_fan).speed != 0;
+            and:
+              - fan.is_on: comfoair_fan
+              - not:
+                  lambda: return int(id(fan_level_raw).state) == id(comfoair_fan).speed;
           then:
-            - lambda: id(comfoair)->set_level(id(comfoair_fan).speed);
+            - select.set:
+                id: fan_level_select
+                option: !lambda |
+                  if (id(comfoair_fan).speed == 0) {
+                    return "Away";
+                  } else if (id(comfoair_fan).speed == 1) {
+                    return "Low";
+                  } else if (id(comfoair_fan).speed == 2) {
+                    return "Medium";
+                  } else if (id(comfoair_fan).speed == 3) {
+                    return "High";
+                  } else {
+                    return "Low";
+                  }
   
 climate:
   - platform: thermostat
