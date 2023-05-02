@@ -684,10 +684,15 @@ climate:
     min_cooling_off_time: 1s
     min_cooling_run_time: 1s
     min_idle_time: 1s
-    # supplemental_cooling_delta: 0.5
-    # max_cooling_run_time: 15min
-    # supplemental_cooling_action: 
-    #   - lambda: id(comfoair)->set_boost(15 * 60);
+    supplemental_cooling_delta: 0.5
+    max_cooling_run_time: 14min
+    supplemental_cooling_action: 
+      # only boost if outdoor_air_temperature is 2 or more degrees lower than extract_air_temperature
+      - lambda: |-
+          if (id(outdoor_air_temp).state > id(extract_air_temp).state + 2) {
+            id(comfoair)->set_boost(15 * 60);
+          }      
+      # - lambda: id(comfoair)->set_boost(15 * 60);
     cool_deadband: 0.1
     cool_overrun: 0.1
     heat_deadband: 0.1
