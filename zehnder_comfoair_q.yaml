@@ -649,6 +649,87 @@ fan:
           payload: 0
     speed_level_command_topic: "comfoair/sensor/comfoair_fan_level_raw/command"
   
+climate:
+  - platform: thermostat
+    name: "${device_name} Climate"
+    id: comfoair_climate
+    sensor: extract_air_temp
+    icon: mdi:air-filter
+    availability:
+      topic: "comfoair/status"
+      payload_available: "online"
+      payload_not_available: "offline"
+    current_temperature_state_topic: "comfoair/extract_air_temp"
+    target_temperature_state_topic: "comfoair/profile_target_temp"
+    visual:
+      min_temperature: 18
+      max_temperature: 25
+      temperature_step: 0.5
+    min_heating_off_time: 1s
+    min_heating_run_time: 1s
+    min_cooling_off_time: 1s
+    min_cooling_run_time: 1s
+    min_idle_time: 1s
+    supplemental_cooling_delta: 0.5
+    max_cooling_run_time: 15min
+    supplemental_cooling_action: 
+      - lambda: id(comfoair)->set_boost(15 * 60);
+    cool_deadband: 0.1
+    cool_overrun: 0.1
+    heat_deadband: 0.1
+    heat_overrun: 0.1
+    default_preset: Home
+    preset:
+      - name: Home
+        default_target_temperature_low: 20.5 °C
+        default_target_temperature_high: 21.5 °C
+    heat_action:
+      - lambda: id(comfoair)->set_temp_profile(zehnder_comfoair_q::TEMP_PROFILE_WARM);
+    idle_action:
+      - lambda: id(comfoair)->set_temp_profile(zehnder_comfoair_q::TEMP_PROFILE_NORMAL);
+    cool_action:
+      - lambda: id(comfoair)->set_temp_profile(zehnder_comfoair_q::TEMP_PROFILE_COOL);
+
+# climate:
+#   - platform: pid
+#     name: "${device_name} Climate"
+#     id: comfoair_climate
+#     sensor: extract_air_temp
+#     icon: mdi:air-filter
+#     availability:
+#       topic: "comfoair/status"
+#       payload_available: "online"
+#       payload_not_available: "offline"
+#     current_temperature_state_topic: "comfoair/extract_air_temp"
+#     target_temperature_state_topic: "comfoair/profile_target_temp"
+#     default_target_temperature: 21 °C
+#     visual:
+#       min_temperature: 18
+#       max_temperature: 25
+#       temperature_step: 0.5
+#     control_parameters:
+#       kp: 0.49460
+#       ki: 0.00487
+#       kd: 12.56301
+#       output_averaging_samples: 5      # smooth the output over 5 samples
+#       derivative_averaging_samples: 5  # smooth the derivative value over 10 samples
+
+#     deadband_parameters:
+#       threshold_high: 0.5°C
+#       threshold_low: -1.0°C
+#       kp_multiplier: 0.0   # proportional gain turned off inside deadband
+#       ki_multiplier: 0.05  # integral accumulates at only 5% of normal ki
+#       kd_multiplier: 0.0   # derviative is turned off inside deadband
+#       deadband_output_averaging_samples: 15   # average the output over 15 samples within the deadband
+#     heat_output: output_comfoair_climate_heat
+#     cool_output: output_comfoair_climate_cool
+#     # heat_action:
+#     #   - lambda: id(comfoair)->set_temp_profile(zehnder_comfoair_q::TEMP_PROFILE_WARM);
+#     # idle_action:
+#     #   - lambda: id(comfoair)->set_temp_profile(zehnder_comfoair_q::TEMP_PROFILE_NORMAL);
+#     # cool_action:
+#     #   - lambda: id(comfoair)->set_temp_profile(zehnder_comfoair_q::TEMP_PROFILE_COOL);
+
 # Example configuration entry
 output:
   - platform: template
@@ -657,4 +738,3 @@ output:
     zero_means_zero: true
     write_action:
       - logger.log: "Fan Speed was changed!"
-  
