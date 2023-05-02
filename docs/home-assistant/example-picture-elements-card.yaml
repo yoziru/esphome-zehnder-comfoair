@@ -1,0 +1,169 @@
+type: picture-elements
+image: /local/images/ventilation.png
+style: |
+  ha-card { height: 150px !important; }
+elements:
+  - type: state-label
+    entity: sensor.zehnder_comfoair_q350_fan_level
+    style:
+      top: 49%
+      left: 73%
+      color: black
+      font-size: 10px
+  - type: state-label
+    entity: sensor.zehnder_comfoair_q350_supply_fan_flow
+    style:
+      top: 59%
+      left: 73%
+      color: black
+  - type: state-label
+    entity: sensor.zehnder_comfoair_q350_exhaust_fan_flow
+    style:
+      top: 59%
+      left: 27%
+      color: black
+  - type: state-label
+    entity: sensor.zehnder_comfoair_q350_extract_air_temperature
+    style:
+      top: 20%
+      left: 91%
+      color: darkred
+  - type: state-label
+    entity: sensor.zehnder_comfoair_q350_extract_air_humidity
+    style:
+      top: 28%
+      left: 89%
+      color: '#4171b1'
+  - type: state-label
+    entity: sensor.zehnder_comfoair_q350_supply_air_temperature
+    style:
+      top: 76.2%
+      left: 91%
+      color: darkred
+  - type: state-label
+    entity: sensor.zehnder_comfoair_q350_supply_air_humidity
+    style:
+      top: 84.6% 
+      left: 89%
+      color: '#4171b1'
+  - type: state-label
+    entity: sensor.zehnder_comfoair_q350_outdoor_air_temperature
+    style:
+      top: 20% 
+      left: 13%
+      color: '#4171b1'
+  - type: state-label
+    entity: sensor.zehnder_comfoair_q350_outdoor_air_humidity
+    style:
+      top: 28% 
+      left: 11%
+      color: '#4171b1'
+  - type: state-label
+    entity: sensor.zehnder_comfoair_q350_exhaust_air_temperature
+    style:
+      top: 76.2% 
+      left: 13%
+      color: '#4171b1'
+  - type: state-label
+    entity: sensor.zehnder_comfoair_q350_exhaust_air_humidity
+    style:
+      top: 84.6% 
+      left: 11%
+      color: '#4171b1'
+  - type: state-label
+    entity: sensor.zehnder_comfoair_q350_bypass_activation_mode
+    prefix: 'Bypass '
+    style:
+      color: black
+      top: 26% 
+      left: 50%
+  - type: conditional
+    conditions:
+    - entity: sensor.zehnder_comfoair_q350_bypass_state 
+      state_not: '0'
+    elements:
+    - type: state-label
+      entity: sensor.zehnder_comfoair_q350_bypass_state
+      style:
+        color: black
+        top: 18%
+        left: 50%
+  - type: conditional
+    conditions:
+    - entity: sensor.zehnder_comfoair_q350_next_bypass_change_in
+      state_not: n/a
+    elements:
+    - type: state-label
+      entity: sensor.zehnder_comfoair_q350_next_bypass_change_in
+      style:
+        color: black
+        top: 33%
+        left: 50%
+        font-size: 80%
+  - type: state-label
+    entity: sensor.zehnder_comfoair_q350_operating_mode
+    style:
+      top: 72% 
+      left: 50%
+      color: black
+  - type: state-label
+    entity: sensor.zehnder_comfoair_q350_profile_target_temperature
+    style:
+      color: black
+      top: 50% 
+      left: 50%
+  - type: conditional
+    conditions:
+    - entity: sensor.zehnder_comfoair_q350_next_fan_change_in
+      state_not: n/a
+    elements:
+    - type: state-label
+      entity: sensor.zehnder_comfoair_q350_next_fan_change_in
+      style:    
+        color: black
+        top: 80%
+        left: 50%
+        font-size: 80%
+  - type: state-label
+    entity: sensor.zehnder_comfoair_q350_filter_replacement_remaining_days
+    prefix: 'Filter change: '
+    style:
+      top: 94% 
+      left: 50%
+      color: black
+  - type: state-label
+    entity: sensor.zehnder_comfoair_q350_power 
+    prefix: 'Power '
+    style:
+      top: 6% 
+      left: 50%
+      color: black
+  - type: state-label
+    entity: sensor.zehnder_comfoair_q350_running_mean_outdoor_temperature
+    prefix: 'RMOT '
+    style:
+      top: 6.5% 
+      left: 20%
+      color: grey
+  - type: conditional
+    conditions:
+      - entity: binary_sensor.zehnder_comfoair_q350_heating_season
+        state: 'on'
+    elements:
+      - type: icon
+        icon: mdi:sun-thermometer 
+        style:
+          color: orange 
+          top: 6%
+          left: 5%
+  - type: conditional
+    conditions:
+      - entity: binary_sensor.zehnder_comfoair_q350_cooling_season
+        state: 'on'
+    elements:
+    - type: icon
+      icon: mdi:snowflake-thermometer
+      style:
+        color: blue
+        top: 6%
+        left: 5%
