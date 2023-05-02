@@ -586,7 +586,7 @@ switch:
     id: auto_ventilation
     icon: mdi:toggle-switch
     turn_on_action:
-        # if boost is on, turn it off first
+      # if boost is on, turn it off first
       - if:
           condition:
             or:
@@ -737,11 +737,11 @@ fan:
     # restore_mode: RESTORE_DEFAULT_ON
     on_turn_on:
       # if operating mode is not auto, set it to auto
-      - if:
-          condition:
-            lambda: return id(operating_mode).state == "Auto";
-          then:
-            - lambda: id(comfoair)->set_manual_mode(false);
+      # - if:
+      #     condition:
+      #       lambda: return id(operating_mode).state != "Auto";
+      #     then:
+      #       - lambda: id(comfoair)->set_manual_mode(false);
     on_turn_off:
       - lambda: id(comfoair)->set_level(0);
     on_speed_set:

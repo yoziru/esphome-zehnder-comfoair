@@ -62,10 +62,10 @@ namespace zehnder_comfoair_q
             {
                 send_command_set_timer(!enable, 0x08, 0x01, !enable ? 1 : 0);
                 // need a small delay to ensure the command is processed before the next one
-                esphome::delay_microseconds_safe(750 * 1000);
+                esphome::delay_microseconds_safe(1000 * 1000);
             };
             send_command_set_timer(enable, 0x08, 0x01, enable ? 1 : 0);
-            esphome::delay_microseconds_safe(750 * 1000);
+            esphome::delay_microseconds_safe(1000 * 1000);
         }
         void set_ventilation_level(VentilationLevel ventilation_level) { set_level(ventilation_level); }
         void set_temp_profile(TemperatureProfile temp_profile) { send_command_set_timer(true, 0x03, 0x01, temp_profile, 0xffffffff); }
@@ -82,7 +82,7 @@ namespace zehnder_comfoair_q
             //     set_manual_mode(false);
             // };
             send_command_set_timer(enable, 0x01, 0x0B, 0x00, 0xffffffff);
-            esphome::delay_microseconds_safe(750 * 1000);
+            esphome::delay_microseconds_safe(1000 * 1000);
         }
 
         void send_command_set_timer(bool enable, uint8_t subunit_id, uint8_t property_id, uint8_t property_value = 0x00,
