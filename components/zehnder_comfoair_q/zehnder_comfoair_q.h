@@ -55,7 +55,15 @@ namespace zehnder_comfoair_q
         void set_level(uint8_t level);
 
         void set_boost(uint32_t duration_secs) { send_command_set_timer(duration_secs > 0, 0x01, 0x06, 3, duration_secs); }
-        void set_manual_mode(bool enable) { send_command_set_timer(enable, 0x08, 0x01, enable ? 1 : 0); }
+        void set_manual_mode(bool enable)
+        {
+            if (!enable)
+            {
+                // hack to force `auto` when `limited_manual` or boost is active: `limited_manual` / `boost` -> `manual` -> `auto`
+                send_command_set_timer(!enable, 0x08, 0x01, !enable ? 1 : 0);
+            }
+            send_command_set_timer(enable, 0x08, 0x01, enable ? 1 : 0);
+        }
         void set_ventilation_level(VentilationLevel ventilation_level) { set_level(ventilation_level); }
         void set_temp_profile(TemperatureProfile temp_profile) { send_command_set_timer(true, 0x03, 0x01, temp_profile, 0xffffffff); }
         void set_bypass_mode(BypassMode bypass_mode, uint32_t duration_secs) { send_command_set_timer(bypass_mode != BYPASS_AUTO, 0x02, 0x01, bypass_mode, duration_secs); }
