@@ -720,7 +720,7 @@ fan:
     icon: mdi:air-filter
     output: comfoair_fan_output
     speed_count: 3
-    restore_mode: RESTORE_DEFAULT_ON
+    # restore_mode: RESTORE_DEFAULT_ON
     on_turn_on:
       - lambda: id(comfoair)->set_manual_mode(false);
     on_turn_off:
@@ -749,15 +749,22 @@ climate:
     max_cooling_run_time: 14min
     supplemental_cooling_action: 
       # only boost if outdoor_air_temperature is 2 or more degrees lower than extract_air_temperature
+      # and if bypass is open, bypass_state > 0 
+      - lambda: |-
+          if (id(outdoor_air_temp).state > id(extract_air_temp).state + 2) {
+            id(comfoair)->set_bypass_mode(zehnder_comfoair_q::BYPASS_ACTIVATE, 15 * 60);
+            delay(100);
+            id(comfoair)->set_boost(15 * 60);
+            delay(100);
+          }
       # - lambda: |-
       #     if (id(outdoor_air_temp).state > id(extract_air_temp).state + 2) {
       #       id(comfoair)->set_boost(15 * 60);
       #     }
-      # only boost if bypass is open, bypass_state > 0 
-      - lambda: |-
-          if (id(bypass_state).state > 0) {
-            id(comfoair)->set_boost(15 * 60);
-          }
+      # - lambda: |-
+      #     if (id(bypass_state).state > 0) {
+      #       id(comfoair)->set_boost(15 * 60);
+      #     }
       # - lambda: id(comfoair)->set_boost(15 * 60);
     cool_deadband: 0.1
     cool_overrun: 0.1
@@ -768,6 +775,9 @@ climate:
       - name: Home
         default_target_temperature_low: 21 °C
         default_target_temperature_high: 22 °C
+      - name: Sleep
+        default_target_temperature_low: 19 °C
+        default_target_temperature_high: 20 °C
     heat_action:
       - mqtt.publish:
           topic: "comfoair/sensor/comfoair_temperature_profile/command"

@@ -65,6 +65,7 @@ namespace zehnder_comfoair_q
                 esphome::delay_microseconds_safe(750 * 1000);
             };
             send_command_set_timer(enable, 0x08, 0x01, enable ? 1 : 0);
+            esphome::delay_microseconds_safe(750 * 1000);
         }
         void set_ventilation_level(VentilationLevel ventilation_level) { set_level(ventilation_level); }
         void set_temp_profile(TemperatureProfile temp_profile) { send_command_set_timer(true, 0x03, 0x01, temp_profile, 0xffffffff); }
@@ -72,6 +73,17 @@ namespace zehnder_comfoair_q
         void set_temperature_passive(OffAutoOn oao) { send_command_set_property(0x1d /* TEMPHUMCONTROL */, 0x01, 0x04, oao); }
         void set_humidity_comfort(OffAutoOn oao) { send_command_set_property(0x1d /* TEMPHUMCONTROL */, 0x01, 0x06, oao); }
         void set_humidity_protection(OffAutoOn oao) { send_command_set_property(0x1d /* TEMPHUMCONTROL */, 0x01, 0x07, oao); }
+        void set_away(bool enable)
+        {
+            // if auto mode is not enabled, we need to enable it first
+            // first check if auto mode is enabled
+            // if (enable)
+            // {
+            //     set_manual_mode(false);
+            // };
+            send_command_set_timer(enable, 0x01, 0x0B, 0x00, 0xffffffff);
+            esphome::delay_microseconds_safe(750 * 1000);
+        }
 
         void send_command_set_timer(bool enable, uint8_t subunit_id, uint8_t property_id, uint8_t property_value = 0x00,
                                     uint32_t duration_secs = 1 /* seems to be the constant for timers with pre-defined durations */);
