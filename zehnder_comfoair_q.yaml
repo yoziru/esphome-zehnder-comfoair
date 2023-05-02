@@ -659,8 +659,7 @@ climate:
       topic: "comfoair/status"
       payload_available: "online"
       payload_not_available: "offline"
-    current_temperature_state_topic: "comfoair/extract_air_temp"
-    target_temperature_state_topic: "comfoair/profile_target_temp"
+    target_temperature_state_topic: "comfoair/sensor/comfoair_profile_target_temp/state"
     visual:
       min_temperature: 18
       max_temperature: 25
@@ -670,10 +669,10 @@ climate:
     min_cooling_off_time: 1s
     min_cooling_run_time: 1s
     min_idle_time: 1s
-    supplemental_cooling_delta: 0.5
-    max_cooling_run_time: 15min
-    supplemental_cooling_action: 
-      - lambda: id(comfoair)->set_boost(15 * 60);
+    # supplemental_cooling_delta: 0.5
+    # max_cooling_run_time: 15min
+    # supplemental_cooling_action: 
+    #   - lambda: id(comfoair)->set_boost(15 * 60);
     cool_deadband: 0.1
     cool_overrun: 0.1
     heat_deadband: 0.1
@@ -681,8 +680,8 @@ climate:
     default_preset: Home
     preset:
       - name: Home
-        default_target_temperature_low: 20.5 °C
-        default_target_temperature_high: 21.5 °C
+        default_target_temperature_low: 21 °C
+        default_target_temperature_high: 22 °C
     heat_action:
       - lambda: id(comfoair)->set_temp_profile(zehnder_comfoair_q::TEMP_PROFILE_WARM);
     idle_action:
