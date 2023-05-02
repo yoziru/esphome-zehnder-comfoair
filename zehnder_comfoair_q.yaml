@@ -564,6 +564,9 @@ text_sensor:
         - 0 -> Normal
         - 1 -> Cool
         - 2 -> Warm
+    on_value:
+      then:
+        - lambda: id(temperature_profile_select).publish_state(x);
 
   - platform: template
     id: next_fan_change_in # PDO 81 (raw)
@@ -643,22 +646,30 @@ select:
     name: 'Temperature Profile'
     id: temperature_profile_select
     icon: mdi:thermometer
-    lambda: return id(temperature_profile).state;
     options:
      - "Normal"
      - "Cool"
      - "Warm"
-    set_action: 
-      - lambda: |
-          if (x == "Normal") {
-            id(comfoair)->set_temp_profile(zehnder_comfoair_q::TEMP_PROFILE_NORMAL);
-          } else if (x == "Cool") {
-            id(comfoair)->set_temp_profile(zehnder_comfoair_q::TEMP_PROFILE_COOL);
-          } else if (x == "Warm") {
-            id(comfoair)->set_temp_profile(zehnder_comfoair_q::TEMP_PROFILE_WARM);
-          } else {
-            id(comfoair)->set_temp_profile(zehnder_comfoair_q::TEMP_PROFILE_NORMAL);
-          }
+    set_action:
+      - if:
+          condition:
+            not:
+              text_sensor.state:
+                id: temperature_profile
+                state: !lambda 'return x;'
+          then:
+            - lambda: |
+                if (x == id(temperature_profile).state) {
+                  return;
+                } else if (x == "Normal") {
+                  id(comfoair)->set_temp_profile(zehnder_comfoair_q::TEMP_PROFILE_NORMAL);
+                } else if (x == "Cool") {
+                  id(comfoair)->set_temp_profile(zehnder_comfoair_q::TEMP_PROFILE_COOL);
+                } else if (x == "Warm") {
+                  id(comfoair)->set_temp_profile(zehnder_comfoair_q::TEMP_PROFILE_WARM);
+                } else {
+                  id(comfoair)->set_temp_profile(zehnder_comfoair_q::TEMP_PROFILE_NORMAL);
+                }
   - platform: template
     name: 'Temperature Passive'
     id: temperature_passive_select
