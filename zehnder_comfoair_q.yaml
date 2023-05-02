@@ -667,8 +667,6 @@ select:
      - "On"
      - "Auto only"
      - "Off"
-    initial_option: "On"
-    restore_value: true
     set_action:
       # map options to enum
       - lambda: |
@@ -689,8 +687,6 @@ select:
      - "On"
      - "Auto only"
      - "Off"
-    initial_option: "On"
-    restore_value: true
     set_action: 
       - lambda: |
           if (x == "Off") {
@@ -710,8 +706,6 @@ select:
      - "On"
      - "Auto only"
      - "Off"
-    initial_option: "On"
-    restore_value: true
     set_action: 
       - lambda: |
           if (x == "Off") {
