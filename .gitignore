@@ -3,3 +3,4 @@ __pycache__
 secrets.yaml
 .vscode
 .DS_Store
+.venv
