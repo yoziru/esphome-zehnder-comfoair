@@ -838,17 +838,17 @@ climate:
     min_cooling_off_time: 1s
     min_cooling_run_time: 1s
     min_idle_time: 1s
-    supplemental_cooling_delta: 0.3
-    max_cooling_run_time: 14min
-    supplemental_cooling_action: 
-      # only boost if outdoor_air_temperature is 2 or more degrees lower than extract_air_temperature
-      - if:
-          condition:
-            lambda: return id(extract_air_temp).state - id(outdoor_air_temp).state > 2;
-          then:
-            - lambda: id(comfoair)->set_bypass_mode(zehnder_comfoair_q::BYPASS_ACTIVATE, 15 * 60);
-            - delay: 100ms
-            - lambda: id(comfoair)->set_boost(15 * 60);
+    # supplemental_cooling_delta: 0.3
+    # max_cooling_run_time: 14min
+    # supplemental_cooling_action: 
+    #   # only boost if outdoor_air_temperature is 2 or more degrees lower than extract_air_temperature
+    #   - if:
+    #       condition:
+    #         lambda: return id(extract_air_temp).state - id(outdoor_air_temp).state > 2;
+    #       then:
+    #         - lambda: id(comfoair)->set_bypass_mode(zehnder_comfoair_q::BYPASS_ACTIVATE, 15 * 60);
+    #         - delay: 100ms
+    #         - lambda: id(comfoair)->set_boost(15 * 60);
     cool_deadband: 0.3
     cool_overrun: 0.3
     heat_deadband: 0.3
