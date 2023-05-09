@@ -613,6 +613,22 @@ switch:
             - lambda: id(comfoair)->set_manual_mode(true);
             - delay: 1s
       - lambda: id(comfoair)->set_manual_mode(false);
+      - delay: 1s
+      # edge case: if after turning on boost, a custom fan level is set, the operating mode will be 'Manual (limited)'
+      # if you try ot enable Auto Ventilation, it will switch to 'Manual (permanent)' first, then turn on boost mode again
+      # So, do this after manual limited, otherwise it will go manual limited -> manual permanent -> boost
+      - if:
+          condition:
+            or:
+              - text_sensor.state:
+                  id: operating_mode
+                  state: 'Boost'
+              - text_sensor.state:  
+                  id: operating_mode
+                  state: 'Boost (RF)'
+          then:
+            - lambda: id(comfoair)->set_boost(0);
+            - delay: 1s
     turn_off_action:
       - lambda: id(comfoair)->set_manual_mode(true);
 
