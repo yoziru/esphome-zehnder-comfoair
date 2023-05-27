@@ -10,9 +10,8 @@ upload: .esphome/build/comfoair/.pioenvs/comfoair/firmware.bin ## Validate the c
 deps: .venv/touchfile ## Create the virtual environment and install the requirements.
 
 .venv/touchfile: requirements.txt
-	test -d .venv || pythom -m venv .venv
-	. .venv/bin/activate;
-	pip install -Ur requirements.txt
+	test -d .venv || python -m venv .venv
+	. .venv/bin/activate && pip install -Ur requirements.txt
 	touch .venv/touchfile
 
 .PHONY: clean
