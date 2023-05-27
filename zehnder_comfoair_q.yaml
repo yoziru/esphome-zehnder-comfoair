@@ -856,11 +856,11 @@ climate:
     default_preset: Home
     preset:
       - name: Home
-        default_target_temperature_low: 21 °C
-        default_target_temperature_high: 22 °C
+        default_target_temperature_low: 21.5 °C
+        default_target_temperature_high: 22.5 °C
       - name: Sleep
-        default_target_temperature_low: 19 °C
-        default_target_temperature_high: 20 °C
+        default_target_temperature_low: 19.5 °C
+        default_target_temperature_high: 20.5 °C
     heat_action:
       - select.set:
           id: temperature_profile_select
