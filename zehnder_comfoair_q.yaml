@@ -463,6 +463,16 @@ binary_sensor:
     id: away_indicator # PDO 16 (raw)
     name: 'Away Indicator'
     icon: mdi:airplane
+    on_press:
+      then:
+        - switch.template.publish:
+            id: away_mode
+            state: ON
+    on_release:
+      then:
+        - switch.template.publish:
+            id: away_mode
+            state: OFF
 
   - platform: template
     id: heating_season # PDO 210 (raw)
@@ -614,7 +624,16 @@ switch:
             - delay: 1s
     turn_off_action:
       - lambda: id(comfoair)->set_manual_mode(true);
-
+  - platform: template
+    name: 'Away Mode'
+    id: away_mode
+    icon: mdi:airplane
+    turn_on_action:
+      - lambda: id(comfoair)->set_away(true);
+      - delay: 1s
+    turn_off_action:
+      - lambda: id(comfoair)->set_away(false);
+      - delay: 1s
 button:
   - platform: template
     name: 'Boost 15min'
