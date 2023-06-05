@@ -30,7 +30,17 @@ You can find the configuration YAML files in the `docs` folder.
 esphome build zehnder_comfoair_q.yaml
 ```
 
+or use
+
+```sh
+make compile
+```
+
 3. Upload/flash the firmware to the board.
+
+```sh
+make upload
+```
 
 Now when you go to the Home Assistant “Integrations” screen (under “Configuration” panel), you should see the ESPHome device show up in the discovered section (although this can take up to 5 minutes). Alternatively, you can manually add the device by clicking “CONFIGURE” on the ESPHome integration and entering “<NODE_NAME>.local” as the host.
 
