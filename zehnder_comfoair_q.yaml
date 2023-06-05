@@ -699,8 +699,6 @@ select:
                 id(comfoair)->set_ventilation_level(zehnder_comfoair_q::VENTILATION_LEVEL_MEDIUM);
               } else if (x == "High") {
                 id(comfoair)->set_ventilation_level(zehnder_comfoair_q::VENTILATION_LEVEL_HIGH);
-              } else {
-                id(comfoair)->set_ventilation_level(zehnder_comfoair_q::VENTILATION_LEVEL_LOW);
               }
   - platform: template
     name: 'Temperature Profile'
@@ -719,16 +717,12 @@ select:
                 state: !lambda 'return x;'
           then:
             - lambda: |
-                if (x == id(temperature_profile).state) {
-                  return;
-                } else if (x == "Normal") {
+                if (x == "Normal") {
                   id(comfoair)->set_temp_profile(zehnder_comfoair_q::TEMP_PROFILE_NORMAL);
                 } else if (x == "Cool") {
                   id(comfoair)->set_temp_profile(zehnder_comfoair_q::TEMP_PROFILE_COOL);
                 } else if (x == "Warm") {
                   id(comfoair)->set_temp_profile(zehnder_comfoair_q::TEMP_PROFILE_WARM);
-                } else {
-                  id(comfoair)->set_temp_profile(zehnder_comfoair_q::TEMP_PROFILE_NORMAL);
                 }
   - platform: template
     name: 'Temperature Passive'
@@ -747,8 +741,6 @@ select:
             id(comfoair)->set_temperature_passive(zehnder_comfoair_q::OAO_AUTO);
           } else if (x == "On") {
             id(comfoair)->set_temperature_passive(zehnder_comfoair_q::OAO_ON);
-          } else {
-            id(comfoair)->set_temperature_passive(zehnder_comfoair_q::OAO_ON);
           }
   - platform: template
     name: 'Humidity Comfort'
@@ -766,8 +758,6 @@ select:
             id(comfoair)->set_humidity_comfort(zehnder_comfoair_q::OAO_AUTO);
           } else if (x == "On") {
             id(comfoair)->set_humidity_comfort(zehnder_comfoair_q::OAO_ON);
-          } else {
-            id(comfoair)->set_humidity_comfort(zehnder_comfoair_q::OAO_ON);
           }
   - platform: template
     name: 'Humidity Protection'
@@ -784,8 +774,6 @@ select:
           } else if (x == "Auto only") {
             id(comfoair)->set_humidity_protection(zehnder_comfoair_q::OAO_AUTO);
           } else if (x == "On") {
-            id(comfoair)->set_humidity_protection(zehnder_comfoair_q::OAO_ON);
-          } else {
             id(comfoair)->set_humidity_protection(zehnder_comfoair_q::OAO_ON);
           }
 
@@ -822,8 +810,6 @@ fan:
                     return "Medium";
                   } else if (id(comfoair_fan).speed == 3) {
                     return "High";
-                  } else {
-                    return "Low";
                   }
   
 climate:
