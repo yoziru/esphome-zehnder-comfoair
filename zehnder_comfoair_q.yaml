@@ -649,6 +649,26 @@ button:
     on_press:
       - lambda: id(comfoair)->set_boost(60 * 60);
   - platform: template
+    name: 'Boost 2h'
+    icon: mdi:numeric-2-circle
+    on_press:
+      - lambda: id(comfoair)->set_boost(2 * 60 * 60);
+  - platform: template
+    name: 'Boost 4h'
+    icon: mdi:numeric-4-circle
+    on_press:
+      - lambda: id(comfoair)->set_boost(4 * 60 * 60);
+  - platform: template
+    name: 'Boost 8h'
+    icon: mdi:numeric-8-circle
+    on_press:
+      - lambda: id(comfoair)->set_boost(8 * 60 * 60);
+  - platform: template
+    name: 'Boost 12h'
+    icon: mdi:dice-d12
+    on_press:
+      - lambda: id(comfoair)->set_boost(12 * 60 * 60);
+  - platform: template
     name: 'Boost off'
     icon: mdi:stop
     on_press:
