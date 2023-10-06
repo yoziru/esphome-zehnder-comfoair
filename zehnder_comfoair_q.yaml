@@ -1,7 +1,15 @@
-esphome:
-  name: comfoair
+substitutions:
   friendly_name: Zehnder ComfoAir Q350
-  comment: Zehnder ComfoAir Q350
+  device_name: comfoair
+  device_description: Zehnder ComfoAir Q350
+  filter_time: 5s
+  filter_send_every: '1'
+  filter_window_size: '3'
+
+esphome:
+  name: ${device_name}
+  friendly_name: ${friendly_name}
+  comment: ${device_description}
 
 esp32:
   board: esp32-evb
@@ -31,12 +39,6 @@ wifi:
 
 web_server:
   port: 80
-
-substitutions:
-  device_name: ComfoAir
-  filter_time: 5s
-  filter_send_every: '1'
-  filter_window_size: '3'
 
 .throttle-filter: &throttle-filter
   - throttle_average: '${filter_time}'
