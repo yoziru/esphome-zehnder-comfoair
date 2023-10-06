@@ -848,17 +848,6 @@ climate:
     min_cooling_off_time: 1s
     min_cooling_run_time: 1s
     min_idle_time: 1s
-    supplemental_cooling_delta: 0.5
-    max_cooling_run_time: 119min
-    supplemental_cooling_action:
-      # only boost if outdoor_air_temperature is 2 or more degrees lower than extract_air_temperature
-      - if:
-          condition:
-            lambda: return id(extract_air_temp).state - id(outdoor_air_temp).state > 2;
-          then:
-            - select.set:
-                id: fan_level_select
-                option: "Medium"
     cool_deadband: 0.5
     cool_overrun: 0.5
     heat_deadband: 0.1
