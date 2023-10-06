@@ -829,6 +829,8 @@ fan:
                     return "Medium";
                   } else if (id(comfoair_fan).speed == 3) {
                     return "High";
+                  } else {
+                    return "Unknown";
                   }
   
 climate:
