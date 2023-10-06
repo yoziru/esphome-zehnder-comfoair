@@ -1,7 +1,7 @@
 substitutions:
   friendly_name: Zehnder ComfoAir Q350
   device_name: comfoair
-  device_description: Zehnder ComfoAir Q350
+  device_description: Ventilation system
   filter_time: 5s
   filter_send_every: '1'
   filter_window_size: '3'
