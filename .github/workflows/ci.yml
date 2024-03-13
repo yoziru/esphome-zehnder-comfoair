@@ -5,12 +5,8 @@ on:
 
 jobs:
   ci:
-    name: Building ${{ matrix.file }}
+    name: Building firmware
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        file:
-          - zehnder_comfoair_q.yaml
     steps:
       - name: Checkout source code
         uses: actions/checkout@v2
@@ -19,5 +15,5 @@ jobs:
       - name: Build ESPHome firmware to verify configuration
         uses: esphome/build-action@v2.0.0
         with:
-          yaml_file: ${{ matrix.file }}
+          yaml_file: zehnder_comfoair_q.yaml
           cache: true
