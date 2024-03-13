@@ -16,6 +16,7 @@ jobs:
         run: cp secrets.yaml.example secrets.yaml
 
   publish:
+    needs: [prep]
     uses: esphome/workflows/.github/workflows/publish.yml@main
     with:
       files: zehnder_comfoair_q.yaml
