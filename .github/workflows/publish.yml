@@ -6,18 +6,24 @@ on:
       - main
 
 jobs:
-  prep:
-    name: Build and Publish ESPHome firmware and website
+  build:
+    name: Building firmware
     runs-on: ubuntu-latest
     steps:
       - name: Checkout source code
         uses: actions/checkout@v2
       - name: Mock secrets.yaml from example
         run: cp secrets.yaml.example secrets.yaml
-
-  publish:
-    needs: [prep]
-    uses: esphome/workflows/.github/workflows/publish.yml@main
-    with:
-      files: zehnder_comfoair_q.yaml
-      name: ESPHome Zehnder ComfoAir Q
+      - name: Build ESPHome firmware to verify configuration
+        id: esphome-build
+        uses: esphome/build-action@v2.0.0
+        with:
+          yaml_file: zehnder_comfoair_q.yaml
+          cache: true
+      - run: |
+          mkdir output
+          mv "${{ steps.esphome-build.outputs.name }}" output/
+      - uses: actions/upload-artifact@v3.1.2
+        with:
+          name: ESPHome
+          path: output
