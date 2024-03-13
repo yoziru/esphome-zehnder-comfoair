@@ -7,7 +7,15 @@ on:
 
 jobs:
   build:
-    uses: esphome/workflows/.github/workflows/publish.yml@main
-    with:
-      files: zehnder_comfoair_q.yaml
-      name: ESPHome Zehnder ComfoAir Q
+    name: Build and Publish ESPHome firmware and website
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v2
+      - name: Mock secrets.yaml from example
+        run: cp secrets.yaml.example secrets.yaml
+      - name: Build ESPHome firmware to verify configuration
+        uses: esphome/workflows/.github/workflows/publish.yml@main
+        with:
+          files: zehnder_comfoair_q.yaml
+          name: ESPHome Zehnder ComfoAir Q
