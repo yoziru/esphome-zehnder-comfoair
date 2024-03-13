@@ -1,0 +1,13 @@
+name: Build and Publish ESPHome firmware and website
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    uses: esphome/workflows/.github/workflows/publish.yml@main
+    with:
+      files: zehnder_comfoair_q.yaml
+      name: ESPHome Zehnder ComfoAir Q
