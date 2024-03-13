@@ -14,6 +14,8 @@ jobs:
     steps:
       - name: Checkout source code
         uses: actions/checkout@v2
+      - name: Mock secrets.yaml from example
+        run: cp secrets.yaml.example secrets.yaml
       - name: Build ESPHome firmware to verify configuration
         uses: esphome/build-action@v2.0.0
         with:
