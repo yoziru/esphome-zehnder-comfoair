@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  build:
+  prep:
     name: Build and Publish ESPHome firmware and website
     runs-on: ubuntu-latest
     steps:
@@ -14,8 +14,9 @@ jobs:
         uses: actions/checkout@v2
       - name: Mock secrets.yaml from example
         run: cp secrets.yaml.example secrets.yaml
-      - name: Build ESPHome firmware to verify configuration
-        uses: esphome/workflows/.github/workflows/publish.yml@main
-        with:
-          files: zehnder_comfoair_q.yaml
-          name: ESPHome Zehnder ComfoAir Q
+
+  publish:
+    uses: esphome/workflows/.github/workflows/publish.yml@main
+    with:
+      files: zehnder_comfoair_q.yaml
+      name: ESPHome Zehnder ComfoAir Q
