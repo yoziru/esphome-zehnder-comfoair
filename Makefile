@@ -7,6 +7,9 @@ compile: .esphome/build/comfoair/.pioenvs/comfoair/firmware.bin  ## Read the con
 upload: .esphome/build/comfoair/.pioenvs/comfoair/firmware.bin ## Validate the configuration, create a binary, upload it, and start logs.
 	. .venv/bin/activate; esphome upload zehnder_comfoair_q.yaml; esphome logs zehnder_comfoair_q.yaml
 
+logs:
+	. .venv/bin/activate; esphome logs zehnder_comfoair_q.yaml
+
 deps: .venv/touchfile ## Create the virtual environment and install the requirements.
 
 .venv/touchfile: requirements.txt
