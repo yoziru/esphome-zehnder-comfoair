@@ -33,7 +33,7 @@ wifi:
   fast_connect: true
   # Enable fallback hotspot (captive portal) in case wifi connection fails
   ap:
-    ssid: "Comfoair Fallback Hotspot"
+    ssid: ${friendly_name} - Access Point
     password: !secret wifi_hotspot_password
 
 captive_portal:
