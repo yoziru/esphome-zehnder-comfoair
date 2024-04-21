@@ -33,7 +33,7 @@ wifi:
   fast_connect: true
   # Enable fallback hotspot (captive portal) in case wifi connection fails
   ap:
-    ssid: ${friendly_name} - Access Point
+    ssid: Zehnder ComfoAirQ Access Point
     password: !secret wifi_hotspot_password
 
 captive_portal:
