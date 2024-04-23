@@ -39,6 +39,11 @@ api:
   encryption:
     key: !secret api_encryption_key
 
+# sync time with home assistant
+time:
+  - platform: homeassistant
+    id: homeassistant_time
+
 ota:
   password: !secret ota_password
 
