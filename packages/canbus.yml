@@ -30,13 +30,13 @@ canbus:
                 comfoair_on_frame_case( 55, id(comfoair), exhaust_fan_mode,                  true);
                 comfoair_on_frame_case( 65, id(comfoair), fan_level_raw,                     true);
                 comfoair_on_frame_case( 66, id(comfoair), bypass_activation_mode,            true);
-                comfoair_on_frame_case( 67, id(comfoair), temperature_profile,               true);
+                comfoair_on_frame_case( 67, id(comfoair), temperature_profile,                true);
                 comfoair_on_frame_case( 81, id(comfoair), next_fan_change_in_raw,           false);
                 comfoair_on_frame_case( 82, id(comfoair), next_bypass_change_in_raw,        false);
                 comfoair_on_frame_case(117, id(comfoair), exhaust_fan_duty,                 false);
                 comfoair_on_frame_case(118, id(comfoair), supply_fan_duty,                  false);
-                comfoair_on_frame_case(119, id(comfoair), exhaust_fan_flow,                 false);
-                comfoair_on_frame_case(120, id(comfoair), supply_fan_flow,                  false);
+                comfoair_on_frame_case(119, id(comfoair), exhaust_fan_flow,                  false);
+                comfoair_on_frame_case(120, id(comfoair), supply_fan_flow,                   false);
                 comfoair_on_frame_case(121, id(comfoair), exhaust_fan_speed,                 true);
                 comfoair_on_frame_case(122, id(comfoair), supply_fan_speed,                  true);
                 comfoair_on_frame_case(128, id(comfoair), power,                             true);
@@ -46,7 +46,7 @@ canbus:
                 comfoair_on_frame_case(209, id(comfoair), running_mean_outdoor_temp,        false);
                 comfoair_on_frame_case(210, id(comfoair), heating_season_raw,                true);
                 comfoair_on_frame_case(211, id(comfoair), cooling_season_raw,                true);
-                comfoair_on_frame_case(212, id(comfoair), profile_target_temp,              false);
+                comfoair_on_frame_case(212, id(comfoair), profile_target_temp,               false);
                 comfoair_on_frame_case(213, id(comfoair), avoided_heating_actual,            true);
                 comfoair_on_frame_case(214, id(comfoair), avoided_heating_ytd,               true);
                 comfoair_on_frame_case(215, id(comfoair), avoided_heating_total,             true);
@@ -55,6 +55,7 @@ canbus:
                 comfoair_on_frame_case(218, id(comfoair), avoided_cooling_total,             true);
                 comfoair_on_frame_case(220, id(comfoair), pre_heater_temp_before,           false);
                 comfoair_on_frame_case(221, id(comfoair), post_heater_temp_after,           false);
+                comfoair_on_frame_case(225, id(comfoair), ventilation_mode,                  true);
                 comfoair_on_frame_case(227, id(comfoair), bypass_state,                      true);
                 comfoair_on_frame_case(274, id(comfoair), extract_air_temp,                 false);
                 comfoair_on_frame_case(275, id(comfoair), exhaust_air_temp,                 false);

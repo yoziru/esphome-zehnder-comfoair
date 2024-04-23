@@ -51,8 +51,8 @@ namespace zehnder_comfoair_q
         void request_all_pdos();
         void request_pdo(uint16_t pdo_id);
 
-        void set_level_float(float state);
         void set_level(uint8_t level);
+        void set_level_float(float state);
 
         void set_boost(uint32_t duration_secs) { send_command_set_timer(duration_secs > 0, 0x01, 0x06, 3, duration_secs); }
         void set_manual_mode(bool enable) { send_command_set_timer(enable, 0x08, 0x01, enable ? 1 : 0); }
@@ -103,6 +103,12 @@ namespace zehnder_comfoair_q
                     publish_state(state_id, *((int32_t *)&can_message[0]));
                 else
                     publish_state(state_id, *((uint32_t *)&can_message[0]));
+                break;
+            case 8:
+                if (!is_unsigned)
+                    publish_state(state_id, *((int64_t *)&can_message[0]));
+                else
+                    publish_state(state_id, *((uint64_t *)&can_message[0]));
                 break;
             default:
                 ESP_LOGW("comfoair", "Unable to infer type from can message size: %d", can_message.size());

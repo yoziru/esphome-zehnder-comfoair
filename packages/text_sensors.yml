@@ -89,3 +89,12 @@ text_sensor:
   - platform: template
     id: next_bypass_change_in # PDO 81 (raw)
     name: 'Next Bypass Change In'
+
+  - platform: template
+    id: ventilation_mode # PDO 225
+    name: 'Ventilation Mode'
+    filters:
+      - map:
+        - 0 -> Disabled
+        - 1 -> Active
+        - 2 -> Overruling
