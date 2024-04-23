@@ -17,7 +17,7 @@ packages:
   fan: !include packages/fan.yml
   climate: !include packages/climate.yml
 
-  device_base: !include boards/esp32-evb.yml
+  device_base: !include boards/m5stack-atoms3.yml
 
 external_components:
 #   - source: github://yoziru/esphome-zehnder-comfoair
@@ -26,7 +26,7 @@ external_components:
 
 esphome:
   name: ${device_name}
-  name_add_mac_suffix: true
+  # name_add_mac_suffix: true
   friendly_name: ${friendly_name}
   comment: ${device_description}
 
