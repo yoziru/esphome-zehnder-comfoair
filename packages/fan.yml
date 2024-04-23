@@ -1,0 +1,44 @@
+fan:
+  - platform: speed
+    name: 'Fan'
+    id: "comfoair_fan"
+    icon: mdi:air-filter
+    output: comfoair_fan_output
+    speed_count: 3
+    # restore_mode: RESTORE_DEFAULT_ON
+    on_turn_on:
+      - switch.turn_on: auto_ventilation
+    on_turn_off:
+      - select.set:
+          id: fan_level_select
+          option: "Away"
+    on_speed_set:
+      - if:
+          condition:
+            and:
+              - fan.is_on: comfoair_fan
+              - not:
+                  lambda: return int(id(fan_level_raw).state) == id(comfoair_fan).speed;
+          then:
+            - select.set:
+                id: fan_level_select
+                option: !lambda |
+                  if (id(comfoair_fan).speed == 0) {
+                    return "Away";
+                  } else if (id(comfoair_fan).speed == 1) {
+                    return "Low";
+                  } else if (id(comfoair_fan).speed == 2) {
+                    return "Medium";
+                  } else if (id(comfoair_fan).speed == 3) {
+                    return "High";
+                  } else {
+                    return "Unknown";
+                  }  
+
+output:
+  - platform: template
+    id: comfoair_fan_output
+    type: float
+    zero_means_zero: true
+    write_action:
+      - logger.log: "Fan Speed was changed!"

@@ -1,0 +1,25 @@
+binary_sensor:
+  - platform: template
+    id: away_indicator # PDO 16 (raw)
+    name: 'Away Indicator'
+    icon: mdi:airplane
+    on_press:
+      then:
+        - switch.template.publish:
+            id: away_mode
+            state: ON
+    on_release:
+      then:
+        - switch.template.publish:
+            id: away_mode
+            state: OFF
+
+  - platform: template
+    id: heating_season # PDO 210 (raw)
+    name: 'Heating Season'
+    icon: mdi:snowflake-thermometer
+
+  - platform: template
+    id: cooling_season # PDO 211 (raw)
+    name: 'Cooling Season'
+    icon: mdi:sun-thermometer

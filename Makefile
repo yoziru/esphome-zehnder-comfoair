@@ -1,7 +1,7 @@
 .DEFAULT_GOAL := help
 compile: .esphome/build/comfoair/.pioenvs/comfoair/firmware.bin  ## Read the configuration and compile the binary.
 
-.esphome/build/comfoair/.pioenvs/comfoair/firmware.bin: .venv/touchfile zehnder_comfoair_q.yaml components/zehnder_comfoair_q/zehnder_comfoair_q.cpp components/zehnder_comfoair_q/zehnder_comfoair_q.h
+.esphome/build/comfoair/.pioenvs/comfoair/firmware.bin: .venv/touchfile zehnder_comfoair_q.yaml components/zehnder_comfoair_q/zehnder_comfoair_q.cpp components/zehnder_comfoair_q/zehnder_comfoair_q.h packages/*.yml boards/*.yml
 	. .venv/bin/activate; esphome compile zehnder_comfoair_q.yaml
 
 upload: .esphome/build/comfoair/.pioenvs/comfoair/firmware.bin ## Validate the configuration, create a binary, upload it, and start logs.

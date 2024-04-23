@@ -1,0 +1,42 @@
+climate:
+  - platform: thermostat
+    name: 'Climate'
+    id: comfoair_climate
+    sensor: extract_air_temp
+    icon: mdi:air-filter
+    visual:
+      min_temperature: 18
+      max_temperature: 25
+      temperature_step: 0.5
+    min_heating_off_time: 1s
+    min_heating_run_time: 1s
+    min_cooling_off_time: 1s
+    min_cooling_run_time: 1s
+    min_idle_time: 1s
+    cool_deadband: 0.1
+    cool_overrun: 0.1
+    heat_deadband: 0.1
+    heat_overrun: 0.1
+    default_preset: home
+    preset:
+      - name: comfort
+        default_target_temperature_low: 23 °C
+        default_target_temperature_high: 24 °C
+      - name: home
+        default_target_temperature_low: 22 °C
+        default_target_temperature_high: 23 °C
+      - name: sleep
+        default_target_temperature_low: 21 °C
+        default_target_temperature_high: 22 °C
+    heat_action:
+      - select.set:
+          id: temperature_profile_select
+          option: "Warm"
+    idle_action:
+      - select.set:
+          id: temperature_profile_select
+          option: "Normal"
+    cool_action:
+      - select.set:
+          id: temperature_profile_select
+          option: "Cool"

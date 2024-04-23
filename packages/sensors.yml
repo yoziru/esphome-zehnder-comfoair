@@ -1,0 +1,344 @@
+.throttle-filter: &throttle-filter
+  - throttle_average: '${filter_time}'
+  - filter_out: nan
+  - sliding_window_moving_average: {send_every: '${filter_send_every}', window_size: '${filter_window_size}'}
+
+.throttle-filter-round-tens: &throttle-filter-round-tens
+  - throttle_average: '${filter_time}'
+  - filter_out: nan
+  - sliding_window_moving_average: {send_every: '${filter_send_every}', window_size: '${filter_window_size}'}
+  - lambda: return round(x/10)*10;
+
+.throttle-filter-e-3: &throttle-filter-e-3
+  - throttle_average: '${filter_time}'
+  - filter_out: nan
+  - sliding_window_moving_average: {send_every: '${filter_send_every}', window_size: '${filter_window_size}'}
+  - multiply: 0.001
+
+sensor:
+
+  - platform: template
+    id: away_indicator_raw # PDO 16
+    name: 'away_indicator_raw'
+    internal: true
+    accuracy_decimals: 0
+    on_value:
+      then:
+        - lambda: id(away_indicator).publish_state(x == 7);
+
+  - platform: template
+    id: fan_level_raw # PDO 65
+    name: 'fan_level_raw'
+    internal: true
+    accuracy_decimals: 0
+    on_value:
+      then:
+        - lambda: id(fan_level).publish_state(std::to_string(int(x)));
+        - if:
+            condition:
+              lambda: 'return int(x) == 0;'
+            then:
+              - fan.turn_off: comfoair_fan
+            else:
+              - fan.turn_on:
+                  id: comfoair_fan
+                  speed: !lambda 'return int(x);'
+
+  - platform: template
+    id: next_fan_change_in_raw # PDO 81
+    name: 'next_fan_change_in_raw'
+    accuracy_decimals: 0
+    device_class: duration
+    unit_of_measurement: 's'
+    internal: true
+    on_value:
+      then:
+        - lambda: id(next_fan_change_in).publish_state(id(comfoair)->seconds_to_human_readable(x));
+
+  - platform: template
+    id: next_bypass_change_in_raw # PDO 82
+    name: 'next_bypass_change_in_raw'
+    accuracy_decimals: 0
+    device_class: duration
+    unit_of_measurement: 's'
+    internal: true
+    on_value:
+      then:
+        - lambda: id(next_bypass_change_in).publish_state(id(comfoair)->seconds_to_human_readable(x));
+
+  - platform: template
+    id: exhaust_fan_duty # PDO 117
+    name: 'Exhaust Fan Duty'
+    accuracy_decimals: 0
+    unit_of_measurement: '%'
+    state_class: measurement
+    filters: *throttle-filter
+
+  - platform: template
+    id: supply_fan_duty # PDO 118
+    name: 'Supply Fan Duty'
+    accuracy_decimals: 0
+    unit_of_measurement: '%'
+    state_class: measurement
+    filters: *throttle-filter
+
+  - platform: template
+    id: supply_fan_flow # PDO 119
+    name: 'Supply Fan Flow'
+    icon: mdi:gauge
+    accuracy_decimals: 0
+    unit_of_measurement: 'm³/h'
+    state_class: measurement
+    filters: *throttle-filter
+
+
+  - platform: template
+    id: exhaust_fan_flow # PDO 120
+    name: 'Exhaust Fan Flow'
+    icon: mdi:gauge
+    accuracy_decimals: 0
+    unit_of_measurement: 'm³/h'
+    state_class: measurement
+    filters: *throttle-filter
+
+  - platform: template
+    id: exhaust_fan_speed # PDO 121
+    name: 'Exhaust Fan Speed'
+    icon: mdi:speedometer
+    accuracy_decimals: 0
+    unit_of_measurement: 'rpm'
+    state_class: measurement
+    filters: *throttle-filter-round-tens
+
+  - platform: template
+    id: supply_fan_speed # PDO 122
+    name: 'Supply Fan Speed'
+    icon: mdi:speedometer
+    accuracy_decimals: 0
+    unit_of_measurement: 'rpm'
+    state_class: measurement
+    filters: *throttle-filter-round-tens
+
+  - platform: template
+    id: power # PDO 128
+    name: 'Power'
+    accuracy_decimals: 0
+    unit_of_measurement: 'W'
+    device_class: power
+    state_class: measurement
+    filters: *throttle-filter
+
+  - platform: template
+    id: energy_ytd # PDO 129
+    name: 'Energy YTD'
+    accuracy_decimals: 0
+    unit_of_measurement: 'kWh'
+    device_class: energy
+    state_class: total_increasing
+
+  - platform: template
+    id: energy_since_start # PDO 130
+    name: 'Energy Since Start'
+    accuracy_decimals: 0
+    unit_of_measurement: 'kWh'
+    device_class: energy
+    state_class: total_increasing
+
+  - platform: template
+    id: filter_replacement_remaining_days # PDO 192
+    name: 'Filter Replacement Remaining Days'
+    icon: mdi:air-filter
+    accuracy_decimals: 0
+    unit_of_measurement: 'days'
+
+  - platform: template
+    id: running_mean_outdoor_temp # PDO 209
+    name: 'Running Mean Outdoor Temperature'
+    filters: [multiply: 0.1]
+    accuracy_decimals: 1
+    unit_of_measurement: '°C'
+    device_class: temperature
+    state_class: measurement
+
+  - platform: template
+    id: heating_season_raw # PDO 210
+    accuracy_decimals: 0
+    on_value:
+      then:
+        - lambda: id(heating_season).publish_state(x == 1);
+
+  - platform: template
+    id: cooling_season_raw # PDO 211
+    accuracy_decimals: 0
+    on_value:
+      then:
+        - lambda: id(cooling_season).publish_state(x == 1);
+ 
+  - platform: template
+    id: profile_target_temp # PDO 212
+    name: 'Profile Target Temperature'
+    filters: [multiply: 0.1]
+    accuracy_decimals: 1
+    unit_of_measurement: '°C'
+    device_class: temperature
+    state_class: measurement
+
+  - platform: template
+    id: avoided_heating_actual # PDO 213
+    name: 'Avoided Heating Actual'
+    filters: *throttle-filter-e-3
+    accuracy_decimals: 3
+    unit_of_measurement: 'kW'
+    device_class: power
+    state_class: measurement
+
+  - platform: template
+    id: avoided_heating_ytd # PDO 214
+    name: 'Avoided Heating YTD'
+    accuracy_decimals: 0
+    unit_of_measurement: 'kWh'
+    device_class: energy
+    state_class: total_increasing
+
+  - platform: template
+    id: avoided_heating_total # PDO 215
+    name: 'Avoided Heating Total'
+    accuracy_decimals: 0
+    unit_of_measurement: 'kWh'
+    device_class: energy
+    state_class: total_increasing
+
+  - platform: template
+    id: avoided_cooling_actual # PDO 216
+    name: 'Avoided Cooling Actual'
+    filters: *throttle-filter-e-3
+    accuracy_decimals: 3
+    unit_of_measurement: 'kW'
+    device_class: power
+    state_class: measurement
+
+  - platform: template
+    id: avoided_cooling_ytd # PDO 217
+    name: 'Avoided Cooling YTD'
+    accuracy_decimals: 0
+    unit_of_measurement: 'kWh'
+    device_class: energy
+    state_class: total_increasing
+
+  - platform: template
+    id: avoided_cooling_total # PDO 218
+    name: 'Avoided Cooling Total'
+    accuracy_decimals: 0
+    unit_of_measurement: 'kWh'
+    device_class: energy
+    state_class: total_increasing
+
+  - platform: template
+    id: pre_heater_temp_before # PDO 220
+    name: 'Pre-heater Temperature Before'
+    filters: [multiply: 0.1]
+    accuracy_decimals: 1
+    unit_of_measurement: '°C'
+    device_class: temperature
+    state_class: measurement
+
+  - platform: template
+    id: post_heater_temp_after # PDO 221
+    name: 'Post-heater Temperature After'
+    filters: [multiply: 0.1]
+    accuracy_decimals: 1
+    unit_of_measurement: '°C'
+    device_class: temperature
+    state_class: measurement
+
+  - platform: template
+    id: bypass_state # PDO 227
+    name: 'Bypass State'
+    accuracy_decimals: 0
+    unit_of_measurement: '%'
+    state_class: measurement
+
+  - platform: template
+    id: extract_air_temp # PDO 274
+    name: 'Extract Air Temperature'
+    filters: [multiply: 0.1]
+    accuracy_decimals: 1
+    unit_of_measurement: '°C'
+    device_class: temperature
+    state_class: measurement
+
+  - platform: template
+    id: exhaust_air_temp # PDO 275
+    name: 'Exhaust Air Temperature'
+    filters: [multiply: 0.1]
+    accuracy_decimals: 1
+    unit_of_measurement: '°C'
+    device_class: temperature
+    state_class: measurement
+
+  - platform: template
+    id: outdoor_air_temp # PDO 276
+    name: 'Outdoor Air Temperature'
+    filters: [multiply: 0.1]
+    accuracy_decimals: 1
+    unit_of_measurement: '°C'
+    device_class: temperature
+    state_class: measurement
+
+  - platform: template
+    id: pre_heater_temp_after # PDO 277, after ComfoFond/GHE
+    name: 'Pre-heater Temp After'
+    filters: [multiply: 0.1]
+    accuracy_decimals: 1
+    unit_of_measurement: '°C'
+    device_class: temperature
+    state_class: measurement
+
+  - platform: template
+    id: supply_air_temp # PDO 278
+    name: 'Supply Air Temperature'
+    filters: [multiply: 0.1]
+    accuracy_decimals: 1
+    unit_of_measurement: '°C'
+    device_class: temperature
+    state_class: measurement
+
+  - platform: template
+    id: extract_air_humidity # PDO 290
+    name: 'Extract Air Humidity'
+    accuracy_decimals: 0
+    unit_of_measurement: '%'
+    device_class: humidity
+    state_class: measurement
+
+  - platform: template
+    id: exhaust_air_humidity # PDO 291
+    name: 'Exhaust Air Humidity'
+    accuracy_decimals: 0
+    unit_of_measurement: '%'
+    device_class: humidity
+    state_class: measurement
+
+  - platform: template
+    id: outdoor_air_humidity # PDO 292, is this really still correct with ComfoFond/GHE installed?
+    name: 'Outdoor Air Humidity'
+    accuracy_decimals: 0
+    unit_of_measurement: '%'
+    device_class: humidity
+    state_class: measurement
+
+  - platform: template
+    id: pre_heater_humidity_after # PDO 293
+    name: 'Pre-heater Humidity After'
+    accuracy_decimals: 0
+    unit_of_measurement: '%'
+    device_class: humidity
+    state_class: measurement
+
+  - platform: template
+    id: supply_air_humidity # PDO 294
+    name: 'Supply Air Humidity'
+    accuracy_decimals: 0
+    unit_of_measurement: '%'
+    device_class: humidity
+    state_class: measurement

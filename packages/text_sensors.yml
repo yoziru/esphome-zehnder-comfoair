@@ -1,0 +1,91 @@
+text_sensor:
+
+  - platform: template
+    id: fan_level # PDO 65 (raw)
+    name: 'Fan Level'
+    icon: mdi:fan
+    filters:
+      - map:
+        - 0 -> Away
+        - 1 -> Low
+        - 2 -> Medium
+        - 3 -> High
+    on_value:
+      then:
+        - lambda: id(fan_level_select).publish_state(x);
+
+  - platform: template
+    id: operating_mode # PDO 49
+    name: 'Operating Mode'
+    filters:
+      - map:
+        - 1 -> Manual (limited)
+        - 2 -> PRESETRF
+        - 3 -> PRESETANALOG
+        - 4 -> PRESETRFANALOG
+        - 5 -> Manual (permanent)
+        - 6 -> Boost
+        - 7 -> Boost (RF)
+        - 8 -> Bathroom Switch
+        - 11 -> Away
+        - 255 -> Auto
+    on_value:
+      then:
+        - if:
+            condition:
+              lambda: 'return x == "Auto";'
+            then:
+              - switch.template.publish:
+                  id: auto_ventilation
+                  state: ON
+            else:
+              - switch.template.publish:
+                  id: auto_ventilation
+                  state: OFF
+
+  - platform: template
+    id: supply_fan_mode # PDO 54
+    name: 'Supply Fan Mode'
+    icon: mdi:arrow-split-vertical
+    filters:
+      - map:
+        - 1 -> Supply Only
+        - 255 -> Balanced
+
+  - platform: template
+    id: exhaust_fan_mode # PDO 55
+    name: 'Exhaust Fan Mode'
+    icon: mdi:arrow-split-vertical
+    filters:
+      - map:
+        - 1 -> Exhaust Only
+        - 255 -> Balanced
+
+  - platform: template
+    id: bypass_activation_mode # PDO 66
+    name: 'Bypass Activation Mode'
+    filters:
+      - map:
+        - 0 -> Auto
+        - 1 -> Activated
+        - 2 -> Deactivated
+
+  - platform: template
+    id: temperature_profile # PDO 67
+    name: 'Temperature Profile'
+    filters:
+      - map:
+        - 0 -> Normal
+        - 1 -> Cool
+        - 2 -> Warm
+    on_value:
+      then:
+        - lambda: id(temperature_profile_select).publish_state(x);
+
+  - platform: template
+    id: next_fan_change_in # PDO 81 (raw)
+    name: 'Next Fan Change In'
+
+  - platform: template
+    id: next_bypass_change_in # PDO 81 (raw)
+    name: 'Next Bypass Change In'

@@ -1,0 +1,8 @@
+substitutions:
+  can_tx_pin: GPIO5
+  can_rx_pin: GPIO35
+
+esp32:
+  board: esp32-evb
+  framework:
+    type: esp-idf
