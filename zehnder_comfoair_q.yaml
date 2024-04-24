@@ -20,8 +20,7 @@ packages:
   device_base: !include boards/m5stack-atoms3.yml
 
 external_components:
-#   - source: github://yoziru/esphome-zehnder-comfoair
-  - source: components
+  - source: github://yoziru/esphome-zehnder-comfoair
     components: [ zehnder_comfoair_q ]
 
 esphome:
