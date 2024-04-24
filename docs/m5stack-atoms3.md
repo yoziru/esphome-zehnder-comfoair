@@ -14,7 +14,7 @@ Before you start, make sure you have already flashed the firmware on the ESP32 b
 
 1. Connect the Dupont jumper cables to the Zehnder ventilation unit (see diagram below).
 ![Zehnder CAN connection with jumper cables](./m5stack-atoms3-1.jpg)
-2. Connect the other side of the Dupont jumper cables with Mini CAN unit (see diagram below).
+2. Connect the other side of the Dupont jumper cables with Mini CAN unit (see diagram below). Make sure you connect the cables correctly.
 ![Mini CAN unit connection with jumper cables](./m5stack-atoms3-2.jpg)
 1. Connect the Mini CAN unit with the M5Stack Atoms3 Lite board using the 4-pin grove cable.
 
@@ -30,8 +30,8 @@ Here is a picture of the finished setup:
 |                 |     +----------------------+       |             |
 |   [ComfoAir]    |     |       [MiniCan]      |       |  [ESP32S3]  |
 |                 |     |     [TJA1051T/3]     | Grove |             |
-| (red)       12V o-----o GND              RXD o=======o GPIO1       |
-| (black)     GND o-----o HV               TXD o=======o GPIO2       |
+| (red)       12V o-----o HV               RXD o=======o GPIO1       |
+| (black)     GND o-----o GND              TXD o=======o GPIO2       |
 | (yellow)  CAN_L o-----o CAN_L             5V o=======o 5V          |
 | (white)   CAN_H o-----o CAN_H            GND o=======o GND         |
 |                 |     |                      |       |             |
