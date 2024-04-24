@@ -51,6 +51,8 @@ sensor:
     device_class: duration
     unit_of_measurement: 's'
     internal: true
+    filters:
+    - throttle: 0.5s
     on_value:
       then:
         - lambda: id(next_fan_change_in).publish_state(id(comfoair)->seconds_to_human_readable(x));
@@ -62,6 +64,8 @@ sensor:
     device_class: duration
     unit_of_measurement: 's'
     internal: true
+    filters:
+    - throttle: 0.5s
     on_value:
       then:
         - lambda: id(next_bypass_change_in).publish_state(id(comfoair)->seconds_to_human_readable(x));
