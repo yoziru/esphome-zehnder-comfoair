@@ -1,14 +1,20 @@
 .DEFAULT_GOAL := help
-compile: .esphome/build/comfoair/.pioenvs/comfoair/firmware.bin  ## Read the configuration and compile the binary.
+BOARD := m5stack-atoms3
+TARGET := zehnder-comfoair-q-$(BOARD).yml
 
-.esphome/build/comfoair/.pioenvs/comfoair/firmware.bin: .venv/touchfile zehnder_comfoair_q.yaml components/zehnder_comfoair_q/zehnder_comfoair_q.cpp components/zehnder_comfoair_q/zehnder_comfoair_q.h packages/*.yml boards/*.yml
-	. .venv/bin/activate; esphome compile zehnder_comfoair_q.yaml
+compile: .esphome/build/zehnder-comfoair-q/.pioenvs/zehnder-comfoair-q/firmware.bin .esphome/build/zehnder-comfoair-q/$(TARGET).touchfile  ## Read the configuration and compile the binary.
 
-upload: .esphome/build/comfoair/.pioenvs/comfoair/firmware.bin ## Validate the configuration, create a binary, upload it, and start logs.
-	. .venv/bin/activate; esphome upload zehnder_comfoair_q.yaml; esphome logs zehnder_comfoair_q.yaml
+.esphome/build/zehnder-comfoair-q/$(TARGET).touchfile: .venv/touchfile $(TARGET) components/zehnder_comfoair_q/zehnder_comfoair_q.cpp components/zehnder_comfoair_q/zehnder_comfoair_q.h packages/*.yml boards/$(BOARD).yml  ## Validate the configuration and create a binary.
+	. .venv/bin/activate; esphome compile $(TARGET)
+	touch .esphome/build/$(TARGET).touchfile
+
+.esphome/build/zehnder-comfoair-q/.pioenvs/zehnder-comfoair-q/firmware.bin: .esphome/build/$(TARGET).touchfile ## Create the binary.
+
+upload: .esphome/build/zehnder-comfoair-q/.pioenvs/zehnder-comfoair-q/firmware.bin ## Validate the configuration, create a binary, upload it, and start logs.
+	. .venv/bin/activate; esphome upload $(TARGET); esphome logs $(TARGET)
 
 logs:
-	. .venv/bin/activate; esphome logs zehnder_comfoair_q.yaml
+	. .venv/bin/activate; esphome logs $(TARGET)
 
 deps: .venv/touchfile ## Create the virtual environment and install the requirements.
 

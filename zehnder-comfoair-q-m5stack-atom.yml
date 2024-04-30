@@ -1,0 +1,3 @@
+packages:
+  base: !include packages/base.yml
+  device_base: !include boards/m5stack-atom.yml

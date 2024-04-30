@@ -1,32 +1,29 @@
 substitutions:
-  friendly_name: Zehnder ComfoAir Q350
-  device_name: zehnder-comfoair-q350
+  friendly_name: Zehnder ComfoAir Q
+  device_name: zehnder-comfoair-q
   device_description: Ventilation system
   filter_time: 5s
   filter_send_every: '1'
   filter_window_size: '3'
 
 packages:
-  canbus: !include packages/canbus.yml
-  binary_sensors: !include packages/binary_sensors.yml
-  button: !include packages/button.yml
-  select: !include packages/select.yml
-  sensors: !include packages/sensors.yml
-  switch: !include packages/switch.yml
-  text_sensors: !include packages/text_sensors.yml
-  fan: !include packages/fan.yml
-  climate: !include packages/climate.yml
-
-  device_base: !include boards/m5stack-atoms3.yml
+  canbus: !include canbus.yml
+  binary_sensors: !include binary_sensors.yml
+  button: !include button.yml
+  select: !include select.yml
+  sensors: !include sensors.yml
+  switch: !include switch.yml
+  text_sensors: !include text_sensors.yml
+  fan: !include fan.yml
+  climate: !include climate.yml
 
 external_components:
-#   - source: github://yoziru/esphome-zehnder-comfoair
   - source: components
     components: [ zehnder_comfoair_q ]
 
 esphome:
   name: ${device_name}
-  # name_add_mac_suffix: true
+  name_add_mac_suffix: true
   friendly_name: ${friendly_name}
   comment: ${device_description}
 

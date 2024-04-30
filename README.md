@@ -25,27 +25,24 @@ See specific guides for each device:
 ## Software
 
 1. Copy and rename `secrets.yaml.example` to `secrets.yaml` and update it with your WiFi credentials (`wifi_ssid` and `wifi_password`).
-2. By default the project builds for the AtomS3 board. To change your board, change the include in `zehnder_comfoair_q.yaml` to the correct file in the `boards` folder. For example for the Olimex ESP32-EVB:
-```yaml
-  device_base: !include boards/esp32-evb.yml
-```
-1. Build the image with [ESPHome](https://esphome.io/guides/getting_started_command_line.html)
 
-```sh
-esphome build zehnder_comfoair_q.yaml
-```
-
-or use
+2. Build the image with [ESPHome](https://esphome.io/guides/getting_started_command_line.html)
 
 ```sh
 make compile
 ```
 
-4. Upload/flash the firmware to the board.
+3. Upload/flash the firmware to the board.
 
 ```sh
 make upload
 ```
+
+> By default the project builds for the AtomS3 board. To change your board, you can specify the `BOARD` parameter. For example for the Olimex ESP32-EVB:
+>```sh
+>make compile BOARD=esp32-evb
+>make upload BOARD=esp32-evb
+>```
 
 Now when you go to the Home Assistant “Integrations” screen (under “Configuration” panel), you should see the ESPHome device show up in the discovered section (although this can take up to 5 minutes). Alternatively, you can manually add the device by clicking “CONFIGURE” on the ESPHome integration and entering “<NODE_NAME>.local” as the host.
 

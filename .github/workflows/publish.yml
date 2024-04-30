@@ -6,24 +6,8 @@ on:
       - main
 
 jobs:
-  build:
-    name: Building firmware
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout source code
-        uses: actions/checkout@v2
-      - name: Mock secrets.yaml from example
-        run: cp secrets.yaml.example secrets.yaml
-      - name: Build ESPHome firmware to verify configuration
-        id: esphome-build
-        uses: esphome/build-action@v2.0.0
-        with:
-          yaml_file: zehnder_comfoair_q.yaml
-          cache: true
-      - run: |
-          mkdir output
-          mv "${{ steps.esphome-build.outputs.name }}" output/
-      - uses: actions/upload-artifact@v4.3.1
-        with:
-          name: ESPHome
-          path: output
+  publish:
+    uses: ./.github/workflows/publish-common.yml
+    with:
+      files: zehnder-comfoair-q-esp32-evb.yml,zehnder-comfoair-q-m5stack-atom.yml,zehnder-comfoair-q-m5stack-atoms3.yml
+      name: Zehnder ComfoAir Q
