@@ -1,0 +1,9 @@
+{
+  "chipFamily": "ESP32",
+  "parts": [
+    {
+      "path": "zehnder-comfoair-q-esp32/zehnder-comfoair-q-esp32.bin",
+      "offset": 0
+    }
+  ]
+}

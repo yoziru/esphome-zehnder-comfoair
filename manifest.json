@@ -1,0 +1,26 @@
+{
+  "name": "Zehnder ComfoAir Q",
+  "version": "",
+  "home_assistant_domain": "esphome",
+  "new_install_skip_erase": false,
+  "builds": [
+    {
+      "chipFamily": "ESP32",
+      "parts": [
+        {
+          "path": "zehnder-comfoair-q-esp32/zehnder-comfoair-q-esp32.bin",
+          "offset": 0
+        }
+      ]
+    },
+    {
+      "chipFamily": "ESP32-S3",
+      "parts": [
+        {
+          "path": "zehnder-comfoair-q-esp32s3/zehnder-comfoair-q-esp32s3.bin",
+          "offset": 0
+        }
+      ]
+    }
+  ]
+}

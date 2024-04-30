@@ -1,0 +1,4 @@
+# CHANGEME: Set these variable to your liking
+title: ESPHome ComfoAir Q
+description: Interact with Zehnder Comfoair Q using ESPHome and Home Assistant
+theme: jekyll-theme-slate
