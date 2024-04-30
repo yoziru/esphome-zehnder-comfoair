@@ -26,6 +26,9 @@ esphome:
   name_add_mac_suffix: true
   friendly_name: ${friendly_name}
   comment: ${device_description}
+  project:
+    name: yoziru.esphome-zehnder-comfoair
+    version: "2024.04.30"
 
 logger:
   level: INFO
