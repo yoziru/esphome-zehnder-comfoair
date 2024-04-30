@@ -8,7 +8,7 @@ compile: .esphome/build/zehnder-comfoair-q/.pioenvs/zehnder-comfoair-q/firmware.
 	. .venv/bin/activate; esphome compile $(TARGET)
 	touch .esphome/build/$(TARGET).touchfile
 
-.esphome/build/zehnder-comfoair-q/.pioenvs/zehnder-comfoair-q/firmware.bin: .esphome/build/$(TARGET).touchfile ## Create the binary.
+.esphome/build/zehnder-comfoair-q/.pioenvs/zehnder-comfoair-q/firmware.bin: .esphome/build/zehnder-comfoair-q/$(TARGET).touchfile ## Create the binary.
 
 upload: .esphome/build/zehnder-comfoair-q/.pioenvs/zehnder-comfoair-q/firmware.bin ## Validate the configuration, create a binary, upload it, and start logs.
 	. .venv/bin/activate; esphome upload $(TARGET); esphome logs $(TARGET)
