@@ -56,7 +56,7 @@ jobs:
       - uses: esphome/build-action@v2.0.0
         id: esphome-build
         with:
-          cache: true
+          cache: false
           yaml_file: ${{ matrix.file }}
           version: ${{ inputs.esphome_version }}
       - run: |
