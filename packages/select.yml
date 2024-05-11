@@ -60,6 +60,8 @@ select:
      - "On"
      - "Auto only"
      - "Off"
+    optimistic: true
+    restore_value: true
     set_action:
       # map options to enum
       - lambda: |
@@ -79,6 +81,8 @@ select:
      - "On"
      - "Auto only"
      - "Off"
+    optimistic: true
+    restore_value: true
     set_action: 
       - lambda: |
           if (x == "Off") {
@@ -97,6 +101,8 @@ select:
      - "On"
      - "Auto only"
      - "Off"
+    optimistic: true
+    restore_value: true
     set_action: 
       - lambda: |
           if (x == "Off") {
@@ -105,4 +111,23 @@ select:
             id(comfoair)->set_humidity_protection(zehnder_comfoair_q::OAO_AUTO);
           } else if (x == "On") {
             id(comfoair)->set_humidity_protection(zehnder_comfoair_q::OAO_ON);
+          }
+  - platform: template
+    name: 'Balance mode'
+    id: balance_mode_select
+    icon: mdi:arrow-split-vertical
+    options:
+     - "Balanced"
+     - "Supply only"
+     - "Exhaust only"
+    optimistic: true
+    restore_value: true
+    set_action:
+      - lambda: |
+          if (x == "Balanced") {
+            id(comfoair)->set_balance_mode(zehnder_comfoair_q::BALANCE_MODE_BALANCED);
+          } else if (x == "Supply only") {
+            id(comfoair)->set_balance_mode(zehnder_comfoair_q::BALANCE_MODE_SUPPLY_ONLY);
+          } else if (x == "Exhaust only") {
+            id(comfoair)->set_balance_mode(zehnder_comfoair_q::BALANCE_MODE_EXHAUST_ONLY);
           }

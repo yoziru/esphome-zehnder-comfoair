@@ -46,20 +46,57 @@ text_sensor:
   - platform: template
     id: supply_fan_mode # PDO 54
     name: 'Supply Fan Mode'
-    icon: mdi:arrow-split-vertical
+    icon: mdi:home-import-outline
     filters:
       - map:
         - 1 -> Supply Only
         - 255 -> Balanced
+    on_value:
+      if:
+        condition:
+          lambda: 'return x == "Supply Only";'
+        then:
+          - lambda: id(balance_mode).publish_state(x);
+        else:
+            if:
+              condition:
+                lambda: 'return id(exhaust_fan_mode).state == "Balanced";'
+              then:
+                - lambda: id(balance_mode).publish_state(x);
+
 
   - platform: template
     id: exhaust_fan_mode # PDO 55
     name: 'Exhaust Fan Mode'
-    icon: mdi:arrow-split-vertical
+    icon: mdi:home-export-outline
     filters:
       - map:
         - 1 -> Exhaust Only
         - 255 -> Balanced
+    on_value:
+      if:
+        condition:
+          lambda: 'return x == "Exhaust Only";'
+        then:
+          - lambda: id(balance_mode).publish_state(x);
+        else:
+            if:
+              condition:
+                lambda: 'return id(supply_fan_mode).state == "Balanced";'
+              then:
+                - lambda: id(balance_mode).publish_state(x);
+
+
+  - platform: template
+    id: balance_mode # PDO 55
+    name: 'Balance Mode'
+    icon: mdi:arrow-split-vertical
+    on_value:
+      then:
+        - select.set:
+            id: balance_mode_select
+            option: x
+
 
   - platform: template
     id: bypass_activation_mode # PDO 66

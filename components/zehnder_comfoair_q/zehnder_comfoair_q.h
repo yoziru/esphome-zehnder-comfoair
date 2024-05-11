@@ -37,6 +37,14 @@ namespace zehnder_comfoair_q
         OAO_ON = 2,
     };
 
+
+    enum BalanceMode : uint8_t
+    {
+        BALANCE_MODE_BALANCED = 0,
+        BALANCE_MODE_SUPPLY_ONLY = 1,
+        BALANCE_MODE_EXHAUST_ONLY = 2,
+    };
+
     class ZehnderComfoAirQ : public PollingComponent
     {
     public:
@@ -63,6 +71,22 @@ namespace zehnder_comfoair_q
         void set_humidity_comfort(OffAutoOn oao) { send_command_set_property(0x1d /* TEMPHUMCONTROL */, 0x01, 0x06, oao); }
         void set_humidity_protection(OffAutoOn oao) { send_command_set_property(0x1d /* TEMPHUMCONTROL */, 0x01, 0x07, oao); }
         void set_away(bool enable) { send_command_set_timer(enable, 0x01, 0x0B, 0x00, 0xffffffff); }
+        void set_supply_only(bool enable) { send_command_set_timer(enable, 0x06, 0x01, 0x00, 0xffffffff); }
+        void set_extract_only(bool enable) { send_command_set_timer(enable, 0x07, 0x01, 0x00, 0xffffffff); }
+        void set_balance_mode(BalanceMode balance_mode) { 
+            if (balance_mode == BALANCE_MODE_BALANCED) {
+                set_supply_only(false);
+                set_extract_only(false);
+            } else if (balance_mode == BALANCE_MODE_SUPPLY_ONLY) {
+                set_supply_only(true);
+                set_extract_only(false);
+            } else if (balance_mode == BALANCE_MODE_EXHAUST_ONLY) {
+                set_supply_only(false);
+                set_extract_only(true);
+            } else {
+                ESP_LOGW(TAG, "Unknown balance mode: %d", balance_mode);
+            }
+        }
 
         void send_command_set_timer(bool enable, uint8_t subunit_id, uint8_t property_id, uint8_t property_value = 0x00,
                                     uint32_t duration_secs = 1 /* seems to be the constant for timers with pre-defined durations */);
