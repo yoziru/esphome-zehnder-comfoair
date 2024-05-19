@@ -18,8 +18,11 @@ packages:
   climate: !include climate.yml
 
 external_components:
-  - source: components
-    components: [ zehnder_comfoair_q ]
+  - components: [ zehnder_comfoair_q ]
+    # uncomment for local dev
+    # source: components
+    source: github://yoziru/esphome-zehnder-comfoair/components@main
+
 
 esphome:
   name: ${device_name}
