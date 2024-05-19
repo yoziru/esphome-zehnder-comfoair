@@ -3,4 +3,4 @@ packages:
   device_base: !include boards/esp32-evb.yml
 
 dashboard_import:
-  package_import_url: github://yoziru/esphome-zehnder-comfoair/zehnder-comfoair-q-esp32-evb.yml@main
+  package_import_url: github://yoziru/esphome-zehnder-comfoair/zehnder-comfoair-q-esp32-evb.yml
