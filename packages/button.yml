@@ -64,4 +64,8 @@ button:
     icon: mdi:fan-chevron-down
     on_press:
       - lambda: id(comfoair)->set_bypass_mode(zehnder_comfoair_q::BYPASS_DEACTIVATE, 60 * 60);
+
+  - platform: restart  #Restart Button ESP
+    name: Restart
+    entity_category: diagnostic
       
