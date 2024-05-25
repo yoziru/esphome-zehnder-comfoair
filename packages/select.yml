@@ -118,16 +118,16 @@ select:
     icon: mdi:arrow-split-vertical
     options:
      - "Balanced"
-     - "Supply only"
-     - "Exhaust only"
+     - "Supply Only"
+     - "Exhaust Only"
     optimistic: true
     restore_value: true
     set_action:
       - lambda: |
           if (x == "Balanced") {
             id(comfoair)->set_balance_mode(zehnder_comfoair_q::BALANCE_MODE_BALANCED);
-          } else if (x == "Supply only") {
+          } else if (x == "Supply Only") {
             id(comfoair)->set_balance_mode(zehnder_comfoair_q::BALANCE_MODE_SUPPLY_ONLY);
-          } else if (x == "Exhaust only") {
+          } else if (x == "Exhaust Only") {
             id(comfoair)->set_balance_mode(zehnder_comfoair_q::BALANCE_MODE_EXHAUST_ONLY);
           }
