@@ -134,3 +134,16 @@ text_sensor:
         - 0 -> Disabled
         - 1 -> Active
         - 2 -> Overruling
+
+  - platform: wifi_info  #Reports Wifi info
+    ip_address:
+      name: IP
+    ssid:
+      name: SSID
+      
+  - platform: version # Reports ESP Version
+    name: Version
+    hide_timestamp: true
+    disabled_by_default: false
+    icon: mdi:new-box
+    entity_category: diagnostic
