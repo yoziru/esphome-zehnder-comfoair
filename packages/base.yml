@@ -60,6 +60,9 @@ wifi:
 
 captive_portal:
 
+web_server:
+  port: 80
+
 # See docs: https://github.com/michaelarnauts/aiocomfoconnect/blob/master/docs/PROTOCOL-PDO.md
 zehnder_comfoair_q:
   id: comfoair
