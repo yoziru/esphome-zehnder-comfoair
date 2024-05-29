@@ -93,9 +93,8 @@ text_sensor:
     icon: mdi:arrow-split-vertical
     on_value:
       then:
-        - select.set:
-            id: balance_mode_select
-            option: x
+        - lambda: id(balance_mode_select).publish_state(x);
+
 
 
   - platform: template
