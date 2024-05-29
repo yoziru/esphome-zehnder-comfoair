@@ -31,7 +31,7 @@ esphome:
   comment: ${device_description}
   project:
     name: yoziru.esphome-zehnder-comfoair
-    version: "2024.05.19"
+    version: "2024.05.29"
 
 logger:
   level: INFO
