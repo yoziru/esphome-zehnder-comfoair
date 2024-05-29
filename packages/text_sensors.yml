@@ -1,4 +1,10 @@
 text_sensor:
+  - platform: version
+    name: "Version"
+    icon: mdi:cube-outline
+  - platform: wifi_info
+    ip_address:
+      name: "IP Address"
 
   - platform: template
     id: fan_level # PDO 65 (raw)
