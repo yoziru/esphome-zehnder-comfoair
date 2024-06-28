@@ -1,20 +1,22 @@
 .DEFAULT_GOAL := help
 BOARD := m5stack-atoms3
-TARGET := zehnder-comfoair-q-$(BOARD).yml
+PROJECT := zehnder-comfoair-q
+TARGET := $(PROJECT)-$(BOARD).yml
+HOST_SUFFIX := ""
 
-compile: .esphome/build/zehnder-comfoair-q/.pioenvs/zehnder-comfoair-q/firmware.bin .esphome/build/zehnder-comfoair-q/$(TARGET).touchfile  ## Read the configuration and compile the binary.
+compile: .esphome/build/$(PROJECT)/.pioenvs/$(PROJECT)/firmware.bin .esphome/build/$(PROJECT)/$(TARGET).touchfile  ## Read the configuration and compile the binary.
 
-.esphome/build/zehnder-comfoair-q/$(TARGET).touchfile: .venv/touchfile $(TARGET) components/zehnder_comfoair_q/zehnder_comfoair_q.cpp components/zehnder_comfoair_q/zehnder_comfoair_q.h packages/*.yml boards/$(BOARD).yml  ## Validate the configuration and create a binary.
+.esphome/build/$(PROJECT)/$(TARGET).touchfile: .venv/touchfile $(TARGET) components/zehnder_comfoair_q/zehnder_comfoair_q.cpp components/zehnder_comfoair_q/zehnder_comfoair_q.h packages/*.yml boards/$(BOARD).yml  ## Validate the configuration and create a binary.
 	. .venv/bin/activate; esphome compile $(TARGET)
 	touch .esphome/build/$(TARGET).touchfile
 
-.esphome/build/zehnder-comfoair-q/.pioenvs/zehnder-comfoair-q/firmware.bin: .esphome/build/zehnder-comfoair-q/$(TARGET).touchfile ## Create the binary.
+.esphome/build/$(PROJECT)/.pioenvs/$(PROJECT)/firmware.bin: .esphome/build/$(PROJECT)/$(TARGET).touchfile ## Create the binary.
 
-upload: .esphome/build/zehnder-comfoair-q/.pioenvs/zehnder-comfoair-q/firmware.bin ## Validate the configuration, create a binary, upload it, and start logs.
-	. .venv/bin/activate; esphome upload $(TARGET); esphome logs $(TARGET)
+upload: .esphome/build/$(PROJECT)/.pioenvs/$(PROJECT)/firmware.bin ## Validate the configuration, create a binary, upload it, and start logs.
+	. .venv/bin/activate; esphome upload $(TARGET) --device $(PROJECT)$(HOST_SUFFIX); esphome logs $(TARGET) --device $(PROJECT)$(HOST_SUFFIX)
 
 logs:
-	. .venv/bin/activate; esphome logs $(TARGET)
+	. .venv/bin/activate; esphome logs $(TARGET) --device $(PROJECT)$(HOST_SUFFIX)
 
 deps: .venv/touchfile ## Create the virtual environment and install the requirements.
 
