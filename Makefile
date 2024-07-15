@@ -13,10 +13,18 @@ compile: .esphome/build/$(PROJECT)/.pioenvs/$(PROJECT)/firmware.bin .esphome/bui
 .esphome/build/$(PROJECT)/.pioenvs/$(PROJECT)/firmware.bin: .esphome/build/$(PROJECT)/$(TARGET).touchfile ## Create the binary.
 
 upload: .esphome/build/$(PROJECT)/.pioenvs/$(PROJECT)/firmware.bin ## Validate the configuration, create a binary, upload it, and start logs.
-	. .venv/bin/activate; esphome upload $(TARGET) --device $(PROJECT)$(HOST_SUFFIX); esphome logs $(TARGET) --device $(PROJECT)$(HOST_SUFFIX)
+	if [ "$(HOST_SUFFIX)" = "" ]; then \
+		. .venv/bin/activate; esphome upload $(TARGET); esphome logs $(TARGET); \
+	else \
+		. .venv/bin/activate; esphome upload $(TARGET) --device $(PROJECT)$(HOST_SUFFIX); esphome logs $(TARGET) --device $(PROJECT)$(HOST_SUFFIX); \
+	fi
 
 logs:
-	. .venv/bin/activate; esphome logs $(TARGET) --device $(PROJECT)$(HOST_SUFFIX)
+	if [ "$(HOST_SUFFIX)" = "" ]; then \
+		. .venv/bin/activate; esphome logs $(TARGET); \
+	else \
+		. .venv/bin/activate; esphome logs $(TARGET) --device $(PROJECT)$(HOST_SUFFIX); \
+	fi
 
 deps: .venv/touchfile ## Create the virtual environment and install the requirements.
 
