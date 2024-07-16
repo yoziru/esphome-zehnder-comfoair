@@ -53,7 +53,7 @@ jobs:
       - uses: actions/checkout@v4.1.7
       - name: Mock secrets.yaml from example
         run: cp secrets.yaml.example secrets.yaml
-      - uses: esphome/build-action@v2.0.0
+      - uses: esphome/build-action@v3.2.0
         id: esphome-build
         with:
           cache: false
