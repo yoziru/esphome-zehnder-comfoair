@@ -62,6 +62,8 @@ captive_portal:
 
 web_server:
   port: 80
+  ota: false
+  local: true
 
 # See docs: https://github.com/michaelarnauts/aiocomfoconnect/blob/master/docs/PROTOCOL-PDO.md
 zehnder_comfoair_q:
