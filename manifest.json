@@ -7,7 +7,7 @@
     "chipFamily": "ESP32",
     "ota": {
       "path": "zehnder-comfoair-q-esp32/zehnder-comfoair-q-esp32.ota.bin",
-      "md5": "a5a409437e8b17b675be9797ff0fc954"
+      "md5": "090732aba7bdfd722e3bc6fe1e8c59e7"
     },
     "parts": [
       {
@@ -26,7 +26,7 @@
     "chipFamily": "ESP32-S3",
     "ota": {
       "path": "zehnder-comfoair-q-esp32s3/zehnder-comfoair-q-esp32s3.ota.bin",
-      "md5": "abedd1181db2a6cceba2fa2ac22c3bc0"
+      "md5": "0fd635fed06e323f90cc148db2712d47"
     },
     "parts": [
       {
