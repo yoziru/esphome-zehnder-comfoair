@@ -12,9 +12,13 @@ canbus:
       - lambda: |-
           auto data_pretty = remote_transmission_request ? "n/a" : format_hex_pretty(x).c_str();
           if ((can_id & 0b11111000000000011111111000000) == 0b00000000000000000000001000000)
-            ESP_LOGD("comfoair_dump", "Node: %d, PDO: %d, rtr: %d, length: %d, content: %s (can_id: 0x%08x)", can_id & 0x3f, can_id >> 14, remote_transmission_request, x.size(), data_pretty, can_id);
+          {
+            ESP_LOGD("comfoair_dump", "Node: %ld, PDO: %ld, rtr: %d, length: %d, content: %s (can_id: 0x%08lx)", can_id & 0x3f, can_id >> 14, remote_transmission_request, x.size(), data_pretty, can_id);
+          }
           else
-            ESP_LOGV("comfoair_dump", "can_id: 0x%08x, rtr: %d, length: %d, content: %s", can_id, remote_transmission_request, x.size(), data_pretty);
+          {
+            ESP_LOGV("comfoair_dump", "can_id: 0x%08lx, rtr: %d, length: %d, content: %s", can_id, remote_transmission_request, x.size(), data_pretty);
+          }
     - can_id:      0b00000000000000000000001000000
       can_id_mask: 0b11111000000000011111111000000
       use_extended_id: true
