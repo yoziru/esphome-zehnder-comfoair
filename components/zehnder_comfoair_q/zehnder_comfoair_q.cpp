@@ -140,7 +140,7 @@ namespace zehnder_comfoair_q
 
     void ZehnderComfoAirQ::send_can_message_(uint32_t can_id, bool remote_transmission_request, const std::vector<uint8_t> &data)
     {
-        ESP_LOGD(TAG, "Send can message: id: 0x%08x (pdo_id: %d), rtr: %d, size: %d, content: %s", can_id, can_id >> 14,
+        ESP_LOGD(TAG, "Send can message: id: 0x%08lx (pdo_id: %ld), rtr: %d, size: %d, content: %s", can_id, can_id >> 14,
                  remote_transmission_request, data.size(), format_hex_pretty(data).c_str());
 
         if (parent_ == nullptr)
