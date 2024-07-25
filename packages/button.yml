@@ -1,42 +1,24 @@
 button:
   - platform: template
-    name: 'Boost 15min'
+    name: 'Boost (15 min)'
     icon: mdi:fast-forward-15
     on_press:
       - lambda: id(comfoair)->set_boost(15 * 60);
   
   - platform: template
-    name: 'Boost 30min'
-    icon: mdi:fast-forward-30
-    on_press:
-      - lambda: id(comfoair)->set_boost(30 * 60);
-  
-  - platform: template
-    name: 'Boost 60min'
+    name: 'Boost (60 min)'
     icon: mdi:fast-forward-60
     on_press:
       - lambda: id(comfoair)->set_boost(60 * 60);
 
   - platform: template
-    name: 'Boost 2h'
-    icon: mdi:numeric-2-circle
+    name: 'Boost (3h)'
+    icon: mdi:numeric-3-circle
     on_press:
-      - lambda: id(comfoair)->set_boost(2 * 60 * 60);
+      - lambda: id(comfoair)->set_boost(3 * 60 * 60);
 
   - platform: template
-    name: 'Boost 4h'
-    icon: mdi:numeric-4-circle
-    on_press:
-      - lambda: id(comfoair)->set_boost(4 * 60 * 60);
-
-  - platform: template
-    name: 'Boost 8h'
-    icon: mdi:numeric-8-circle
-    on_press:
-      - lambda: id(comfoair)->set_boost(8 * 60 * 60);
-
-  - platform: template
-    name: 'Boost 12h'
+    name: 'Boost (12h)'
     icon: mdi:dice-d12
     on_press:
       - lambda: id(comfoair)->set_boost(12 * 60 * 60);
@@ -52,6 +34,12 @@ button:
     icon: mdi:fan-chevron-up
     on_press:
       - lambda: id(comfoair)->set_bypass_mode(zehnder_comfoair_q::BYPASS_ACTIVATE, 60 * 60);
+  
+  - platform: template
+    name: 'Bypass On (12h)'
+    icon: mdi:dice-d12
+    on_press:
+      - lambda: id(comfoair)->set_bypass_mode(zehnder_comfoair_q::BYPASS_ACTIVATE, 12 * 60 * 60);
 
   - platform: template
     name: 'Bypass Auto'
