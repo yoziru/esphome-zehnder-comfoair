@@ -1,6 +1,7 @@
+# M5Stack ATOM Lite
 substitutions:
-  can_tx_pin: GPIO22
-  can_rx_pin: GPIO19
+  can_tx_pin: GPIO26
+  can_rx_pin: GPIO32
   
 esp32:
   board: m5stack-atom
