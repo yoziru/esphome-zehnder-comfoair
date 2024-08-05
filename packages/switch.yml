@@ -1,6 +1,6 @@
 switch:
   - platform: template
-    name: 'Auto Ventilation'
+    name: "Auto Ventilation"
     id: auto_ventilation
     icon: mdi:toggle-switch
     turn_on_action:
@@ -10,10 +10,10 @@ switch:
             or:
               - text_sensor.state:
                   id: operating_mode
-                  state: 'Boost'
-              - text_sensor.state:  
+                  state: "Boost"
+              - text_sensor.state:
                   id: operating_mode
-                  state: 'Boost (RF)'
+                  state: "Boost (RF)"
           then:
             - lambda: id(comfoair)->set_boost(0);
             - delay: 1s
@@ -22,7 +22,7 @@ switch:
           condition:
             text_sensor.state:
               id: operating_mode
-              state: 'Manual (limited)'
+              state: "Manual (limited)"
           then:
             - lambda: id(comfoair)->set_manual_mode(true);
             - delay: 1s
@@ -36,17 +36,17 @@ switch:
             or:
               - text_sensor.state:
                   id: operating_mode
-                  state: 'Boost'
-              - text_sensor.state:  
+                  state: "Boost"
+              - text_sensor.state:
                   id: operating_mode
-                  state: 'Boost (RF)'
+                  state: "Boost (RF)"
           then:
             - lambda: id(comfoair)->set_boost(0);
             - delay: 1s
     turn_off_action:
       - lambda: id(comfoair)->set_manual_mode(true);
   - platform: template
-    name: 'Away Mode'
+    name: "Away Mode"
     id: away_mode
     icon: mdi:airplane
     turn_on_action:

@@ -1,7 +1,7 @@
 binary_sensor:
   - platform: template
     id: away_indicator # PDO 16 (raw)
-    name: 'Away Indicator'
+    name: "Away Indicator"
     icon: mdi:airplane
     on_press:
       then:
@@ -16,10 +16,10 @@ binary_sensor:
 
   - platform: template
     id: heating_season # PDO 210 (raw)
-    name: 'Heating Season'
+    name: "Heating Season"
     icon: mdi:snowflake-thermometer
 
   - platform: template
     id: cooling_season # PDO 211 (raw)
-    name: 'Cooling Season'
+    name: "Cooling Season"
     icon: mdi:sun-thermometer

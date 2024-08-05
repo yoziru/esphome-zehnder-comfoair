@@ -1,6 +1,6 @@
 climate:
   - platform: thermostat
-    name: 'Climate'
+    name: "Climate"
     id: comfoair_climate
     sensor: extract_air_temp
     icon: mdi:air-filter

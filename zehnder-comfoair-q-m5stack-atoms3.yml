@@ -1,6 +1,8 @@
+external_components: !include packages/external_components.yml
+
 packages:
   base: !include packages/base.yml
   device_base: !include boards/m5stack-atoms3.yml
 
 dashboard_import:
-  package_import_url: github://yoziru/esphome-zehnder-comfoair/zehnder-comfoair-q-m5stack-atoms3.yml
+  package_import_url: github://yoziru/esphome-zehnder-comfoair/zehnder-comfoair-q-m5stack-atoms3.dashboard.yml

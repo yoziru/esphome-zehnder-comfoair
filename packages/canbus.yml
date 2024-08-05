@@ -5,70 +5,70 @@ canbus:
     bit_rate: 50kbps
     can_id: 0 # mandatory but we do not use it
     on_frame:
-    - can_id: 0
-      can_id_mask: 0
-      use_extended_id: true
-      then:
-      - lambda: |-
-          auto data_pretty = remote_transmission_request ? "n/a" : format_hex_pretty(x).c_str();
-          if ((can_id & 0b11111000000000011111111000000) == 0b00000000000000000000001000000)
-          {
-            ESP_LOGD("comfoair_dump", "Node: %ld, PDO: %ld, rtr: %d, length: %d, content: %s (can_id: 0x%08lx)", can_id & 0x3f, can_id >> 14, remote_transmission_request, x.size(), data_pretty, can_id);
-          }
-          else
-          {
-            ESP_LOGV("comfoair_dump", "can_id: 0x%08lx, rtr: %d, length: %d, content: %s", can_id, remote_transmission_request, x.size(), data_pretty);
-          }
-    - can_id:      0b00000000000000000000001000000
-      can_id_mask: 0b11111000000000011111111000000
-      use_extended_id: true
-      remote_transmission_request: false
-      then:
-        - lambda: |-
-            auto pdo_id = id(comfoair)->get_pdo_id_from_can_id (can_id); // need space for ESPHome not to try to interpret it as id(...)
-            switch (pdo_id)
-            {
-                comfoair_on_frame_case( 16, id(comfoair), away_indicator_raw,                true);
-                comfoair_on_frame_case( 49, id(comfoair), operating_mode,                    true);
-                comfoair_on_frame_case( 54, id(comfoair), supply_fan_mode,                   true);
-                comfoair_on_frame_case( 55, id(comfoair), exhaust_fan_mode,                  true);
-                comfoair_on_frame_case( 65, id(comfoair), fan_level_raw,                     true);
-                comfoair_on_frame_case( 66, id(comfoair), bypass_activation_mode,            true);
-                comfoair_on_frame_case( 67, id(comfoair), temperature_profile,                true);
-                comfoair_on_frame_case( 81, id(comfoair), next_fan_change_in_raw,           false);
-                comfoair_on_frame_case( 82, id(comfoair), next_bypass_change_in_raw,        false);
-                comfoair_on_frame_case(117, id(comfoair), exhaust_fan_duty,                 false);
-                comfoair_on_frame_case(118, id(comfoair), supply_fan_duty,                  false);
-                comfoair_on_frame_case(119, id(comfoair), exhaust_fan_flow,                  false);
-                comfoair_on_frame_case(120, id(comfoair), supply_fan_flow,                   false);
-                comfoair_on_frame_case(121, id(comfoair), exhaust_fan_speed,                 true);
-                comfoair_on_frame_case(122, id(comfoair), supply_fan_speed,                  true);
-                comfoair_on_frame_case(128, id(comfoair), power,                             true);
-                comfoair_on_frame_case(129, id(comfoair), energy_ytd,                        true);
-                comfoair_on_frame_case(130, id(comfoair), energy_since_start,                true);
-                comfoair_on_frame_case(192, id(comfoair), filter_replacement_remaining_days, false);
-                comfoair_on_frame_case(209, id(comfoair), running_mean_outdoor_temp,        false);
-                comfoair_on_frame_case(210, id(comfoair), heating_season_raw,                true);
-                comfoair_on_frame_case(211, id(comfoair), cooling_season_raw,                true);
-                comfoair_on_frame_case(212, id(comfoair), profile_target_temp,               false);
-                comfoair_on_frame_case(213, id(comfoair), avoided_heating_actual,            true);
-                comfoair_on_frame_case(214, id(comfoair), avoided_heating_ytd,               true);
-                comfoair_on_frame_case(215, id(comfoair), avoided_heating_total,             true);
-                comfoair_on_frame_case(216, id(comfoair), avoided_cooling_actual,            true);
-                comfoair_on_frame_case(217, id(comfoair), avoided_cooling_ytd,               true);
-                comfoair_on_frame_case(218, id(comfoair), avoided_cooling_total,             true);
-                comfoair_on_frame_case(220, id(comfoair), pre_heater_temp_before,           false);
-                comfoair_on_frame_case(221, id(comfoair), post_heater_temp_after,           false);
-                comfoair_on_frame_case(225, id(comfoair), ventilation_mode,                  true);
-                comfoair_on_frame_case(227, id(comfoair), bypass_state,                      true);
-                comfoair_on_frame_case(274, id(comfoair), extract_air_temp,                 false);
-                comfoair_on_frame_case(275, id(comfoair), exhaust_air_temp,                 false);
-                comfoair_on_frame_case(276, id(comfoair), outdoor_air_temp,                 false);
-                comfoair_on_frame_case(277, id(comfoair), pre_heater_temp_after,            false);
-                comfoair_on_frame_case(278, id(comfoair), supply_air_temp,                  false);
-                comfoair_on_frame_case(290, id(comfoair), extract_air_humidity,              true);
-                comfoair_on_frame_case(291, id(comfoair), exhaust_air_humidity,              true);
-                comfoair_on_frame_case(292, id(comfoair), outdoor_air_humidity,              true);
-                comfoair_on_frame_case(293, id(comfoair), pre_heater_humidity_after,         true);
-                comfoair_on_frame_case(294, id(comfoair), supply_air_humidity,               true);
-            }
+      - can_id: 0
+        can_id_mask: 0
+        use_extended_id: true
+        then:
+          - lambda: |-
+              auto data_pretty = remote_transmission_request ? "n/a" : format_hex_pretty(x).c_str();
+              if ((can_id & 0b11111000000000011111111000000) == 0b00000000000000000000001000000)
+              {
+                ESP_LOGD("comfoair_dump", "Node: %ld, PDO: %ld, rtr: %d, length: %d, content: %s (can_id: 0x%08lx)", can_id & 0x3f, can_id >> 14, remote_transmission_request, x.size(), data_pretty, can_id);
+              }
+              else
+              {
+                ESP_LOGV("comfoair_dump", "can_id: 0x%08lx, rtr: %d, length: %d, content: %s", can_id, remote_transmission_request, x.size(), data_pretty);
+              }
+      - can_id: 0b00000000000000000000001000000
+        can_id_mask: 0b11111000000000011111111000000
+        use_extended_id: true
+        remote_transmission_request: false
+        then:
+          - lambda: |-
+              auto pdo_id = id(comfoair)->get_pdo_id_from_can_id (can_id); // need space for ESPHome not to try to interpret it as id(...)
+              switch (pdo_id)
+              {
+                  comfoair_on_frame_case( 16, id(comfoair), away_indicator_raw,                true);
+                  comfoair_on_frame_case( 49, id(comfoair), operating_mode,                    true);
+                  comfoair_on_frame_case( 54, id(comfoair), supply_fan_mode,                   true);
+                  comfoair_on_frame_case( 55, id(comfoair), exhaust_fan_mode,                  true);
+                  comfoair_on_frame_case( 65, id(comfoair), fan_level_raw,                     true);
+                  comfoair_on_frame_case( 66, id(comfoair), bypass_activation_mode,            true);
+                  comfoair_on_frame_case( 67, id(comfoair), temperature_profile,                true);
+                  comfoair_on_frame_case( 81, id(comfoair), next_fan_change_in_raw,           false);
+                  comfoair_on_frame_case( 82, id(comfoair), next_bypass_change_in_raw,        false);
+                  comfoair_on_frame_case(117, id(comfoair), exhaust_fan_duty,                 false);
+                  comfoair_on_frame_case(118, id(comfoair), supply_fan_duty,                  false);
+                  comfoair_on_frame_case(119, id(comfoair), exhaust_fan_flow,                  false);
+                  comfoair_on_frame_case(120, id(comfoair), supply_fan_flow,                   false);
+                  comfoair_on_frame_case(121, id(comfoair), exhaust_fan_speed,                 true);
+                  comfoair_on_frame_case(122, id(comfoair), supply_fan_speed,                  true);
+                  comfoair_on_frame_case(128, id(comfoair), power,                             true);
+                  comfoair_on_frame_case(129, id(comfoair), energy_ytd,                        true);
+                  comfoair_on_frame_case(130, id(comfoair), energy_since_start,                true);
+                  comfoair_on_frame_case(192, id(comfoair), filter_replacement_remaining_days, false);
+                  comfoair_on_frame_case(209, id(comfoair), running_mean_outdoor_temp,        false);
+                  comfoair_on_frame_case(210, id(comfoair), heating_season_raw,                true);
+                  comfoair_on_frame_case(211, id(comfoair), cooling_season_raw,                true);
+                  comfoair_on_frame_case(212, id(comfoair), profile_target_temp,               false);
+                  comfoair_on_frame_case(213, id(comfoair), avoided_heating_actual,            true);
+                  comfoair_on_frame_case(214, id(comfoair), avoided_heating_ytd,               true);
+                  comfoair_on_frame_case(215, id(comfoair), avoided_heating_total,             true);
+                  comfoair_on_frame_case(216, id(comfoair), avoided_cooling_actual,            true);
+                  comfoair_on_frame_case(217, id(comfoair), avoided_cooling_ytd,               true);
+                  comfoair_on_frame_case(218, id(comfoair), avoided_cooling_total,             true);
+                  comfoair_on_frame_case(220, id(comfoair), pre_heater_temp_before,           false);
+                  comfoair_on_frame_case(221, id(comfoair), post_heater_temp_after,           false);
+                  comfoair_on_frame_case(225, id(comfoair), ventilation_mode,                  true);
+                  comfoair_on_frame_case(227, id(comfoair), bypass_state,                      true);
+                  comfoair_on_frame_case(274, id(comfoair), extract_air_temp,                 false);
+                  comfoair_on_frame_case(275, id(comfoair), exhaust_air_temp,                 false);
+                  comfoair_on_frame_case(276, id(comfoair), outdoor_air_temp,                 false);
+                  comfoair_on_frame_case(277, id(comfoair), pre_heater_temp_after,            false);
+                  comfoair_on_frame_case(278, id(comfoair), supply_air_temp,                  false);
+                  comfoair_on_frame_case(290, id(comfoair), extract_air_humidity,              true);
+                  comfoair_on_frame_case(291, id(comfoair), exhaust_air_humidity,              true);
+                  comfoair_on_frame_case(292, id(comfoair), outdoor_air_humidity,              true);
+                  comfoair_on_frame_case(293, id(comfoair), pre_heater_humidity_after,         true);
+                  comfoair_on_frame_case(294, id(comfoair), supply_air_humidity,               true);
+              }
