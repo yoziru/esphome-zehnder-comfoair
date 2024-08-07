@@ -4,4 +4,4 @@ substitutions:
   can_rx_pin: GPIO32
   board: m5stack-atom
   variant: esp32
-  flash_size: 8MB
+  flash_size: 4MB
