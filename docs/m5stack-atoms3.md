@@ -32,8 +32,8 @@ Here is a picture of the finished setup:
 |                 |     |     [TJA1051T/3]     | Grove |             |
 | (red)       12V o-----o HV               RXD o=======o GPIO1       |
 | (black)     GND o-----o GND              TXD o=======o GPIO2       |
-| (yellow)  CAN_L o-----o CAN_L             5V o=======o 5V          |
-| (white)   CAN_H o-----o CAN_H            GND o=======o GND         |
+| (white)   CAN_L o-----o CAN_L             5V o=======o 5V          |
+| (yellow)  CAN_H o-----o CAN_H            GND o=======o GND         |
 |                 |     |                      |       |             |
 |-----------------+     +----------------------+       +-------------+
 ```
