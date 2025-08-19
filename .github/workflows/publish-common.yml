@@ -45,7 +45,7 @@ jobs:
     outputs:
       esphome-version: ${{ steps.esphome-build.outputs.esphome-version }}
     steps:
-      - uses: actions/checkout@v4.1.7
+      - uses: actions/checkout@v4.3.0
       - name: Mock secrets.yaml from example
         run: cp secrets.yaml.example secrets.yaml
       - name: Get ESPHome version
@@ -54,11 +54,10 @@ jobs:
         run: |
           esphome_version=$(grep esphome requirements.txt | cut -d'=' -f3)
           echo "esphome_version=$esphome_version" >> "$GITHUB_OUTPUT"
-      - uses: esphome/build-action@v3.2.0
+      - uses: esphome/build-action@v7.0.0
         id: esphome-build
         with:
-          cache: true
-          yaml_file: ${{ matrix.file }}
+          yaml-file: ${{ matrix.file }}
           version: ${{ steps.get_esphome_version.outputs.esphome_version }}
       - name: Move generated files to output
         run: |
@@ -66,7 +65,7 @@ jobs:
           mv "${{ steps.esphome-build.outputs.name }}" output/
           echo ${{ steps.esphome-build.outputs.version }} > output/version
           echo ${{ steps.esphome-build.outputs.project-version }} > output/project_version
-      - uses: actions/upload-artifact@v4.3.4
+      - uses: actions/upload-artifact@v4.6.2
         with:
           name: build-${{ matrix.file }}
           path: output
@@ -77,8 +76,8 @@ jobs:
     runs-on: ubuntu-latest
     needs: [build]
     steps:
-      - uses: actions/checkout@v4.1.7
-      - uses: actions/download-artifact@v4.1.7
+      - uses: actions/checkout@v4.3.0
+      - uses: actions/download-artifact@v5.0.0
         with:
           pattern: build-*
           merge-multiple: true
@@ -91,7 +90,7 @@ jobs:
       - run: cp -R static/* output
 
       - name: Deploy 🚀
-        uses: JamesIves/github-pages-deploy-action@v4.6.0
+        uses: JamesIves/github-pages-deploy-action@v4.7.3
         with:
           branch: gh-pages
           folder: output
