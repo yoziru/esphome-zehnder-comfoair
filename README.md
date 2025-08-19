@@ -50,6 +50,26 @@ Now when you go to the Home Assistant “Integrations” screen (under “Config
 
 Optional: for the ventilation card with the arrows, see [`docs/home-assistant/example-picture-elements-card.yaml`](docs/home-assistant/example-picture-elements-card.yaml)
 
+## Software (Already running ESPhome somewhere)
+
+If you are already running an instance of ESPHome, you can also include this repository directly by including it as a package. The main benefit here is having centralized management of all your ESPhome devices. To do this, you can use the following config for your device:
+```
+substitutions:
+  wifi_ssid: !secret wifi_ssid
+  wifi_password: !secret wifi_password
+  wifi_hotspot_password: !secret wifi_hotspot_password
+  ota_password: !secret ota_password
+  api_encryption_key: !secret api_encryption_key
+
+packages:
+  remote_package_shorthand: github://yoziru/esphome-zehnder-comfoair/zehnder-comfoair-q-esp32-evb.dashboard.yml@main
+```
+
+Be sure to use the correct `.dashboard.yml` file for your board. Also make sure you have the secrets defined otherwise it will not work and use defaults from this repository. Finally, make sure you set your `flash_size` correctly, because otherwise you will get errors after booting, by adding this to your `substitutions`:
+
+```
+  flash_size: 4MB
+```
 
 ## Credits
 
@@ -67,3 +87,4 @@ A lot of this repo was inspired by the reverse engineering [here](https://github
 - [ComfoControl Protocol](https://github.com/michaelarnauts/aiocomfoconnect/blob/master/docs/PROTOCOL.md)
 - [RMI PROTOCOL](https://github.com/michaelarnauts/aiocomfoconnect/blob/master/docs/PROTOCOL-RMI.md)
 - [PDO PROTOCOL](https://github.com/michaelarnauts/aiocomfoconnect/blob/master/docs/PROTOCOL-PDO.md)
+
