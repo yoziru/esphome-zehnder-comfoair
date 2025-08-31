@@ -4,3 +4,4 @@ secrets.yaml
 .vscode
 .DS_Store
 .venv
+.selected_suffix
