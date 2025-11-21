@@ -155,7 +155,7 @@ namespace zehnder_comfoair_q
         CanbusSendAction<> canbus_send_action;
         canbus_send_action.set_parent(parent_);
         canbus_send_action.set_can_id(can_id);
-        // use_extended_id as already been set globally on parent
+        // use_extended_id has already been set globally on parent
         if (remote_transmission_request)
             canbus_send_action.set_remote_transmission_request(true);
         canbus_send_action.set_data_static(data.data(), data.size());
