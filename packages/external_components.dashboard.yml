@@ -1,2 +1,2 @@
 - components: [ zehnder_comfoair_q ]
-  source: components
+  source: github://yoziru/esphome-zehnder-comfoair/components@main
