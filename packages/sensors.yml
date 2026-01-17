@@ -150,6 +150,31 @@ sensor:
     state_class: total_increasing
 
   - platform: template
+    id: pre_heater_energy_ytd # PDO 144
+    name: "Pre-heater Energy YTD"
+    accuracy_decimals: 0
+    unit_of_measurement: "kWh"
+    device_class: energy
+    state_class: total_increasing
+
+  - platform: template
+    id: pre_heater_energy_since_start # PDO 145
+    name: "Pre-heater Energy Since Start"
+    accuracy_decimals: 0
+    unit_of_measurement: "kWh"
+    device_class: energy
+    state_class: total_increasing
+
+  - platform: template
+    id: pre_heater_power # PDO 146
+    name: "Pre-heater Power"
+    accuracy_decimals: 0
+    unit_of_measurement: "W"
+    device_class: power
+    state_class: measurement
+    filters: *throttle-filter
+
+  - platform: template
     id: filter_replacement_remaining_days # PDO 192
     name: "Filter Replacement Remaining Days"
     icon: mdi:air-filter

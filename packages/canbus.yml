@@ -46,6 +46,9 @@ canbus:
                   comfoair_on_frame_case(128, id(comfoair), power,                             true);
                   comfoair_on_frame_case(129, id(comfoair), energy_ytd,                        true);
                   comfoair_on_frame_case(130, id(comfoair), energy_since_start,                true);
+                  comfoair_on_frame_case(144, id(comfoair), pre_heater_energy_ytd,             true);
+                  comfoair_on_frame_case(145, id(comfoair), pre_heater_energy_since_start,    true);
+                  comfoair_on_frame_case(146, id(comfoair), pre_heater_power,                 true);
                   comfoair_on_frame_case(192, id(comfoair), filter_replacement_remaining_days, false);
                   comfoair_on_frame_case(209, id(comfoair), running_mean_outdoor_temp,        false);
                   comfoair_on_frame_case(210, id(comfoair), heating_season_raw,                true);
