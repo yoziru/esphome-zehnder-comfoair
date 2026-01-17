@@ -43,7 +43,7 @@ canbus:
                   comfoair_on_frame_case(120, id(comfoair), supply_fan_flow,                   false);
                   comfoair_on_frame_case(121, id(comfoair), exhaust_fan_speed,                 true);
                   comfoair_on_frame_case(122, id(comfoair), supply_fan_speed,                  true);
-                  comfoair_on_frame_case(128, id(comfoair), power,                             true);
+                  comfoair_on_frame_case(128, id(comfoair), ventilation_power,                             true);
                   comfoair_on_frame_case(129, id(comfoair), energy_ytd,                        true);
                   comfoair_on_frame_case(130, id(comfoair), energy_since_start,                true);
                   comfoair_on_frame_case(144, id(comfoair), pre_heater_energy_ytd,             true);
