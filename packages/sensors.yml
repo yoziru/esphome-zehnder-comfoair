@@ -125,8 +125,8 @@ sensor:
     filters: *throttle-filter-round-tens
 
   - platform: template
-    id: power # PDO 128
-    name: "Power"
+    id: ventilation_power # PDO 128
+    name: "Ventilation Power"
     accuracy_decimals: 0
     unit_of_measurement: "W"
     device_class: power
@@ -148,6 +148,46 @@ sensor:
     unit_of_measurement: "kWh"
     device_class: energy
     state_class: total_increasing
+
+  - platform: template
+    id: pre_heater_energy_ytd # PDO 144
+    name: "Pre-heater Energy YTD"
+    accuracy_decimals: 0
+    unit_of_measurement: "kWh"
+    device_class: energy
+    state_class: total_increasing
+
+  - platform: template
+    id: pre_heater_energy_since_start # PDO 145
+    name: "Pre-heater Energy Since Start"
+    accuracy_decimals: 0
+    unit_of_measurement: "kWh"
+    device_class: energy
+    state_class: total_increasing
+
+  - platform: template
+    id: pre_heater_power # PDO 146
+    name: "Pre-heater Power"
+    accuracy_decimals: 0
+    unit_of_measurement: "W"
+    device_class: power
+    state_class: measurement
+    filters: *throttle-filter
+
+  - platform: template
+    id: power
+    name: "Power"
+    accuracy_decimals: 0
+    unit_of_measurement: "W"
+    device_class: power
+    state_class: measurement
+    lambda: |-
+      float vent_power = id(ventilation_power).state;
+      float heater_power = id(pre_heater_power).state;
+      if (isnan(vent_power)) vent_power = 0;
+      if (isnan(heater_power)) heater_power = 0;
+      return vent_power + heater_power;
+    update_interval: 1s
 
   - platform: template
     id: filter_replacement_remaining_days # PDO 192
