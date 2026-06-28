@@ -1,0 +1,8 @@
+external_components: !include packages/external_components.yml
+
+packages:
+  base: !include packages/base.yml
+  device_base: !include boards/waveshare-esp32-s3-rs485-can.yml
+
+dashboard_import:
+  package_import_url: github://yoziru/esphome-zehnder-comfoair/zehnder-comfoair-q-waveshare-esp32-s3-rs485-can.dashboard.yml

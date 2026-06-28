@@ -39,6 +39,18 @@ setup instead of changing the project commands.
   network troubleshooting tools.
 - VS Code extensions should be declared in `devcontainer.json`, especially YAML
   and C++ support.
+- Build and validate board-specific changes inside the devcontainer. If the
+  `devcontainer` CLI is unavailable, build the image from `.devcontainer` and
+  run the Makefile inside it:
+
+```bash
+docker build -f .devcontainer/Dockerfile -t esphome-zehnder-comfoair-devcontainer .
+docker run --rm -v "$PWD":/workspaces/esphome-zehnder-comfoair \
+  -w /workspaces/esphome-zehnder-comfoair \
+  esphome-zehnder-comfoair-devcontainer \
+  bash -lc 'make validate-config BOARD=waveshare-esp32-s3-rs485-can && make compile BOARD=waveshare-esp32-s3-rs485-can'
+```
+
 - Validate the container with `make help`, then `make validate-config`, then a
   board-specific `make compile`.
 
