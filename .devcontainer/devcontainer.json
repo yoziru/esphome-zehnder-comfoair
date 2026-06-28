@@ -1,0 +1,35 @@
+{
+  "name": "ESPHome Zehnder ComfoAir",
+  "build": {
+    "dockerfile": "Dockerfile",
+    "context": ".."
+  },
+  "workspaceFolder": "/workspaces/esphome-zehnder-comfoair",
+  "postCreateCommand": "cp -n secrets.yaml.example secrets.yaml && make help",
+  "remoteUser": "vscode",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "esphome.esphome-vscode",
+        "redhat.vscode-yaml",
+        "ms-vscode.cpptools",
+        "ms-python.python",
+        "ms-vscode.makefile-tools",
+        "ms-azuretools.vscode-docker",
+        "editorconfig.editorconfig",
+        "streetsidesoftware.code-spell-checker",
+        "timonwong.shellcheck"
+      ],
+      "settings": {
+        "yaml.customTags": [
+          "!include scalar",
+          "!secret scalar"
+        ],
+        "files.associations": {
+          "*.yml": "yaml",
+          "*.yaml": "yaml"
+        }
+      }
+    }
+  }
+}
