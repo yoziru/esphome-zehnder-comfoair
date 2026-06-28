@@ -5,6 +5,10 @@
     "context": ".."
   },
   "workspaceFolder": "/workspaces/esphome-zehnder-comfoair",
+  "runArgs": [
+    "--privileged",
+    "--group-add=dialout"
+  ],
   "postCreateCommand": "cp -n secrets.yaml.example secrets.yaml && make help",
   "remoteUser": "vscode",
   "customizations": {
