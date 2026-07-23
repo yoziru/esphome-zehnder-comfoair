@@ -18,7 +18,39 @@
       {send_every: "${filter_send_every}", window_size: "${filter_window_size}"}
   - multiply: 0.001
 
+# To allow to calculate the next_change, instead of counting down.
+time:
+  - platform: homeassistant
+    id: ha_time
+
+
 sensor:
+  - platform: template
+    id: next_fan_change # PDO 81 (raw)
+    name: "Next Fan Change"
+    device_class: timestamp
+    update_interval: never
+    lambda: |-
+      auto now = id(ha_time).now();
+      if (!now.is_valid())
+        return NAN;
+
+      return now.timestamp + id(next_fan_change_in_raw).state;
+
+  - platform: template
+    id: next_bypass_change # PDO 81 (raw)
+    name: "Next Bypass Change"
+    device_class: timestamp
+    update_interval: never
+    lambda: |-
+      auto now = id(ha_time).now();
+      if (!now.is_valid())
+        return NAN;
+
+      return now.timestamp + id(next_bypass_change_in_raw).state;
+
+  # Internals:
+
   - platform: template
     id: away_indicator_raw # PDO 16
     name: "away_indicator_raw"
@@ -66,6 +98,9 @@ sensor:
     internal: true
     filters:
       - throttle: 0.5s
+    on_value:
+      then:
+        - component.update: next_fan_change
 
   - platform: template
     id: next_bypass_change_in_raw # PDO 82
@@ -76,6 +111,9 @@ sensor:
     internal: true
     filters:
       - throttle: 0.5s
+    on_value:
+      then:
+        - component.update: next_bypass_change
 
   - platform: template
     id: exhaust_fan_duty # PDO 117

@@ -121,14 +121,6 @@ text_sensor:
         - lambda: id(temperature_profile_select).publish_state(x);
 
   - platform: template
-    id: next_fan_change_in # PDO 81 (raw)
-    name: "Next Fan Change In"
-
-  - platform: template
-    id: next_bypass_change_in # PDO 82 (raw)
-    name: "Next Bypass Change In"
-
-  - platform: template
     id: ventilation_mode # PDO 225
     name: "Ventilation Mode"
     filters:
