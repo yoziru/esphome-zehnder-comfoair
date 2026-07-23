@@ -49,6 +49,20 @@ sensor:
 
       return now.timestamp + id(next_bypass_change_in_raw).state;
 
+  - platform: template
+    id: filter_replacement_date
+    name: "Filter Replacement Date"
+    device_class: timestamp
+    update_interval: never
+    lambda: |-
+      auto now = id(ha_time).now();
+      if (!now.is_valid())
+        return NAN;
+
+      return now.timestamp +
+             id(filter_replacement_remaining_days).state * 24 * 60 * 60;
+
+
   # Internals:
 
   - platform: template
@@ -186,7 +200,11 @@ sensor:
     name: "Filter Replacement Remaining Days"
     icon: mdi:air-filter
     accuracy_decimals: 0
+    internal: true
     unit_of_measurement: "days"
+    on_value:
+      then:
+        - component.update: filter_replacement_date
 
   - platform: template
     id: running_mean_outdoor_temp # PDO 209
