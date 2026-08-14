@@ -63,6 +63,7 @@ jobs:
         run: |
           mkdir output
           mv "${{ steps.esphome-build.outputs.name }}" output/
+          mv manifest.json output/
           echo ${{ steps.esphome-build.outputs.version }} > output/version
           echo ${{ steps.esphome-build.outputs.project-version }} > output/project_version
       - uses: actions/upload-artifact@v4.6.2
