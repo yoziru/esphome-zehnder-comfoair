@@ -6,3 +6,45 @@ substitutions:
   board: m5stack-atom
   variant: esp32
   flash_size: 4MB
+
+# Board specific entities
+# Output that blinks the LED
+output:
+  - platform: template
+    id: status_output
+    type: binary
+    write_action:
+      - if:
+          condition:
+            lambda: return (state);
+          then:
+            - light.turn_on:
+                id: led
+                brightness: 70%
+                red: 100%
+                green: 0%
+                blue: 0%
+          else:
+            - light.turn_off: led
+
+light:
+  # Enable status LED
+  - platform: status_led
+    output: status_output
+    name: "Status Led"
+    internal: true
+    entity_category: diagnostic
+
+  #G27=RGB SK6812 (single LED)
+  - platform: esp32_rmt_led_strip
+    channel_colors: GRB
+    pin: GPIO27
+    num_leds: 1
+    chipset: SK6812
+    id: led
+    name: "Led"
+    entity_category: diagnostic
+
+# No button entity: the ATOM Lite button (GPIO39) phantom-triggers due to an
+# ESP32 ADC power quirk (needs an adc_power_acquire() workaround), so it is
+# deliberately left out until someone needs it.
