@@ -2,5 +2,5 @@ esp32:
   board: $board
   variant: $variant
   flash_size: $flash_size
-  framework:
-    type: esp-idf
+  # framework defaults to esp-idf for all variants since ESPHome 2026.1,
+  # so no explicit framework block.
