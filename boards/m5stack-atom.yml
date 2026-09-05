@@ -1,4 +1,5 @@
-# M5Stack ATOM Lite
+# M5Stack ATOM Lite (ESP32-PICO-D4, 4MB flash - do not raise: the OTA
+# app partition would land past the end of physical flash)
 substitutions:
   can_tx_pin: GPIO26
   can_rx_pin: GPIO32
