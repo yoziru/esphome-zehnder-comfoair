@@ -1,0 +1,34 @@
+# Waveshare ESP32-S3-RS485-CAN
+substitutions:
+  can_tx_pin: GPIO15
+  can_rx_pin: GPIO16
+  rs485_tx_pin: GPIO17
+  rs485_rx_pin: GPIO18
+  rs485_flow_control_pin: GPIO21
+  rs485_baud_rate: "9600"
+  i2c_sda_pin: GPIO39
+  i2c_scl_pin: GPIO38
+  header_gpio1_pin: GPIO1
+  header_gpio2_pin: GPIO2
+  board: esp32-s3-devkitc-1
+  variant: esp32s3
+  flash_size: 16MB
+
+uart:
+  - id: waveshare_rs485
+    tx_pin: ${rs485_tx_pin}
+    rx_pin: ${rs485_rx_pin}
+    flow_control_pin: ${rs485_flow_control_pin}
+    baud_rate: ${rs485_baud_rate}
+
+i2c:
+  - id: waveshare_i2c
+    sda: ${i2c_sda_pin}
+    scl: ${i2c_scl_pin}
+    scan: true
+
+time:
+  - platform: pcf85063
+    id: waveshare_rtc
+    i2c_id: waveshare_i2c
+    address: 0x51
