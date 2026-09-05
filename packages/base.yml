@@ -13,7 +13,9 @@ packages:
   canbus: !include canbus.yml
   climate: !include climate.yml
   common: !include common.yml
+  comfoair: !include zehnder_comfoair_q.yml
   fan: !include fan.yml
+  project: !include project.yml
   select: !include select.yml
   sensors: !include sensors.yml
   switch: !include switch.yml
@@ -24,9 +26,6 @@ esphome:
   name_add_mac_suffix: true
   friendly_name: ${friendly_name}
   comment: ${device_description}
-  project:
-    name: yoziru.esphome-zehnder-comfoair
-    version: "2024.8.0"
 
 logger:
   level: INFO
@@ -38,8 +37,8 @@ api:
     key: !secret api_encryption_key
 
 ota:
-  platform: esphome
-  password: !secret ota_password
+  - platform: esphome
+    password: !secret ota_password
 
 wifi:
   ssid: !secret wifi_ssid
@@ -57,54 +56,3 @@ web_server:
   port: 80
   ota: false
   local: true
-
-# See docs: https://github.com/michaelarnauts/aiocomfoconnect/blob/master/docs/PROTOCOL-PDO.md
-zehnder_comfoair_q:
-  id: comfoair
-  request_ids:
-    [
-      16,
-      49,
-      54,
-      55,
-      65,
-      66,
-      67,
-      81,
-      82,
-      117,
-      118,
-      119,
-      120,
-      121,
-      122,
-      128,
-      129,
-      130,
-      192,
-      209,
-      210,
-      211,
-      212,
-      212,
-      213,
-      214,
-      215,
-      216,
-      217,
-      218,
-      220,
-      221,
-      225,
-      227,
-      274,
-      275,
-      276,
-      277,
-      278,
-      290,
-      291,
-      292,
-      293,
-      294,
-    ]

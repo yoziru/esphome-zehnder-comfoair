@@ -25,6 +25,9 @@ compile: .esphome/build/$(PROJECT)/.pioenvs/$(PROJECT)/firmware.bin  ## Read the
 validate-config: check-uv ## Validate the configuration without building the binary
 	uvx --with pip esphome==$(ESPHOME_VERSION) config $(TARGET)
 
+validate-dashboard-config: check-uv ## Validate the generated-style ESPHome Dashboard configuration
+	uvx --with pip esphome==$(ESPHOME_VERSION) config tests/dashboard_config.yml
+
 # Build firmware.bin if YAML sources or dependencies change
 .esphome/build/$(PROJECT)/.pioenvs/$(PROJECT)/firmware.bin: $(TARGET) packages/*.yml $(BOARD_FILES) requirements.txt $(shell command -v uv 2>/dev/null)
 	$(UV_CHECK)
@@ -72,7 +75,7 @@ discover: ## Discover ESPHome devices on the network
 		fi; \
 	fi'
 
-.PHONY: clean
+.PHONY: clean validate-dashboard-config
 clean: ## Remove the esphome build directory
 	rm -rf .esphome .selected_suffix
 

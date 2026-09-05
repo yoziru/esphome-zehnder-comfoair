@@ -1,2 +1,8 @@
+# Device Builder builds fetch the components from git at the ref selected by
+# the device configuration (${zehnder_comfoair_ref}: a branch, tag, or commit SHA).
 - components: [ zehnder_comfoair_q ]
-  source: github://yoziru/esphome-zehnder-comfoair/components@main
+  source:
+    type: git
+    url: https://github.com/yoziru/esphome-zehnder-comfoair.git
+    ref: ${zehnder_comfoair_ref}
+    path: components

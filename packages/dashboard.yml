@@ -1,0 +1,34 @@
+# This package deliberately excludes esphome identity, API, and Wi-Fi credentials.
+# ESPHome Device Builder owns those settings in each device's local configuration.
+substitutions:
+  # Set by the Device Builder configuration to a branch, tag, or commit SHA.
+  zehnder_comfoair_ref: main
+  filter_time: 5s
+  filter_send_every: "1"
+  filter_window_size: "3"
+
+packages:
+  binary_sensors: !include binary_sensors.yml
+  board: !include board.yml
+  button: !include button.yml
+  canbus: !include canbus.yml
+  climate: !include climate.yml
+  comfoair: !include zehnder_comfoair_q.yml
+  common: !include common.yml
+  fan: !include fan.yml
+  project: !include project.yml
+  select: !include select.yml
+  sensors: !include sensors.yml
+  switch: !include switch.yml
+  text_sensors: !include text_sensors.yml
+
+external_components: !include external_components.dashboard.yml
+
+logger:
+  level: INFO
+  logs:
+    canbus: INFO
+
+ota:
+  - platform: esphome
+    password: $ota_password

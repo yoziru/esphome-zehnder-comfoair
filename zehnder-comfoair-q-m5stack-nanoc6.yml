@@ -5,4 +5,4 @@ packages:
   device_base: !include boards/m5stack-nanoc6.yml
 
 dashboard_import:
-  package_import_url: github://yoziru/esphome-zehnder-comfoair/zehnder-comfoair-q-m5stack-nanoc6.dashboard.yml
+  package_import_url: github://yoziru/esphome-zehnder-comfoair/zehnder-comfoair-q-m5stack-nanoc6.dashboard.yml@main
