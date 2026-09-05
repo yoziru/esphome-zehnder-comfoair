@@ -119,6 +119,8 @@ api:
 wifi:
   ssid: !secret wifi_ssid
   password: !secret wifi_password
+  ap:
+    password: !secret wifi_hotspot_password
 ```
 
 Secret names are local to each user's dashboard. If yours differ, keep `ota_password` on the left and change only the name after `!secret`.
