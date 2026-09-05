@@ -22,7 +22,7 @@ light:
 
   #G20=RGB WS2812
   - platform: esp32_rmt_led_strip
-    rgb_order: GRB
+    channel_colors: GRB
     pin: GPIO20
     num_leds: 4
     chipset: ws2812
@@ -44,6 +44,9 @@ binary_sensor:
     entity_category: diagnostic
     pin:
       number: GPIO9
+      # M5Stack uses GPIO9 for the button (also the download-mode strap).
+      # Acknowledged: input with pullup, same as the other board files.
+      ignore_strapping_warning: true
       inverted: true
       mode:
         input: true
