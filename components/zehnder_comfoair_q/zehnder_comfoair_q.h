@@ -51,7 +51,7 @@ namespace zehnder_comfoair_q
         void update() override;
 
         void set_parent(Canbus *parent) { parent_ = parent; }
-        void set_request_ids(const std::vector<uint16_t> request_ids) { request_ids_ = request_ids; }
+        void set_request_ids(const std::vector<uint16_t> &request_ids) { request_ids_ = request_ids; }
         void set_request_delay(uint32_t request_delay) { request_delay_ = request_delay; }
         void set_local_node_id(uint8_t local_node_id) { local_node_id_ = local_node_id; }
 
@@ -135,24 +135,10 @@ namespace zehnder_comfoair_q
                 else
                     publish_state(state_id, *((uint32_t *)&can_message[0]));
                 break;
-            case 8:
-                if (!is_unsigned)
-                    publish_state(state_id, *((int64_t *)&can_message[0]));
-                else
-                    publish_state(state_id, *((uint64_t *)&can_message[0]));
-                break;
             default:
                 ESP_LOGW("comfoair", "Unable to infer type from can message size: %d", can_message.size());
                 break;
             }
-        }
-
-        template <class T>
-        static __attribute((always_inline)) inline void publish_pdo_state(uint16_t pdo_id, T state_id, uint32_t can_id,
-                                                                          const std::vector<uint8_t> can_message, bool is_unsigned = false)
-        {
-            if ((can_id & (0x3ff << 14)) == pdo_id << 14)
-                ZehnderComfoAirQ::publish_state(state_id, can_message, is_unsigned);
         }
 
         static __attribute((always_inline)) inline uint16_t get_pdo_id_from_can_id(uint32_t can_id)
@@ -197,12 +183,10 @@ namespace zehnder_comfoair_q
         int request_next_pdo_pos_ = 0;
         void request_next_pdo_();
 
-        uint8_t local_node_id_ = 0x3e;
+        uint8_t local_node_id_ = 0x2a;
 
-        uint32_t get_command_next_can_id_(uint8_t src_node_id, uint8_t dst_node_id, uint8_t unknown_counter,
-                                          bool is_multi_message_command, bool response_error_occurred, bool is_request);
-        uint32_t get_command_can_id_(uint8_t src_node_id, uint8_t dst_node_id, uint8_t unknown_counter,
-                                     bool is_multi_message_command, bool response_error_occurred, bool is_request, uint8_t sequence_number);
+        // Builds the CAN id of a command frame sent from this node to the ComfoAir Q unit (node 0x01).
+        uint32_t get_command_can_id_(bool is_multi_message_command, uint8_t sequence_number);
         uint8_t get_command_next_sequence_number_();
         uint8_t command_sequence_number_ = 0;
 
