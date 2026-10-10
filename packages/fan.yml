@@ -5,7 +5,6 @@ fan:
     icon: mdi:air-filter
     output: comfoair_fan_output
     speed_count: 3
-    # restore_mode: RESTORE_DEFAULT_ON
     on_turn_on:
       - switch.turn_on: auto_ventilation
     on_turn_off:

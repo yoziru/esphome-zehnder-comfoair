@@ -87,7 +87,7 @@ namespace zehnder_comfoair_q
     void ZehnderComfoAirQ::send_command(const std::vector<uint8_t> &command)
     {
         auto is_multi_message_command = command.size() > 8;
-        auto can_id = get_command_next_can_id_(this->local_node_id_, 0x01, 0, is_multi_message_command, false, true);
+        auto can_id = get_command_can_id_(is_multi_message_command, get_command_next_sequence_number_());
 
         if (is_multi_message_command)
         {
@@ -110,26 +110,14 @@ namespace zehnder_comfoair_q
         }
     }
 
-    uint32_t ZehnderComfoAirQ::get_command_next_can_id_(uint8_t src_node_id, uint8_t dst_node_id, uint8_t unknown_counter,
-                                                        bool is_multi_message_command, bool response_error_occurred,
-                                                        bool is_request)
-    {
-        return get_command_can_id_(src_node_id, dst_node_id, unknown_counter, is_multi_message_command,
-                                   response_error_occurred, is_request, get_command_next_sequence_number_());
-    }
-
-    uint32_t ZehnderComfoAirQ::get_command_can_id_(uint8_t src_node_id, uint8_t dst_node_id, uint8_t unknown_counter,
-                                                   bool is_multi_message_command, bool response_error_occurred,
-                                                   bool is_request, uint8_t sequence_number)
+    uint32_t ZehnderComfoAirQ::get_command_can_id_(bool is_multi_message_command, uint8_t sequence_number)
     {
         return 0x1f << 24 |
                sequence_number << 17 |
-               (is_request ? 1 : 0) << 16 |
-               (response_error_occurred ? 1 : 0) << 15 |
+               1 << 16 | // is_request
                (is_multi_message_command ? 1 : 0) << 14 |
-               unknown_counter << 12 |
-               dst_node_id << 6 |
-               src_node_id << 0;
+               0x01 << 6 | // destination node: the ComfoAir Q unit
+               this->local_node_id_;
     }
 
     uint8_t ZehnderComfoAirQ::get_command_next_sequence_number_()
