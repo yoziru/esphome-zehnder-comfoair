@@ -85,7 +85,7 @@ text_sensor:
               - lambda: id(balance_mode).publish_state(x);
 
   - platform: template
-    id: balance_mode # PDO 55
+    id: balance_mode # derived from PDO 54 (supply fan mode) and PDO 55 (exhaust fan mode)
     name: "Balance Mode"
     icon: mdi:arrow-split-vertical
     on_value:
@@ -118,7 +118,7 @@ text_sensor:
     name: "Next Fan Change In"
 
   - platform: template
-    id: next_bypass_change_in # PDO 81 (raw)
+    id: next_bypass_change_in # PDO 82 (raw)
     name: "Next Bypass Change In"
 
   - platform: template
