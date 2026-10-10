@@ -82,7 +82,7 @@ jobs:
       cancel-in-progress: false
     steps:
       - uses: actions/checkout@v7.0.1
-      - uses: actions/download-artifact@v5.0.0
+      - uses: actions/download-artifact@v8.0.2
         with:
           pattern: build-*
           merge-multiple: true
