@@ -85,7 +85,31 @@ jobs:
       - name: Create single manifest.json
         run: |
           version=$(cat output/project_version)
-          jq -s --arg version "$version" '{"name": "${{ inputs.name }}", "version": $version, "home_assistant_domain": "esphome", "new_install_skip_erase": false, "builds":.}' output/*/manifest.json > output/${{ inputs.manifest_filename }}
+          # Each build's manifest lives in its own directory and uses file paths
+          # relative to that directory. Prefix every path with the directory so
+          # the combined manifest at the site root points at existing files.
+          jq -n --arg name "${{ inputs.name }}" --arg version "$version" '
+            {
+              "name": $name,
+              "version": $version,
+              "home_assistant_domain": "esphome",
+              "new_install_skip_erase": false,
+              "builds": [
+                inputs
+                | . as $build
+                | (input_filename | split("/") | .[-2]) as $dir
+                | $build
+                | .ota.path = ($dir + "/" + .ota.path)
+                | if .parts then .parts |= map(.path = ($dir + "/" + .path)) else . end
+              ]
+            }
+          ' output/*/manifest.json > output/${{ inputs.manifest_filename }}
+
+      - name: Verify manifest paths
+        run: |
+          jq -r '.builds[] | .ota.path, (.parts[]?.path)' output/${{ inputs.manifest_filename }} | while read -r path; do
+            test -f "output/$path" || { echo "Manifest references missing file: $path"; exit 1; }
+          done
 
       - run: cp -R static/* output
 
