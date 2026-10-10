@@ -75,6 +75,11 @@ jobs:
     name: Publish new firmware and website to GitHub Pages
     runs-on: ubuntu-latest
     needs: [build]
+    # Serialize gh-pages deploys: concurrent publishes race on the gh-pages
+    # push, and only the newest main state needs to win.
+    concurrency:
+      group: publish-gh-pages
+      cancel-in-progress: false
     steps:
       - uses: actions/checkout@v4.3.0
       - uses: actions/download-artifact@v5.0.0
