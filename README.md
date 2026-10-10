@@ -13,7 +13,6 @@ See specific guides for each device:
 - [Olimex ESP32-EVB](docs/esp32-evb.md)
 - [M5Stack AtomS3 Lite](docs/m5stack-atoms3.md)
 - Example ESP32 alternative (see [diagram](https://github.com/mat3u/comfoair-esp32/tree/hacomfoairmqtt-compatibility#connections-diagram))
-![](./docs/case_with_electronics.png)
 
 ## Boards
 
@@ -127,7 +126,7 @@ Secret names are local to each user's dashboard. If yours differ, keep `ota_pass
 
 ### CLI
 
-1. Copy `secrets.yaml.example` to `secrets.yaml` and fill in your Wi-Fi credentials.
+1. Copy `secrets.yaml.example` to `secrets.yaml` and fill in your Wi-Fi credentials. Generate your own `api_encryption_key` (e.g. `openssl rand -base64 32`) and set a unique `ota_password` — do not keep the example values.
 
 2. Build the image with [ESPHome](https://esphome.io/guides/getting_started_command_line.html)
 
