@@ -26,7 +26,7 @@ jobs:
           esphome_version=$(grep esphome requirements.txt | cut -d'=' -f3)
           echo "esphome_version=$esphome_version" >> "$GITHUB_OUTPUT"
       - name: Build ESPHome firmware to verify configuration
-        uses: esphome/build-action@v7.0.0
+        uses: esphome/build-action@v8.1.0
         with:
           yaml-file: ${{ matrix.file }}
           version: ${{ steps.get_esphome_version.outputs.esphome_version }}
