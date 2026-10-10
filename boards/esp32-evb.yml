@@ -1,7 +1,9 @@
 # Olimex ESP32-EVB
+# All current variants ship with ESP32-WROOM-32E/32UE modules (4MB flash).
+# Use at most your module's actual flash; override in your own config if larger.
 substitutions:
   can_tx_pin: GPIO5
   can_rx_pin: GPIO35
   board: esp32-evb
   variant: esp32
-  flash_size: 8MB
+  flash_size: 4MB
