@@ -15,6 +15,7 @@ jobs:
           - zehnder-comfoair-q-m5stack-atom.yml
           - zehnder-comfoair-q-m5stack-atoms3.yml
           - zehnder-comfoair-q-m5stack-nanoc6.yml
+          - zehnder-comfoair-q-waveshare-esp32-s3-rs485-can.yml
     steps:
       - uses: actions/checkout@v7.0.1
       - name: Mock secrets.yaml from example
@@ -32,8 +33,14 @@ jobs:
           version: ${{ steps.get_esphome_version.outputs.esphome_version }}
 
   dashboard-config:
-    name: Validating Device Builder configuration
+    name: Validating ${{ matrix.file }}
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        file:
+          - tests/dashboard_config.yml
+          - tests/dashboard_waveshare_config.yml
     steps:
       - uses: actions/checkout@v7.0.1
       - name: Install ESPHome
@@ -41,4 +48,4 @@ jobs:
           python -m venv .venv
           .venv/bin/pip install -r requirements.txt
       - name: Validate dashboard config
-        run: .venv/bin/esphome config tests/dashboard_config.yml
+        run: .venv/bin/esphome config ${{ matrix.file }}
