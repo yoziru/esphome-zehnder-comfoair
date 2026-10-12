@@ -49,3 +49,10 @@ jobs:
           .venv/bin/pip install -r requirements.txt
       - name: Validate dashboard config
         run: .venv/bin/esphome config ${{ matrix.file }}
+
+  publish-manifests:
+    name: Testing web installer manifests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - run: make test-publish

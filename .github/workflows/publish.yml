@@ -9,5 +9,6 @@ jobs:
   publish:
     uses: ./.github/workflows/publish-common.yml
     with:
-      files: zehnder-comfoair-q-m5stack-atom.yml,zehnder-comfoair-q-m5stack-atoms3.yml,zehnder-comfoair-q-m5stack-nanoc6.yml
+      files: zehnder-comfoair-q-m5stack-atom.yml,zehnder-comfoair-q-m5stack-atoms3.yml,zehnder-comfoair-q-m5stack-nanoc6.yml,zehnder-comfoair-q-waveshare-esp32-s3-rs485-can.yml
+      legacy_files: zehnder-comfoair-q-m5stack-atom.yml,zehnder-comfoair-q-m5stack-atoms3.yml,zehnder-comfoair-q-m5stack-nanoc6.yml
       name: Zehnder ComfoAir Q

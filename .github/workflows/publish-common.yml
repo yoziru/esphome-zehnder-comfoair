@@ -8,6 +8,11 @@ on:
         description: Comma-separated list of files to build.
         required: true
         type: string
+      legacy_files:
+        description: Configurations for the legacy manifest, one per chip family. Defaults to files.
+        required: false
+        type: string
+        default: ""
       name:
         description: Name of the firmware to publish.
         required: false
@@ -60,11 +65,15 @@ jobs:
           yaml-file: ${{ matrix.file }}
           version: ${{ steps.get_esphome_version.outputs.esphome_version }}
       - name: Move generated files to output
+        env:
+          CONFIG_FILE: ${{ matrix.file }}
+          BUILD_NAME: ${{ steps.esphome-build.outputs.name }}
+          PROJECT_VERSION: ${{ steps.esphome-build.outputs.project-version }}
         run: |
+          board=$(basename "$CONFIG_FILE" .yml)
           mkdir output
-          mv "${{ steps.esphome-build.outputs.name }}" output/
-          echo ${{ steps.esphome-build.outputs.version }} > output/version
-          echo ${{ steps.esphome-build.outputs.project-version }} > output/project_version
+          mv "$BUILD_NAME" "output/$board"
+          printf '%s\n' "$PROJECT_VERSION" > "output/$board/project_version"
       - uses: actions/upload-artifact@v7.0.2
         with:
           name: build-${{ matrix.file }}
@@ -87,34 +96,18 @@ jobs:
           pattern: build-*
           merge-multiple: true
           path: output
-      - name: Create single manifest.json
+      - name: Create and verify board and legacy manifests
+        env:
+          CONFIG_FILES: ${{ inputs.files }}
+          LEGACY_FILES: ${{ inputs.legacy_files }}
+          PROJECT_NAME: ${{ inputs.name }}
+          MANIFEST_FILENAME: ${{ inputs.manifest_filename }}
         run: |
-          version=$(cat output/project_version)
-          # Each build's manifest lives in its own directory and uses file paths
-          # relative to that directory. Prefix every path with the directory so
-          # the combined manifest at the site root points at existing files.
-          jq -n --arg name "${{ inputs.name }}" --arg version "$version" '
-            {
-              "name": $name,
-              "version": $version,
-              "home_assistant_domain": "esphome",
-              "new_install_skip_erase": false,
-              "builds": [
-                inputs
-                | . as $build
-                | (input_filename | split("/") | .[-2]) as $dir
-                | $build
-                | .ota.path = ($dir + "/" + .ota.path)
-                | if .parts then .parts |= map(.path = ($dir + "/" + .path)) else . end
-              ]
-            }
-          ' output/*/manifest.json > output/${{ inputs.manifest_filename }}
-
-      - name: Verify manifest paths
-        run: |
-          jq -r '.builds[] | .ota.path, (.parts[]?.path)' output/${{ inputs.manifest_filename }} | while read -r path; do
-            test -f "output/$path" || { echo "Manifest references missing file: $path"; exit 1; }
-          done
+          python3 scripts/build_manifests.py output \
+            --files "$CONFIG_FILES" \
+            --legacy-files "${LEGACY_FILES:-$CONFIG_FILES}" \
+            --name "$PROJECT_NAME" \
+            --manifest-filename "$MANIFEST_FILENAME"
 
       - run: cp -R static/* output
 
