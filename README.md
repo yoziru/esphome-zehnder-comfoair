@@ -3,6 +3,7 @@
 This project lets you use an ESP32 device with a CAN interface to interact with the Zehnder ComfoAir Q ventilation unit. Tested with:
 - [Olimex ESP32-EVB-EA-IND](docs/esp32-evb.md) using its internal CAN bus component + separate power supply
 - [M5Stack AtomS3 Lite](docs/m5stack-atoms3.md) with Mini CAN Unit (TJA1051T/3) feeding off the 12V supply of the ventilation unit
+- [Waveshare ESP32-S3-RS485-CAN](docs/waveshare-esp32-s3-rs485-can.md) with built-in isolated CAN, tested with a Q350 TR using ComfoNet power
 
 
 It exposes all known information and airflow control through the [ESPHome native API](https://esphome.io/components/api.html), and allows you to integrate the unit in Home Assistant as depicted below:
@@ -12,6 +13,7 @@ It exposes all known information and airflow control through the [ESPHome native
 See specific guides for each device:
 - [Olimex ESP32-EVB](docs/esp32-evb.md)
 - [M5Stack AtomS3 Lite](docs/m5stack-atoms3.md)
+- [Waveshare ESP32-S3-RS485-CAN](docs/waveshare-esp32-s3-rs485-can.md)
 - Example ESP32 alternative (see [diagram](https://github.com/mat3u/comfoair-esp32/tree/hacomfoairmqtt-compatibility#connections-diagram))
 
 ## Boards
@@ -24,6 +26,7 @@ Pick the config for your hardware:
 | **M5Stack Atom Lite** | `zehnder-comfoair-q-m5stack-atom.dashboard.yml` | `BOARD=m5stack-atom` |
 | **M5Stack AtomS3 Lite** | `zehnder-comfoair-q-m5stack-atoms3.dashboard.yml` | `BOARD=m5stack-atoms3` |
 | **M5Stack NanoC6** | `zehnder-comfoair-q-m5stack-nanoc6.dashboard.yml` | `BOARD=m5stack-nanoc6` |
+| **Waveshare ESP32-S3-RS485-CAN** | `zehnder-comfoair-q-waveshare-esp32-s3-rs485-can.dashboard.yml` | `BOARD=waveshare-esp32-s3-rs485-can` |
 
 
 ## Installation
@@ -60,7 +63,7 @@ packages:
 
 6. Save and **Install**. Future firmware updates are applied from this same device card with **Update**.
 
-Use `zehnder-comfoair-q-esp32-evb.dashboard.yml` for the Olimex ESP32-EVB, `zehnder-comfoair-q-m5stack-atom.dashboard.yml` for the Atom Lite, or `zehnder-comfoair-q-m5stack-nanoc6.dashboard.yml` for the NanoC6.
+Use `zehnder-comfoair-q-esp32-evb.dashboard.yml` for the Olimex ESP32-EVB, `zehnder-comfoair-q-m5stack-atom.dashboard.yml` for the Atom Lite, `zehnder-comfoair-q-m5stack-nanoc6.dashboard.yml` for the NanoC6, or `zehnder-comfoair-q-waveshare-esp32-s3-rs485-can.dashboard.yml` for the Waveshare ESP32-S3-RS485-CAN.
 
 **Wrong board?** If the upload reaches 100% but ends with `Finishing update failed`, the board file doesn't match your chip. Switch `files:` to the `.dashboard.yml` for your hardware and install again.
 

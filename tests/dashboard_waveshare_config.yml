@@ -1,0 +1,25 @@
+# Mirrors the configuration materialized by ESPHome Device Builder for an adopted device.
+substitutions:
+  # Pin remote components while validating the local dashboard package.
+  zehnder_comfoair_ref: 6d11d0d1f4e24c7ad8349b68736f89852a62a3df
+  name: zehnder-comfoair-test
+  friendly_name: Zehnder ComfoAir Test
+  ota_password: !secret test_ota_password
+
+packages:
+  zehnder_comfoair_q: !include ../zehnder-comfoair-q-waveshare-esp32-s3-rs485-can.dashboard.yml
+
+esphome:
+  name: ${name}
+  name_add_mac_suffix: false
+  friendly_name: ${friendly_name}
+
+api:
+  encryption:
+    key: !secret test_api_encryption_key
+
+wifi:
+  ssid: !secret test_wifi_ssid
+  password: !secret test_wifi_password
+  ap:
+    password: !secret test_wifi_hotspot_password

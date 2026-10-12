@@ -1,0 +1,7 @@
+# Waveshare ESP32-S3-RS485-CAN
+substitutions:
+  can_tx_pin: GPIO15
+  can_rx_pin: GPIO16
+  board: esp32-s3-devkitc-1
+  variant: esp32s3
+  flash_size: 16MB
