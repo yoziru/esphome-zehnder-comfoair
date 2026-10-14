@@ -9,6 +9,10 @@ It exposes all known information and airflow control through the [ESPHome native
 ![Home Assistant screenshot](./docs/ha_screen.png)
 
 ## Hardware
+
+Four 0-10 V input readings are available through the
+[optional analog-input package](docs/ANALOG-INPUTS.md).
+
 See specific guides for each device:
 - [Olimex ESP32-EVB](docs/esp32-evb.md)
 - [M5Stack AtomS3 Lite](docs/m5stack-atoms3.md)
