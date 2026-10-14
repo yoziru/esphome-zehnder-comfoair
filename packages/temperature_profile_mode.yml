@@ -1,0 +1,13 @@
+# Independent of the Normal/Cool/Warm temperature-profile timer.
+select:
+  - platform: template
+    id: temperature_profile_mode_requested
+    name: "Requested Temperature Profile Mode"
+    entity_category: config
+    options: [Adaptive, Fixed]
+    initial_option: Adaptive
+    optimistic: true
+    restore_value: false
+    set_action:
+      - lambda: |-
+          id(comfoair)->send_command_set_property(0x1d, 0x01, 0x08, x == "Fixed" ? 1 : 0);
