@@ -35,8 +35,12 @@ canbus:
                   comfoair_on_frame_case( 65, id(comfoair), fan_level_raw,                     true);
                   comfoair_on_frame_case( 66, id(comfoair), bypass_activation_mode,            true);
                   comfoair_on_frame_case( 67, id(comfoair), temperature_profile,                true);
-                  comfoair_on_frame_case( 81, id(comfoair), next_fan_change_in_raw,           false);
-                  comfoair_on_frame_case( 82, id(comfoair), next_bypass_change_in_raw,        false);
+                  case 81:
+                      id(comfoair)->publish_duration_state(id(next_fan_change_in_raw), id(next_fan_change_in), x);
+                      break;
+                  case 82:
+                      id(comfoair)->publish_duration_state(id(next_bypass_change_in_raw), id(next_bypass_change_in), x);
+                      break;
                   comfoair_on_frame_case(117, id(comfoair), exhaust_fan_duty,                 false);
                   comfoair_on_frame_case(118, id(comfoair), supply_fan_duty,                  false);
                   comfoair_on_frame_case(119, id(comfoair), exhaust_fan_flow,                  true);

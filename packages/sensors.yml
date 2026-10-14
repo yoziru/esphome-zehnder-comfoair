@@ -55,9 +55,6 @@ sensor:
     internal: true
     filters:
       - throttle: 0.5s
-    on_value:
-      then:
-        - lambda: id(next_fan_change_in).publish_state(id(comfoair)->seconds_to_human_readable(x));
 
   - platform: template
     id: next_bypass_change_in_raw # PDO 82
@@ -68,9 +65,6 @@ sensor:
     internal: true
     filters:
       - throttle: 0.5s
-    on_value:
-      then:
-        - lambda: id(next_bypass_change_in).publish_state(id(comfoair)->seconds_to_human_readable(x));
 
   - platform: template
     id: exhaust_fan_duty # PDO 117
