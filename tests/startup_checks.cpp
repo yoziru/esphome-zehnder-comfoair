@@ -50,10 +50,20 @@ for (const auto &entry : std::vector<std::pair<uint16_t, sensor::Sensor *>>{
 }
 bus.receive(276, std::vector<uint8_t>{0x85, 0xff}); // -123 tenths C
 check(std::abs(id(outdoor_air_temp).state + 12.3f) < 0.001f, "INT16 PDO preserves negative temperature");
-for (const auto &payload : std::vector<std::vector<uint8_t>>{{}, {1, 2, 3}, {1, 2, 3, 4, 5}}) {
+for (const auto &payload : std::vector<std::vector<uint8_t>>{{}, {1}, {1, 2, 3}, {1, 2, 3, 4}, {1, 2, 3, 4, 5}}) {
   bus.receive(129, payload);
-  check(id(energy_ytd).raw_state == 40000, "unsupported PDO widths do not publish invented state");
+  check(id(energy_ytd).raw_state == 40000, "wrong PDO widths do not publish invented state");
 }
+bus.receive(212, std::vector<uint8_t>{233, 0});
+check(std::abs(id(profile_target_temp).state - 23.3f) < 0.001f, "two-byte target temperature");
+bus.receive(212, std::vector<uint8_t>{1});
+check(std::abs(id(profile_target_temp).state - 23.3f) < 0.001f, "short target cannot replace valid state");
+id(comfoair).publish_pdo_state(id(energy_ytd), std::vector<uint8_t>{1, 0}, 305);
+check(id(energy_ytd).raw_state == 40000, "unknown PDO cannot infer a type from payload width");
+bus.receive(210, 1);
+bus.receive(210, 2);
+check(id(heating_season_raw).state == 1 && id(heating_season).state, "invalid BOOL preserves prior state");
+bus.receive(210, 0);
 check(bus.sent.empty(), "numeric PDO decoding never sends control commands");
 
 bus.receive(81, std::vector<uint8_t>{0x00, 0x00, 0x00, 0x80});

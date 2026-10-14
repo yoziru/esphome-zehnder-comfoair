@@ -1,5 +1,18 @@
 # Host C++ regression tests
 
+Standalone checks use the production PDO decoder headers with a C++17 compiler:
+
+```sh
+python scripts/generate_pdo_map.py --check
+python -m unittest discover -s tests -p 'test_pdo_mapping.py'
+python tests/test_pdo_decode.py
+```
+
+Run `python scripts/sync_pdo_reference.py --check` to audit the pinned upstream
+reference with network access. On Windows, the standalone tests also work from
+a Visual Studio developer shell. The actual ESPHome host tests below are not
+replaced by these checks.
+
 Protocol framing, sequence rollover and RTR scheduling are also covered. See
 `test-audit.md` for the contract inventory. Run `ESPHOME_TEST_SANITIZE=1 make test`
 for ASan/UBSan; the existing CI test job runs normal and sanitized configurations.
