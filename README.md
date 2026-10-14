@@ -9,6 +9,10 @@ It exposes all known information and airflow control through the [ESPHome native
 ![Home Assistant screenshot](./docs/ha_screen.png)
 
 ## Hardware
+
+See [PDO type mapping](docs/PDO-MAPPING.md) for the pinned protocol inventory,
+strict decoding, type disagreements, current handler API, and regression checks.
+
 See specific guides for each device:
 - [Olimex ESP32-EVB](docs/esp32-evb.md)
 - [M5Stack AtomS3 Lite](docs/m5stack-atoms3.md)
