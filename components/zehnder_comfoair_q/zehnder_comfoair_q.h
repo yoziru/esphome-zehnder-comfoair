@@ -143,27 +143,39 @@ namespace zehnder_comfoair_q
             return can_id >> 14;
         }
 
-        static std::string seconds_to_human_readable(int seconds)
+        static void publish_duration_state(sensor::Sensor *raw, text_sensor::TextSensor *formatted,
+                                           const std::vector<uint8_t> &message)
         {
-            if (seconds < 0)
+            if (message.size() != 4)
+                return;
+            uint32_t seconds = 0;
+            for (size_t i = 0; i < 4; i++)
+                seconds |= uint32_t(message[i]) << (8 * i);
+            raw->publish_state(seconds);
+            formatted->publish_state(seconds_to_human_readable(seconds));
+        }
+
+        static std::string seconds_to_human_readable(int64_t seconds)
+        {
+            if (seconds < 0 || seconds == 0xffffffffLL)
                 return "n/a";
 
             std::string output;
             if (output.length() > 0 || seconds >= 86400)
             {
-                int days = seconds / 86400;
+                auto days = seconds / 86400;
                 output += to_string(days) + "d";
                 seconds -= days * 86400;
             }
             if (output.length() > 0 || seconds >= 3600)
             {
-                int hours = seconds / 3600;
+                auto hours = seconds / 3600;
                 output += to_string(hours) + "h";
                 seconds -= hours * 3600;
             }
             if (output.length() > 0 || seconds >= 60)
             {
-                int minutes = seconds / 60;
+                auto minutes = seconds / 60;
                 output += to_string(minutes) + "m";
                 seconds -= minutes * 60;
             }

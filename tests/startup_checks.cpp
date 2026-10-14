@@ -56,6 +56,16 @@ for (const auto &payload : std::vector<std::vector<uint8_t>>{{}, {1, 2, 3}, {1, 
 }
 check(bus.sent.empty(), "numeric PDO decoding never sends control commands");
 
+bus.receive(81, std::vector<uint8_t>{0x00, 0x00, 0x00, 0x80});
+check(id(next_fan_change_in).state == "24855d3h14m8s", "UINT32 duration above INT32_MAX is not a no-change sentinel");
+bus.receive(82, std::vector<uint8_t>{0xfe, 0xff, 0xff, 0xff});
+check(id(next_bypass_change_in).state == "49710d6h28m14s", "UINT32 duration adjacent to sentinel remains exact");
+bus.receive(81, std::vector<uint8_t>{0xff, 0xff, 0xff, 0xff});
+check(id(next_fan_change_in).state == "n/a", "all-ones duration sentinel means no scheduled change");
+bus.receive(82, std::vector<uint8_t>{1, 2, 3});
+check(id(next_bypass_change_in).state == "49710d6h28m14s", "malformed duration does not replace real state");
+check(bus.sent.empty(), "duration PDO feedback is read-only");
+
 // The reporter's polling workaround: no lambda means update is a no-op.
 id(temperature_profile).update();
 check(!id(temperature_profile).has_state(), "polling must not invent a temperature profile");
