@@ -3,6 +3,8 @@ switch:
     name: "Auto Ventilation"
     id: auto_ventilation
     icon: mdi:toggle-switch
+    # The unit owns this state; restoring OFF would send a manual-mode command.
+    restore_mode: DISABLED
     turn_on_action:
       # if boost is on, turn it off first
       - if:
@@ -49,6 +51,7 @@ switch:
     name: "Away Mode"
     id: away_mode
     icon: mdi:airplane
+    restore_mode: DISABLED
     turn_on_action:
       - lambda: id(comfoair)->set_away(true);
       - delay: 1s

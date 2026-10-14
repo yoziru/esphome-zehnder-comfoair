@@ -1,0 +1,79 @@
+// Compiled as an on_boot lambda inside the real generated ESPHome firmware.
+using esphome::test_canbus::check;
+auto &bus = *id(test_bus);
+check(bus.sent.empty(), "setup must not write ventilation settings");
+bus.sent.clear();
+
+// The reporter's polling workaround: no lambda means update is a no-op.
+id(temperature_profile).update();
+check(!id(temperature_profile).has_state(), "polling must not invent a temperature profile");
+check(bus.sent.empty(), "polling must not send profile commands");
+
+bus.receive(67, 2);
+check(id(temperature_profile).state == "Warm", "profile PDO updates the sensor");
+check(id(temperature_profile_select).current_option() == "Warm", "profile PDO updates the select");
+check(bus.sent.empty(), "profile feedback must not write to CAN");
+id(temperature_profile).update();
+check(id(temperature_profile).state == "Warm" && bus.sent.empty(),
+      "polling after a PDO must preserve the device's profile");
+
+bus.receive(65, 1);
+check(id(comfoair_fan).state && id(comfoair_fan).speed == 1 && bus.sent.empty(),
+      "first nonzero fan PDO before any mode PDO must update without sending commands");
+
+// Exercise both PDO orders and all fan levels, including ON/OFF transitions.
+for (bool mode_first : {false, true}) {
+  for (uint8_t level : {uint8_t(0), uint8_t(1), uint8_t(3), uint8_t(2), uint8_t(0)}) {
+    bus.sent.clear();
+    if (mode_first)
+      bus.receive(49, 1);  // Manual (limited)
+    bus.receive(65, level);
+    if (!mode_first)
+      bus.receive(49, 1);
+    check(id(comfoair_fan).state == (level != 0), "fan PDO updates ON/OFF state");
+    if (level != 0)
+      check(id(comfoair_fan).speed == level, "fan PDO updates speed");
+    check(bus.sent.empty(), "fan/mode feedback must not change the unit's mode or level");
+  }
+}
+
+// Feedback suppression must not suppress genuine user controls.
+bus.sent.clear();
+auto profile_call = id(temperature_profile_select).make_call();
+profile_call.set_option("Cool");
+profile_call.perform();
+check(bus.sent.size() == 2 && bus.sent[0].data[1] == 0x84 &&
+      bus.sent[0].data[3] == 0x03 && bus.sent[1].data[6] == 1,
+      "user profile selection sends the Cool timer command");
+
+bus.sent.clear();
+auto level_call = id(fan_level_select).make_call();
+level_call.set_option("High");
+level_call.perform();
+check(bus.sent.size() == 2 && bus.sent[0].data[3] == 0x01 &&
+      bus.sent[1].data[6] == 3, "user fan selection sends the High timer command");
+
+bus.sent.clear();
+id(auto_ventilation).turn_off();
+check(bus.sent.size() == 2 && bus.sent[0].data[3] == 0x08,
+      "user manual-mode switch still sends a command");
+bus.sent.clear();
+id(away_mode).turn_on();
+check(bus.sent.size() == 2 && bus.sent[0].data[4] == 0x0b,
+      "user Away switch still sends a command");
+
+bus.receive(49, 255);  // Auto: no delayed manual-limited workaround in this case.
+bus.sent.clear();
+auto fan_call = id(comfoair_fan).turn_on();
+fan_call.set_speed(1);
+fan_call.perform();
+check(bus.sent.size() == 3 && bus.sent[0].data[0] == 0x85 &&
+      bus.sent[0].data[2] == 0x08 && bus.sent[2].data[6] == 1,
+      "user fan ON/Low still sends Auto and Low commands");
+bus.receive(65, 1);
+bus.sent.clear();
+id(comfoair_fan).turn_off().perform();
+check(bus.sent.size() == 2 && bus.sent[1].data[6] == 0,
+      "user fan OFF still sends Away level");
+
+bus.sent.clear();
