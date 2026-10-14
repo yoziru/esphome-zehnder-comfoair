@@ -93,12 +93,14 @@ namespace zehnder_comfoair_q
         {
             std::vector<uint8_t> message_buffer;
             int message_counter = 0;
-            for (auto command_pos = command.begin(); command_pos < command.end(); command_pos += 7)
+            for (size_t offset = 0; offset < command.size(); offset += 7)
             {
-                auto is_last_message = command.end() - command_pos <= 7;
+                auto length = std::min(size_t(7), command.size() - offset);
+                auto command_pos = command.begin() + offset;
+                auto is_last_message = offset + length == command.size();
                 message_buffer.clear();
                 message_buffer.push_back(message_counter | (is_last_message ? 0x80 : 0));
-                message_buffer.insert(message_buffer.end(), command_pos, std::min(command_pos + 7, command.end()));
+                message_buffer.insert(message_buffer.end(), command_pos, command_pos + length);
                 send_can_message_(can_id, false, message_buffer);
 
                 message_counter++;
