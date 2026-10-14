@@ -28,6 +28,26 @@ def run(climate):
                 "feedback must not leave delayed outbound commands");
         '''},
     ]
+    for mode, offset in [(1, 2), (6, 1)]:
+        actions.extend([
+            {"lambda": f'''
+                id(test_bus).receive(49, {mode});
+                id(test_bus).sent.clear();
+                id(auto_ventilation).turn_on();
+            '''},
+            {"delay": "2500ms"},
+            {"lambda": f'''
+                const auto &sent = id(test_bus).sent;
+                esphome::test_canbus::check(sent.size() >= {offset + 2} &&
+                    sent[{offset}].can_data_length_code == 4 && sent[{offset}].data[0] == 0x85 &&
+                    sent[{offset}].data[2] == 0x08 && sent[{offset}].data[3] == 0x01 &&
+                    sent[{offset + 1}].can_data_length_code == 4 && sent[{offset + 1}].data[0] == 0x85 &&
+                    sent[{offset + 1}].data[2] == 0x01 && sent[{offset + 1}].data[3] == 0x01,
+                    "Auto after delayed mode {mode} cancels both timers in order");
+                id(test_bus).receive(49, 255);
+                id(test_bus).sent.clear();
+            '''},
+        ])
     if climate:
         # Let the real thermostat's minimum run/off timers expire between actions.
         cases = [

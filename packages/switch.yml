@@ -29,6 +29,8 @@ switch:
             - lambda: id(comfoair)->set_manual_mode(true);
             - delay: 1s
       - lambda: id(comfoair)->set_manual_mode(false);
+      # Returning to the schedule also requires cancelling a selected fan level.
+      - lambda: id(comfoair)->send_command_set_timer(false, 0x01, 0x01);
       - delay: 1s
       # edge case: if after turning on boost, a custom fan level is set, the operating mode will be 'Manual (limited)'
       # if you try ot enable Auto Ventilation, it will switch to 'Manual (permanent)' first, then turn on boost mode again
