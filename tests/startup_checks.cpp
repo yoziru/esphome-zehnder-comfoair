@@ -4,6 +4,19 @@ auto &bus = *id(test_bus);
 check(bus.sent.empty(), "setup must not write ventilation settings");
 bus.sent.clear();
 
+for (const auto &entry : std::vector<std::pair<uint16_t, sensor::Sensor *>>{
+         {369, id(analog_input_1)}, {370, id(analog_input_2)}, {371, id(analog_input_3)}, {372, id(analog_input_4)}}) {
+  bus.receive(entry.first, 75);
+  check(std::abs(entry.second->state - 7.5f) < 0.001f, "analog UINT8 value scales to volts once");
+  bus.receive(entry.first, std::vector<uint8_t>{1, 0});
+  check(std::abs(entry.second->state - 7.5f) < 0.001f, "analog input rejects wrong widths");
+  bus.receive(entry.first, std::vector<uint8_t>{});
+  check(std::abs(entry.second->state - 7.5f) < 0.001f, "empty analog frame preserves prior reading");
+  bus.receive(entry.first, 0);
+  check(entry.second->state == 0, "zero is a legitimate device reading");
+}
+check(bus.sent.empty(), "analog telemetry never writes ventilation settings");
+
 // Literal payloads reconstruct through the actual component's public CAN boundary.
 uint32_t previous_sequence = 0;
 for (size_t length : {8u, 9u, 14u, 15u, 4u}) {
