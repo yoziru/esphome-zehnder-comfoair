@@ -18,6 +18,7 @@ def run(climate):
     if climate:
         packages.append("climate")
     packages.append("modulated_fan_speed")
+    packages.append("airflow_constraints")
     bus = yaml.safe_load((ROOT / "packages/canbus.yml").read_text())["canbus"][0]
     bus.update(platform="test_canbus", id="test_bus")
     del bus["tx_pin"], bus["rx_pin"]
@@ -156,7 +157,7 @@ def run(climate):
     path.write_text(yaml.safe_dump(config, sort_keys=False) + includes)
     merged = read_config({})
     assert merged is not None
-    assert sorted(int(pdo) for pdo in merged["zehnder_comfoair_q"]["request_ids"]) == [65, 67, 226]
+    assert sorted(int(pdo) for pdo in merged["zehnder_comfoair_q"]["request_ids"]) == [65, 67, 226, 230]
     assert len(merged["canbus"]) == 1
     subprocess.run([sys.executable, "-m", "esphome", "compile", str(path)], check=True)
     # Fresh preferences per run; do not inherit the workstation's host state.
