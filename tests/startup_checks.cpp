@@ -14,6 +14,7 @@ for (size_t length : {8u, 9u, 14u, 15u, 4u}) {
   id(comfoair).send_command(payload);
   const bool fragmented = length > 8;
   check(bus.sent.size() == (fragmented ? (length + 6) / 7 : 1), "command frame count respects 8/7 byte boundaries");
+  if (bus.sent.empty()) continue; // Report the missing frames rather than dereferencing front().
   std::vector<uint8_t> reconstructed;
   for (size_t i = 0; i < bus.sent.size(); i++) {
     const auto &frame = bus.sent[i];
