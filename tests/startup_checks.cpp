@@ -89,6 +89,36 @@ bus.receive(230, std::vector<uint8_t>{1});
 check(id(airflow_constraints).state == "0x8000200000000000: Unknown(bit 63)" && bus.sent.empty(),
       "malformed constraints preserve state and feedback sends no commands");
 
+for (const auto &entry : std::vector<std::pair<float, std::vector<uint8_t>>>{
+         {300, {0x03, 0x1c, 0x01, 0x03, 0x2c, 0x01}},
+         {0, {0x03, 0x1c, 0x01, 0x03, 0, 0}},
+         {65535, {0x03, 0x1c, 0x01, 0x03, 0xff, 0xff}}}) {
+  bus.sent.clear();
+  auto call = id(filter_lifetime_requested).make_call();
+  call.set_value(entry.first);
+  call.perform();
+  check(bus.sent.size() == 1 &&
+        std::vector<uint8_t>(bus.sent[0].data, bus.sent[0].data + bus.sent[0].can_data_length_code) == entry.second &&
+        id(filter_lifetime_requested).state == entry.first,
+        "explicit filter lifetime uses exact little-endian UINT16 property bytes");
+}
+for (float invalid : {-1.0f, 300.5f, 65536.0f, NAN, INFINITY}) {
+  bus.sent.clear();
+  auto call = id(filter_lifetime_requested).make_call();
+  call.set_value(invalid);
+  call.perform();
+  check(bus.sent.empty() && id(filter_lifetime_requested).state == 65535,
+        "invalid lifetime does not send a command or replace requested state");
+  check(!id(comfoair).set_filter_lifetime(invalid) && bus.sent.empty(),
+        "direct lifetime API also validates values at its boundary");
+}
+id(comfoair).set_temperature_passive(zehnder_comfoair_q::OAO_ON);
+check(bus.sent.size() == 1 &&
+      std::vector<uint8_t>(bus.sent[0].data, bus.sent[0].data + bus.sent[0].can_data_length_code) ==
+          std::vector<uint8_t>({0x03, 0x1d, 0x01, 0x04, 0x02}),
+      "existing UINT8 property writes remain unchanged");
+bus.sent.clear();
+
 // The reporter's polling workaround: no lambda means update is a no-op.
 id(temperature_profile).update();
 check(!id(temperature_profile).has_state(), "polling must not invent a temperature profile");

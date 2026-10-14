@@ -1,0 +1,18 @@
+# A requested value, not confirmed readback. No setting is applied at boot.
+number:
+  - platform: template
+    id: filter_lifetime_requested
+    name: "Requested Filter Lifetime"
+    entity_category: config
+    unit_of_measurement: d
+    min_value: 0
+    max_value: 65535
+    step: 1
+    initial_value: 150
+    restore_value: false
+    optimistic: false
+    update_interval: never
+    set_action:
+      - lambda: |-
+          if (id(comfoair)->set_filter_lifetime(x))
+            id(filter_lifetime_requested).publish_state(x);

@@ -2,6 +2,7 @@
 
 #include <esphome.h>
 #include "airflow_constraints.h"
+#include <cmath>
 
 using namespace esphome; // needed for ESP_LOGx to work
 using namespace esphome::canbus;
@@ -99,6 +100,17 @@ namespace zehnder_comfoair_q
         void send_command_set_timer(bool enable, uint8_t subunit_id, uint8_t property_id, uint8_t property_value = 0x00,
                                     uint32_t duration_secs = 1 /* seems to be the constant for timers with pre-defined durations */);
         void send_command_set_property(uint8_t unit_id, uint8_t subunit_id, uint8_t property_id, uint8_t property_value);
+        void send_command_set_property_uint16(uint8_t unit_id, uint8_t subunit_id, uint8_t property_id, uint16_t value)
+        {
+            send_command({0x03, unit_id, subunit_id, property_id, uint8_t(value), uint8_t(value >> 8)});
+        }
+        bool set_filter_lifetime(float days)
+        {
+            if (!std::isfinite(days) || days < 0 || days > 65535 || std::floor(days) != days)
+                return false;
+            send_command_set_property_uint16(0x1c, 0x01, 0x03, uint16_t(days));
+            return true; // Valid request sent, not a device acknowledgement.
+        }
         void send_command(const std::vector<uint8_t> &command);
 
         // keep template functions in here to make sure they get implemented for all required types by being used from lambdas inside yaml

@@ -19,6 +19,7 @@ def run(climate):
         packages.append("climate")
     packages.append("modulated_fan_speed")
     packages.append("airflow_constraints")
+    packages.append("filter_lifetime")
     bus = yaml.safe_load((ROOT / "packages/canbus.yml").read_text())["canbus"][0]
     bus.update(platform="test_canbus", id="test_bus")
     del bus["tx_pin"], bus["rx_pin"]
