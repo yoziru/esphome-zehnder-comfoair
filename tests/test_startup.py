@@ -117,6 +117,11 @@ def run(climate):
         config["esphome"]["platformio_options"] = {
             "build_flags": ["-fsanitize=address,undefined", "-fno-omit-frame-pointer"]
         }
+    if os.environ.get("ESPHOME_TEST_BOUNDS") == "1":
+        flags = (["-D_LIBCPP_ABI_BOUNDED_ITERATORS_IN_VECTOR=1",
+                  "-D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_DEBUG"]
+                 if sys.platform == "darwin" else ["-D_GLIBCXX_DEBUG"])
+        config["esphome"].setdefault("platformio_options", {}).setdefault("build_flags", []).extend(flags)
     BUILD.mkdir(parents=True, exist_ok=True)
     path = BUILD / f"{name}.yaml"
     includes = "packages:\n" + "".join(

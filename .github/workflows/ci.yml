@@ -14,6 +14,8 @@ jobs:
         run: make test
       - name: Run host tests with ASan and UBSan
         run: ESPHOME_TEST_SANITIZE=1 make test
+      - name: Check iterator bounds
+        run: ESPHOME_TEST_BOUNDS=1 make test
 
   ci:
     name: Building ${{ matrix.file }}
