@@ -19,3 +19,8 @@ Retain the existing cases. Repeated fan cases vary actual level/transition/order
 Remaining risks belong in their fix/feature PRs: unsigned PDO bindings, safe byte reads, full 64-bit constraints, typed property writes and Auto override cancellation. Regression cases must fail before their fix for the intended observable reason. Do not land known product failures in this test-only branch.
 
 Run `make test`. Set `ESPHOME_TEST_SANITIZE=1 make test` to build/run the real host code under ASan/UBSan. This checks executed paths, not every iterator precondition or strict-aliasing rule. Remote CI and physical ventilation-unit behavior are not claimed by a local pass.
+
+The manual request-cycle fixture uses `request_interval: never`. ESPHome's periodic
+scheduler intentionally runs its first update after a randomized small offset even
+for a one-hour interval; leaving that enabled races the explicitly triggered cycles.
+This disables fixture noise, not production scheduling or the real delayed callbacks.

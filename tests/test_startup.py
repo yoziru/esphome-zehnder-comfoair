@@ -111,7 +111,7 @@ def run(climate):
             {"source": {"type": "local", "path": str(ROOT / "tests/components")}},
         ],
         "canbus": [bus],
-        "zehnder_comfoair_q": {"id": "comfoair", "canbus_id": "test_bus", "request_ids": [65, 67]},
+        "zehnder_comfoair_q": {"id": "comfoair", "canbus_id": "test_bus", "request_ids": [65, 67], "request_interval": "never"},
     }
     if os.environ.get("ESPHOME_TEST_SANITIZE") == "1":
         config["esphome"]["platformio_options"] = {
