@@ -1,0 +1,24 @@
+substitutions:
+  comfoair_canbus_id: comfoair_canbus
+
+zehnder_comfoair_q:
+  request_ids: [230]
+
+text_sensor:
+  - platform: template
+    id: airflow_constraints
+    name: "Airflow Constraints"
+    entity_category: diagnostic
+    update_interval: never
+
+canbus:
+  - id: !extend ${comfoair_canbus_id}
+    on_frame:
+      - can_id: 0x398040 # PDO 230
+        can_id_mask: 0x1fffffc0
+        use_extended_id: true
+        remote_transmission_request: false
+        then:
+          - lambda: |-
+              if (x.size() == 8)
+                id(airflow_constraints).publish_state(zehnder_comfoair_q::airflow_constraints_to_string(x));

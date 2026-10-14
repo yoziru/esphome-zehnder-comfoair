@@ -1,0 +1,10 @@
+external_components:
+  - source:
+      type: local
+      path: ../../components
+    components: [zehnder_comfoair_q]
+
+packages:
+  base: !include ../../packages/base.yml
+  board: !include ../../boards/m5stack-atoms3.yml
+  diagnostic: !include ../../packages/airflow_constraints.yml

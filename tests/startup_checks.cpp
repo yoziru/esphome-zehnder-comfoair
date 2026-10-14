@@ -75,6 +75,20 @@ bus.receive(226, std::vector<uint8_t>{1});
 check(id(modulated_fan_speed).state == 65535 && bus.sent.empty(),
       "malformed modulated speed cannot change state or send commands");
 
+for (const auto &entry : std::vector<std::pair<std::vector<uint8_t>, std::string>>{
+         {{0, 0, 0, 0, 0, 0, 0, 0}, "0x0000000000000000: unavailable"},
+         {{0, 0, 0, 0, 0, 0x20, 0, 0}, "0x0000200000000000: None"},
+         {{0, 2, 0, 0, 0, 0x20, 0, 0}, "0x0000200000000200: FrostProtection"},
+         {{0xa0, 0, 0, 0, 0, 0x20, 0x40, 0}, "0x00402000000000a0: NoiseGuard, CO2ZoneX8"},
+         {{0, 0, 0, 0, 0, 0x20, 0, 0x80}, "0x8000200000000000: Unknown(bit 63)"}}) {
+  bus.receive(230, entry.first);
+  check(id(airflow_constraints).state == entry.second,
+        "constraints retain all bits and interpret validity, grouped reasons and high/unknown bits");
+}
+bus.receive(230, std::vector<uint8_t>{1});
+check(id(airflow_constraints).state == "0x8000200000000000: Unknown(bit 63)" && bus.sent.empty(),
+      "malformed constraints preserve state and feedback sends no commands");
+
 // The reporter's polling workaround: no lambda means update is a no-op.
 id(temperature_profile).update();
 check(!id(temperature_profile).has_state(), "polling must not invent a temperature profile");

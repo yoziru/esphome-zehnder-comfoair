@@ -1,6 +1,7 @@
 #pragma once
 
 #include <esphome.h>
+#include "airflow_constraints.h"
 
 using namespace esphome; // needed for ESP_LOGx to work
 using namespace esphome::canbus;
