@@ -5,8 +5,14 @@ fan:
     icon: mdi:air-filter
     output: comfoair_fan_output
     speed_count: 3
+    restore_mode: NO_RESTORE
     on_turn_on:
-      - switch.turn_on: auto_ventilation
+      # PDO feedback uses fan.turn_on too; do not echo it back as an Auto command.
+      - if:
+          condition:
+            lambda: return !id(fan_level_raw).has_state() || int(id(fan_level_raw).state) != id(comfoair_fan).speed;
+          then:
+            - switch.turn_on: auto_ventilation
     on_turn_off:
       - select.set:
           id: fan_level_select
@@ -17,7 +23,7 @@ fan:
             and:
               - fan.is_on: comfoair_fan
               - not:
-                  lambda: return int(id(fan_level_raw).state) == id(comfoair_fan).speed;
+                  lambda: return id(fan_level_raw).has_state() && int(id(fan_level_raw).state) == id(comfoair_fan).speed;
           then:
             - select.set:
                 id: fan_level_select

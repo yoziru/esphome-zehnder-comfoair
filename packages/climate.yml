@@ -33,9 +33,14 @@ climate:
           id: temperature_profile_select
           option: "Warm"
     idle_action:
-      - select.set:
-          id: temperature_profile_select
-          option: "Normal"
+      # The thermostat fires idle_action at boot, before the first profile PDO.
+      - if:
+          condition:
+            lambda: return id(temperature_profile).has_state();
+          then:
+            - select.set:
+                id: temperature_profile_select
+                option: "Normal"
     cool_action:
       - select.set:
           id: temperature_profile_select

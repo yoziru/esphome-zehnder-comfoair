@@ -4,6 +4,15 @@ on:
   pull_request:
 
 jobs:
+  tests:
+    name: Host C++ startup and feedback tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
+      - name: Run tests
+        run: make test
+
   ci:
     name: Building ${{ matrix.file }}
     runs-on: ubuntu-latest
