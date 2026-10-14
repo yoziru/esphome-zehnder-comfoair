@@ -12,6 +12,7 @@ namespace esphome::test_canbus {
 class TestCanbus : public canbus::Canbus {
  public:
   std::vector<canbus::CanFrame> sent;
+  std::vector<canbus::CanFrame> requests;
 
   void receive(uint16_t pdo, uint8_t value) { receive(pdo, std::vector<uint8_t>{value}); }
 
@@ -30,6 +31,8 @@ class TestCanbus : public canbus::Canbus {
   canbus::Error send_message(canbus::CanFrame *frame) override {
     if (!frame->remote_transmission_request)
       sent.push_back(*frame);
+    else
+      requests.push_back(*frame);
     return canbus::ERROR_OK;
   }
   canbus::Error read_message(canbus::CanFrame *frame) override {

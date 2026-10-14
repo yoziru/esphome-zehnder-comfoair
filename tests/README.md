@@ -1,5 +1,9 @@
 # Host C++ regression tests
 
+Protocol framing, sequence rollover and RTR scheduling are also covered. See
+`test-audit.md` for the contract inventory. Run `ESPHOME_TEST_SANITIZE=1 make test`
+for ASan/UBSan; the existing CI test job runs normal and sanitized configurations.
+
 Run `make test` with uv and a C++ compiler installed. ESPHome is pinned by
 `requirements.txt`; PlatformIO's native target builds and runs the actual C++
 component, ESPHome entities, and production YAML automations. No ESP32 or unit

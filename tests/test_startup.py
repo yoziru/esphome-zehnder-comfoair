@@ -57,6 +57,39 @@ def run(climate):
                         "thermostat after synchronization: {contract}");
                 '''},
             ])
+    actions.extend([
+        {"lambda": '''
+            auto &bus = *id(test_bus);
+            bus.requests.clear();
+            id(comfoair).set_request_ids({65, 67});
+            id(comfoair).update();
+            id(comfoair).update();
+            esphome::test_canbus::check(bus.requests.size() == 1,
+                "an update must not interleave a second request cycle");
+        '''},
+        {"delay": "300ms"},
+        {"lambda": '''
+            auto &requests = id(test_bus).requests;
+            esphome::test_canbus::check(requests.size() == 2 &&
+                requests[0].can_id == ((65u << 14) | 0x6a) &&
+                requests[1].can_id == ((67u << 14) | 0x6a) &&
+                requests[0].use_extended_id && requests[1].use_extended_id &&
+                requests[0].remote_transmission_request && requests[1].remote_transmission_request,
+                "delayed PDO cycle preserves order and sends extended RTR frames");
+            id(comfoair).set_request_ids({});
+            id(comfoair).update();
+            esphome::test_canbus::check(requests.size() == 2, "empty request list sends nothing");
+            id(comfoair).set_request_ids({65, 67});
+            id(comfoair).update();
+        '''},
+        {"delay": "300ms"},
+        {"lambda": '''
+            const auto &requests = id(test_bus).requests;
+            esphome::test_canbus::check(requests.size() == 4 &&
+                requests[2].can_id == requests[0].can_id && requests[3].can_id == requests[1].can_id,
+                "completed request cycle can start again");
+        '''},
+    ])
     actions.append({
         "lambda": '''
             esphome::test_canbus::check(global_preferences->sync(),
@@ -78,8 +111,12 @@ def run(climate):
             {"source": {"type": "local", "path": str(ROOT / "tests/components")}},
         ],
         "canbus": [bus],
-        "zehnder_comfoair_q": {"id": "comfoair", "canbus_id": "test_bus", "request_ids": [65, 67]},
+        "zehnder_comfoair_q": {"id": "comfoair", "canbus_id": "test_bus", "request_ids": [65, 67], "request_interval": "never"},
     }
+    if os.environ.get("ESPHOME_TEST_SANITIZE") == "1":
+        config["esphome"]["platformio_options"] = {
+            "build_flags": ["-fsanitize=address,undefined", "-fno-omit-frame-pointer"]
+        }
     BUILD.mkdir(parents=True, exist_ok=True)
     path = BUILD / f"{name}.yaml"
     includes = "packages:\n" + "".join(
