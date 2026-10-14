@@ -1,0 +1,26 @@
+# Independently opt-in; the base package does not include this diagnostic.
+substitutions:
+  comfoair_canbus_id: comfoair_canbus
+
+zehnder_comfoair_q:
+  request_ids: [226]
+
+sensor:
+  - platform: template
+    id: modulated_fan_speed
+    name: "Modulated Fan Speed"
+    entity_category: diagnostic
+    update_interval: never
+    accuracy_decimals: 0
+
+canbus:
+  - id: !extend ${comfoair_canbus_id}
+    on_frame:
+      - can_id: 0x388040 # PDO 226
+        can_id_mask: 0x1fffffc0
+        use_extended_id: true
+        remote_transmission_request: false
+        then:
+          - lambda: |-
+              if (x.size() == 2)
+                id(comfoair)->publish_state(id(modulated_fan_speed), x, true);

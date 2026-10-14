@@ -17,6 +17,7 @@ def run(climate):
     packages = ["binary_sensors", "sensors", "text_sensors", "select", "switch", "fan"]
     if climate:
         packages.append("climate")
+    packages.append("modulated_fan_speed")
     bus = yaml.safe_load((ROOT / "packages/canbus.yml").read_text())["canbus"][0]
     bus.update(platform="test_canbus", id="test_bus")
     del bus["tx_pin"], bus["rx_pin"]
@@ -118,7 +119,7 @@ def run(climate):
         '''
     })
     config = {
-        "substitutions": {"filter_time": "1s", "filter_send_every": "1", "filter_window_size": "1"},
+        "substitutions": {"filter_time": "1s", "filter_send_every": "1", "filter_window_size": "1", "comfoair_canbus_id": "test_bus"},
         "esphome": {
             "name": name,
             "build_path": str(BUILD / name),
@@ -147,7 +148,16 @@ def run(climate):
     includes = "packages:\n" + "".join(
         f"  {p}: !include {ROOT / 'packages' / (p + '.yml')}\n" for p in packages
     )
+    # Verify actual ESPHome merge semantics, not a copied expected source list.
+    from esphome.config import read_config
+    from esphome.core import CORE
+    CORE.reset()
+    CORE.config_path = path
     path.write_text(yaml.safe_dump(config, sort_keys=False) + includes)
+    merged = read_config({})
+    assert merged is not None
+    assert sorted(int(pdo) for pdo in merged["zehnder_comfoair_q"]["request_ids"]) == [65, 67, 226]
+    assert len(merged["canbus"]) == 1
     subprocess.run([sys.executable, "-m", "esphome", "compile", str(path)], check=True)
     # Fresh preferences per run; do not inherit the workstation's host state.
     with tempfile.TemporaryDirectory(dir=BUILD) as prefs:

@@ -1,5 +1,6 @@
 canbus:
   - platform: esp32_can
+    id: comfoair_canbus
     tx_pin: ${can_tx_pin}
     rx_pin: ${can_rx_pin}
     bit_rate: 50kbps

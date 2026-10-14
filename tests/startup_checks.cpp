@@ -66,6 +66,15 @@ bus.receive(82, std::vector<uint8_t>{1, 2, 3});
 check(id(next_bypass_change_in).state == "49710d6h28m14s", "malformed duration does not replace real state");
 check(bus.sent.empty(), "duration PDO feedback is read-only");
 
+for (const auto &entry : std::vector<std::pair<std::vector<uint8_t>, float>>{
+         {{0, 0}, 0}, {{0x2c, 0x01}, 300}, {{0xff, 0xff}, 65535}}) {
+  bus.receive(226, entry.first);
+  check(id(modulated_fan_speed).state == entry.second, "modulated speed is independent UINT16 diagnostic state");
+}
+bus.receive(226, std::vector<uint8_t>{1});
+check(id(modulated_fan_speed).state == 65535 && bus.sent.empty(),
+      "malformed modulated speed cannot change state or send commands");
+
 // The reporter's polling workaround: no lambda means update is a no-op.
 id(temperature_profile).update();
 check(!id(temperature_profile).has_state(), "polling must not invent a temperature profile");
