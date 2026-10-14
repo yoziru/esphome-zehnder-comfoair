@@ -4,6 +4,38 @@ auto &bus = *id(test_bus);
 check(bus.sent.empty(), "setup must not write ventilation settings");
 bus.sent.clear();
 
+// Literal payloads reconstruct through the actual component's public CAN boundary.
+uint32_t previous_sequence = 0;
+for (size_t length : {8u, 9u, 14u, 15u, 4u}) {
+  std::vector<uint8_t> payload(length);
+  for (size_t i = 0; i < length; i++)
+    payload[i] = uint8_t(0x20 + i);
+  bus.sent.clear();
+  id(comfoair).send_command(payload);
+  const bool fragmented = length > 8;
+  check(bus.sent.size() == (fragmented ? (length + 6) / 7 : 1), "command frame count respects 8/7 byte boundaries");
+  std::vector<uint8_t> reconstructed;
+  for (size_t i = 0; i < bus.sent.size(); i++) {
+    const auto &frame = bus.sent[i];
+    check(frame.use_extended_id && !frame.remote_transmission_request,
+          "commands use extended data frames, not RTR");
+    check(frame.can_id == bus.sent.front().can_id && (frame.can_id & 0x3f) == 0x2a &&
+          ((frame.can_id >> 6) & 0x3f) == 1 && ((frame.can_id >> 14) & 1) == fragmented,
+          "command fragments share destination, local node, sequence and fragmentation flag");
+    if (fragmented)
+      check(frame.data[0] == (i | (i + 1 == bus.sent.size() ? 0x80 : 0)),
+            "only the final fragment has its final marker");
+    reconstructed.insert(reconstructed.end(), frame.data + (fragmented ? 1 : 0),
+                         frame.data + frame.can_data_length_code);
+  }
+  check(reconstructed == payload, "all payload bytes survive CAN fragmentation in order");
+  const auto sequence = (bus.sent.front().can_id >> 17) & 3;
+  if (length != 8)
+    check(sequence == ((previous_sequence + 1) & 3), "command sequence advances and wraps modulo four");
+  previous_sequence = sequence;
+}
+bus.sent.clear();
+
 // The reporter's polling workaround: no lambda means update is a no-op.
 id(temperature_profile).update();
 check(!id(temperature_profile).has_state(), "polling must not invent a temperature profile");
