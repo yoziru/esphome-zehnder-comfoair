@@ -8,15 +8,15 @@
       "chipFamily": "ESP32",
       "ota": {
         "path": "zehnder-comfoair-q-esp32/zehnder-comfoair-q-esp32.ota.bin",
-        "md5": "f65115591a7478ff91b45883521759e7",
-        "sha256": "82d881ba9096895e844a7058e78f50a54202b8c5a2dad4b2074699482617dd97"
+        "md5": "98cbdd9978977e2a7e43294590e1dd1f",
+        "sha256": "11f7f5df2dae90203a5821372f6dc9efca2a684697d073cf8681da03e6a703d0"
       },
       "parts": [
         {
           "path": "zehnder-comfoair-q-esp32/zehnder-comfoair-q-esp32.factory.bin",
           "offset": 0,
-          "md5": "549c21ffa70c5c4b6ecf33c611d3e47b",
-          "sha256": "a2f569cf4c605b07e0a7b4cef43d188efc12366b0320de194316d2bda744f643"
+          "md5": "a99ed0b75a5381397335233b7860b9b7",
+          "sha256": "5316da9ae4c24300c8b8bee5fea316bd911a6c3a490a34b369d22cf5a1bcb633"
         }
       ]
     },
@@ -24,15 +24,15 @@
       "chipFamily": "ESP32-C6",
       "ota": {
         "path": "zehnder-comfoair-q-esp32c6/zehnder-comfoair-q-esp32c6.ota.bin",
-        "md5": "331deb0d599540787f05df97f094b895",
-        "sha256": "c0c93390f7bafca5488e1002b77757e17b17bab6384577290eaf3f5a0729cb92"
+        "md5": "4b51b319eabc3419c417168ec4100ded",
+        "sha256": "cd2a80bc6839fb376078f2abe6ba357af4719ecaed32badfc763f427da897701"
       },
       "parts": [
         {
           "path": "zehnder-comfoair-q-esp32c6/zehnder-comfoair-q-esp32c6.factory.bin",
           "offset": 0,
-          "md5": "934ee0ceb89358b3a740658927cab084",
-          "sha256": "6b749626f5a396943571f660d3223bfb31ae60805db055c7d4c69a36b9994902"
+          "md5": "dec6a9a8ca0d2fcac240e10155748af6",
+          "sha256": "d59d24b079a1557364a07dcf264b3bef0c7dc9e39f795ee2a9869a0289e802bc"
         }
       ]
     },
@@ -40,15 +40,15 @@
       "chipFamily": "ESP32-S3",
       "ota": {
         "path": "zehnder-comfoair-q-esp32s3/zehnder-comfoair-q-esp32s3.ota.bin",
-        "md5": "6ccab13485a6569ce7a52a8435c00ac5",
-        "sha256": "b24aa590f495fbe36b4f2b56e7bfa27864fc552a514134522867e1333a6af5fb"
+        "md5": "03a13eab764b289b4c3500ecd7838ee9",
+        "sha256": "db42b499aca8a702d546ed8d8bd503e7fb84cb78a47b44fb09e17dc21994d0e5"
       },
       "parts": [
         {
           "path": "zehnder-comfoair-q-esp32s3/zehnder-comfoair-q-esp32s3.factory.bin",
           "offset": 0,
-          "md5": "962bddc113d4ed2f1fb6acef29db9d94",
-          "sha256": "b31ba9b6de9e721d27c7482eda36e301ef1491b39895ca1282da94ff25b1ce56"
+          "md5": "91c725c5e87a40d350aaa47a6df6b074",
+          "sha256": "6d7e6a35ef2abd3a66c167f386964c1662947ce2622f349fc7932d5fa1d3a071"
         }
       ]
     }
