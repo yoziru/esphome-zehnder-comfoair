@@ -31,6 +31,7 @@ jobs:
           - tests/firmware/modulated_fan_speed.yml
           - tests/firmware/airflow_constraints.yml
           - tests/firmware/filter_lifetime.yml
+          - tests/firmware/temperature_profile_mode.yml
     steps:
       - uses: actions/checkout@v7.0.1
       - name: Mock secrets.yaml from example
