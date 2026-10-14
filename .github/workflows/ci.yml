@@ -29,6 +29,7 @@ jobs:
           - zehnder-comfoair-q-m5stack-atoms3.yml
           - zehnder-comfoair-q-m5stack-nanoc6.yml
           - tests/firmware/modulated_fan_speed.yml
+          - tests/firmware/airflow_constraints.yml
     steps:
       - uses: actions/checkout@v7.0.1
       - name: Mock secrets.yaml from example
