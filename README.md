@@ -9,6 +9,10 @@ It exposes all known information and airflow control through the [ESPHome native
 ![Home Assistant screenshot](./docs/ha_screen.png)
 
 ## Hardware
+
+See [PDO addressing](docs/PDO-ADDRESSING.md) for supported ID bounds, receive
+filtering, and high-ID validation limits. No new startup queries are enabled.
+
 See specific guides for each device:
 - [Olimex ESP32-EVB](docs/esp32-evb.md)
 - [M5Stack AtomS3 Lite](docs/m5stack-atoms3.md)
