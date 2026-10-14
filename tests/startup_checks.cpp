@@ -37,6 +37,25 @@ for (size_t length : {8u, 9u, 14u, 15u, 4u}) {
 }
 bus.sent.clear();
 
+for (const auto &entry : std::vector<std::pair<uint16_t, sensor::Sensor *>>{
+         {119, id(exhaust_fan_flow)}, {120, id(supply_fan_flow)},
+         {121, id(exhaust_fan_speed)}, {122, id(supply_fan_speed)},
+         {128, id(power)}, {129, id(energy_ytd)}, {130, id(energy_since_start)},
+         {192, id(filter_replacement_remaining_days)},
+         {213, id(avoided_heating_actual)}, {214, id(avoided_heating_ytd)},
+         {215, id(avoided_heating_total)}, {216, id(avoided_cooling_actual)},
+         {217, id(avoided_cooling_ytd)}, {218, id(avoided_cooling_total)}}) {
+  bus.receive(entry.first, std::vector<uint8_t>{0x40, 0x9c}); // 40000 unsigned
+  check(entry.second->raw_state == 40000, "documented UINT16 PDO retains values above 32767");
+}
+bus.receive(276, std::vector<uint8_t>{0x85, 0xff}); // -123 tenths C
+check(std::abs(id(outdoor_air_temp).state + 12.3f) < 0.001f, "INT16 PDO preserves negative temperature");
+for (const auto &payload : std::vector<std::vector<uint8_t>>{{}, {1, 2, 3}, {1, 2, 3, 4, 5}}) {
+  bus.receive(129, payload);
+  check(id(energy_ytd).raw_state == 40000, "unsupported PDO widths do not publish invented state");
+}
+check(bus.sent.empty(), "numeric PDO decoding never sends control commands");
+
 // The reporter's polling workaround: no lambda means update is a no-op.
 id(temperature_profile).update();
 check(!id(temperature_profile).has_state(), "polling must not invent a temperature profile");

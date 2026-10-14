@@ -116,28 +116,25 @@ namespace zehnder_comfoair_q
         }
 
         template <class T>
-        static void publish_state(T state_id, const std::vector<uint8_t> can_message, bool is_unsigned = false)
+        static void publish_state(T state_id, const std::vector<uint8_t> &can_message, bool is_unsigned = false)
         {
-            switch (can_message.size())
+            const auto size = can_message.size();
+            if (size != 1 && size != 2 && size != 4)
             {
-            case 1:
-                publish_state(state_id, *((uint8_t *)&can_message[0]));
-                break;
-            case 2:
-                if (!is_unsigned)
-                    publish_state(state_id, *((int16_t *)&can_message[0]));
-                else
-                    publish_state(state_id, *((uint16_t *)&can_message[0]));
-                break;
-            case 4:
-                if (!is_unsigned)
-                    publish_state(state_id, *((int32_t *)&can_message[0]));
-                else
-                    publish_state(state_id, *((uint32_t *)&can_message[0]));
-                break;
-            default:
-                ESP_LOGW("comfoair", "Unable to infer type from can message size: %d", can_message.size());
-                break;
+                ESP_LOGW("comfoair", "Unable to infer type from can message size: %zu", size);
+                return;
+            }
+            uint32_t value = 0;
+            for (size_t i = 0; i < size; i++)
+                value |= uint32_t(can_message[i]) << (8 * i);
+            if (size == 1 || is_unsigned)
+                publish_state(state_id, value);
+            else
+            {
+                int64_t signed_value = value;
+                if (value & (uint32_t(1) << (size * 8 - 1)))
+                    signed_value -= int64_t(1) << (size * 8);
+                publish_state(state_id, signed_value);
             }
         }
 

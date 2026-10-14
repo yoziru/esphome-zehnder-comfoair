@@ -39,14 +39,14 @@ canbus:
                   comfoair_on_frame_case( 82, id(comfoair), next_bypass_change_in_raw,        false);
                   comfoair_on_frame_case(117, id(comfoair), exhaust_fan_duty,                 false);
                   comfoair_on_frame_case(118, id(comfoair), supply_fan_duty,                  false);
-                  comfoair_on_frame_case(119, id(comfoair), exhaust_fan_flow,                  false);
-                  comfoair_on_frame_case(120, id(comfoair), supply_fan_flow,                   false);
+                  comfoair_on_frame_case(119, id(comfoair), exhaust_fan_flow,                  true);
+                  comfoair_on_frame_case(120, id(comfoair), supply_fan_flow,                   true);
                   comfoair_on_frame_case(121, id(comfoair), exhaust_fan_speed,                 true);
                   comfoair_on_frame_case(122, id(comfoair), supply_fan_speed,                  true);
                   comfoair_on_frame_case(128, id(comfoair), power,                             true);
                   comfoair_on_frame_case(129, id(comfoair), energy_ytd,                        true);
                   comfoair_on_frame_case(130, id(comfoair), energy_since_start,                true);
-                  comfoair_on_frame_case(192, id(comfoair), filter_replacement_remaining_days, false);
+                  comfoair_on_frame_case(192, id(comfoair), filter_replacement_remaining_days, true);
                   comfoair_on_frame_case(209, id(comfoair), running_mean_outdoor_temp,        false);
                   comfoair_on_frame_case(210, id(comfoair), heating_season_raw,                true);
                   comfoair_on_frame_case(211, id(comfoair), cooling_season_raw,                true);
