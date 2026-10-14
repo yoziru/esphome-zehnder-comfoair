@@ -51,7 +51,9 @@ def run(climate):
                 {"delay": "1500ms"},
                 {"lambda": f'''
                     const auto &sent = id(test_bus).sent;
-                    esphome::test_canbus::check(sent.size() == 2 && sent[1].data[6] == {expected},
+                    esphome::test_canbus::check(sent.size() == 2 &&
+                        sent[0].data[1] == 0x84 && sent[0].data[2] == 0x15 &&
+                        sent[0].data[3] == 0x03 && sent[0].data[4] == 0x01 && sent[1].data[6] == {expected},
                         "thermostat after synchronization: {contract}");
                 '''},
             ])
