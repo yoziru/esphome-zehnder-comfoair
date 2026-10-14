@@ -100,10 +100,16 @@ bus.sent.clear();
 auto fan_call = id(comfoair_fan).turn_on();
 fan_call.set_speed(1);
 fan_call.perform();
-check(bus.sent.size() == 3 && bus.sent[0].data[0] == 0x85 &&
-      bus.sent[0].data[2] == 0x08 && bus.sent[2].data[6] == 1,
+check(bus.sent.size() == 4 && bus.sent[0].data[0] == 0x85 &&
+      bus.sent[0].data[2] == 0x08 && bus.sent[1].data[2] == 0x01 && bus.sent[3].data[6] == 1,
       "user fan ON/Low still sends Auto and Low commands");
 bus.receive(65, 1);
+bus.sent.clear();
+id(auto_ventilation).turn_on();
+check(bus.sent.size() == 2 &&
+      std::vector<uint8_t>(bus.sent[0].data, bus.sent[0].data + bus.sent[0].can_data_length_code) == std::vector<uint8_t>({0x85, 0x15, 0x08, 0x01}) &&
+      std::vector<uint8_t>(bus.sent[1].data, bus.sent[1].data + bus.sent[1].can_data_length_code) == std::vector<uint8_t>({0x85, 0x15, 0x01, 0x01}),
+      "explicit Auto cancels manual mode then the temporary speed override");
 bus.sent.clear();
 id(comfoair_fan).turn_off().perform();
 check(bus.sent.size() == 2 && bus.sent[1].data[6] == 0,
