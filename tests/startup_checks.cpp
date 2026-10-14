@@ -119,6 +119,23 @@ check(bus.sent.size() == 1 &&
       "existing UINT8 property writes remain unchanged");
 bus.sent.clear();
 
+for (const auto &entry : std::vector<std::pair<std::string, uint8_t>>{{"Adaptive", 0}, {"Fixed", 1}}) {
+  bus.sent.clear();
+  auto call = id(temperature_profile_mode_requested).make_call();
+  call.set_option(entry.first);
+  call.perform();
+  check(bus.sent.size() == 1 &&
+        std::vector<uint8_t>(bus.sent[0].data, bus.sent[0].data + bus.sent[0].can_data_length_code) ==
+            std::vector<uint8_t>({0x03, 0x1d, 0x01, 0x08, entry.second}) &&
+        id(temperature_profile_mode_requested).current_option() == entry.first,
+        "profile mode writes its UINT8 property, not a Normal/Cool/Warm timer");
+}
+bus.sent.clear();
+auto invalid_mode = id(temperature_profile_mode_requested).make_call();
+invalid_mode.set_option("External setpoint");
+invalid_mode.perform();
+check(bus.sent.empty(), "unverified external-setpoint mode is not exposed");
+
 // The reporter's polling workaround: no lambda means update is a no-op.
 id(temperature_profile).update();
 check(!id(temperature_profile).has_state(), "polling must not invent a temperature profile");
@@ -127,6 +144,8 @@ check(bus.sent.empty(), "polling must not send profile commands");
 bus.receive(67, 2);
 check(id(temperature_profile).state == "Warm", "profile PDO updates the sensor");
 check(id(temperature_profile_select).current_option() == "Warm", "profile PDO updates the select");
+check(id(temperature_profile_mode_requested).current_option() == "Fixed",
+      "Normal/Cool/Warm feedback is independent of requested profile mode");
 check(bus.sent.empty(), "profile feedback must not write to CAN");
 id(temperature_profile).update();
 check(id(temperature_profile).state == "Warm" && bus.sent.empty(),
