@@ -43,7 +43,7 @@ jobs:
       matrix:
         file: ${{ fromJson(needs.prepare.outputs.files) }}
     outputs:
-      esphome-version: ${{ steps.esphome-build.outputs.esphome-version }}
+      esphome-version: ${{ steps.esphome-build.outputs.version }}
     steps:
       - uses: actions/checkout@v7.0.1
       - name: Mock secrets.yaml from example
