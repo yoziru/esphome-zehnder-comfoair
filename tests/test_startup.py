@@ -30,6 +30,24 @@ def run(climate):
         {"lambda": '''
             esphome::test_canbus::check(id(test_bus).sent.empty(),
                 "feedback must not leave delayed outbound commands");
+            auto &bus = *id(test_bus);
+            bus.receive(146, std::vector<uint8_t>{0x20, 0x03});
+            id(ventilation_and_preheater_power).update();
+            esphome::test_canbus::check(std::isfinite(id(power).state) &&
+                id(ventilation_and_preheater_power).state == id(power).state + 800,
+                "combined sensor uses actual ventilation and decoded heater readings");
+            id(pre_heater_power).publish_state(NAN);
+            id(ventilation_and_preheater_power).update();
+            esphome::test_canbus::check(std::isnan(id(ventilation_and_preheater_power).state),
+                "ventilation-only feedback cannot invent missing preheater power");
+            id(pre_heater_power).publish_state(INFINITY);
+            id(ventilation_and_preheater_power).update();
+            esphome::test_canbus::check(std::isnan(id(ventilation_and_preheater_power).state),
+                "non-finite source invalidates combined power");
+            bus.receive(146, std::vector<uint8_t>{0, 0});
+            id(ventilation_and_preheater_power).update();
+            esphome::test_canbus::check(id(ventilation_and_preheater_power).state == id(power).state && bus.sent.empty(),
+                "zero heater restores the sum without settings writes");
         '''},
     ]
     for mode, offset in [(1, 2), (6, 1)]:
@@ -159,6 +177,8 @@ def run(climate):
     path.write_text(yaml.safe_dump(config, sort_keys=False) + includes)
     merged = read_config({})
     assert merged is not None
+    shared = yaml.safe_load((ROOT / "packages/zehnder_comfoair_q.yml").read_text())
+    assert {144, 145, 146} <= set(shared["zehnder_comfoair_q"]["request_ids"])
     assert sorted(int(pdo) for pdo in merged["zehnder_comfoair_q"]["request_ids"]) == [65, 67, 226, 230]
     assert len(merged["canbus"]) == 1
     subprocess.run([sys.executable, "-m", "esphome", "compile", str(path)], check=True)
