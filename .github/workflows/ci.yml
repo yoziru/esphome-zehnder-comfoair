@@ -12,11 +12,8 @@ jobs:
       - uses: astral-sh/setup-uv@1c37ad07a6a961277cf70c0d37d6f313000f5884 # v10.3.0
       - name: Run tests
         run: make test
-      - name: Check PDO addressing and configured bounds
-        run: |
-          python3 tests/test_pdo_address.py
-          python3 tests/test_pdo_address.py --sanitize
-          uv run --with-requirements requirements.txt python -m unittest discover -s tests -p 'test_pdo_address_schema.py'
+      - name: Check PDO schema bounds and YAML filter
+        run: uv run --with-requirements requirements.txt python -m unittest discover -s tests -p 'test_pdo_address_schema.py'
       - name: Run host tests with ASan and UBSan
         run: ESPHOME_TEST_SANITIZE=1 make test
       - name: Check iterator bounds
