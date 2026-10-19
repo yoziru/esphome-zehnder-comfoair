@@ -6,46 +6,26 @@ zehnder_comfoair_q:
   request_ids: [369, 370, 371, 372]
 
 sensor:
-  - platform: template
+  - <<: &analog_sensor
+      platform: template
+      entity_category: diagnostic
+      update_interval: never
+      device_class: voltage
+      state_class: measurement
+      unit_of_measurement: "V"
+      accuracy_decimals: 1
+      filters: [multiply: 0.1]
     id: analog_input_1
     name: "Analog Input 1"
-    entity_category: diagnostic
-    update_interval: never
-    device_class: voltage
-    state_class: measurement
-    unit_of_measurement: "V"
-    accuracy_decimals: 1
-    filters: [multiply: 0.1]
-  - platform: template
+  - <<: *analog_sensor
     id: analog_input_2
     name: "Analog Input 2"
-    entity_category: diagnostic
-    update_interval: never
-    device_class: voltage
-    state_class: measurement
-    unit_of_measurement: "V"
-    accuracy_decimals: 1
-    filters: [multiply: 0.1]
-  - platform: template
+  - <<: *analog_sensor
     id: analog_input_3
     name: "Analog Input 3"
-    entity_category: diagnostic
-    update_interval: never
-    device_class: voltage
-    state_class: measurement
-    unit_of_measurement: "V"
-    accuracy_decimals: 1
-    filters: [multiply: 0.1]
-  - platform: template
+  - <<: *analog_sensor
     id: analog_input_4
     name: "Analog Input 4"
-    entity_category: diagnostic
-    update_interval: never
-    device_class: voltage
-    state_class: measurement
-    unit_of_measurement: "V"
-    accuracy_decimals: 1
-    filters: [multiply: 0.1]
 
 canbus:
   - id: !extend ${comfoair_canbus_id}
