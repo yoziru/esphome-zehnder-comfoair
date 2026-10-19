@@ -13,6 +13,9 @@ id(comfoair).request_pdo(2048);
 check(bus.requests.size() == high_request_count + 1, "out-of-range direct request is rejected");
 bus.requests.clear();
 
+for (auto unrelated : std::vector<uint32_t>{0x10000001, 0x1f000a81, 0x1f800000, 0x80000041, 0x02000041})
+  check(!zehnder_comfoair_q::is_pdo_can_id(unrelated), "PDO namespace excludes heartbeat/RMI/firmware/invalid IDs");
+
 // Literal payloads reconstruct through the actual component's public CAN boundary.
 uint32_t previous_sequence = 0;
 for (size_t length : {8u, 9u, 14u, 15u, 4u}) {
