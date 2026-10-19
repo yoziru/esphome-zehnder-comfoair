@@ -10,8 +10,8 @@ It exposes all known information and airflow control through the [ESPHome native
 
 ## Hardware
 
-See [PDO type mapping](docs/PDO-MAPPING.md) for the pinned protocol inventory,
-strict decoding, type disagreements, current handler API, and regression checks.
+See [PDO type mapping](docs/PDO-MAPPING.md) for declared types, strict decoding,
+reference disagreements, and the current handler API.
 
 See specific guides for each device:
 - [Olimex ESP32-EVB](docs/esp32-evb.md)
