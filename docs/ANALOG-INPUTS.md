@@ -21,8 +21,6 @@ Whether a voltage comes from a CO2 sensor, potentiometer, or another source
 depends on the installation/OptionBox. Voltage-to-ppm conversion is sensor
 specific and is not guessed by this package.
 
-Q600 normal-condition reads return zero for these channels; that validates
-transport/decoding, not calibrated nonzero voltage or an installed OptionBox.
 The host tests cover nonzero conversion (75 -> 7.5 V) and wrong-width rejection.
 An OptionBox/potentiometer or known-voltage test is still needed for physical
 nonzero verification.
