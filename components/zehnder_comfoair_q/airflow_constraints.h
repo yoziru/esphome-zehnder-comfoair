@@ -4,16 +4,16 @@
 #include <cstdio>
 #include <string>
 #include <vector>
+#include "pdo_decode.h"
 
 namespace zehnder_comfoair_q
 {
     inline std::string airflow_constraints_to_string(const std::vector<uint8_t> &data)
     {
-        if (data.size() != 8)
+        PdoValue decoded;
+        if (!decode_pdo_value(PdoType::INT64, data, decoded))
             return {};
-        uint64_t value = 0;
-        for (size_t i = 0; i < 8; i++)
-            value |= uint64_t(data[i]) << (8 * i);
+        const uint64_t value = decoded.raw;
         char raw[19];
         std::snprintf(raw, sizeof(raw), "0x%016" PRIx64, value);
         std::string output = std::string(raw) + ": ";

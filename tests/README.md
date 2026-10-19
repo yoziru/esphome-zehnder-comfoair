@@ -1,5 +1,8 @@
 # Host C++ regression tests
 
+PDO type/width, integer boundary, and unknown-type checks run in the same
+`make test` host suite, including the sanitizer and iterator-bounds configurations.
+
 Protocol framing, sequence rollover and RTR scheduling are also covered. See
 `test-audit.md` for the contract inventory. Run `ESPHOME_TEST_SANITIZE=1 make test`
 for ASan/UBSan; the existing CI test job runs normal and sanitized configurations.

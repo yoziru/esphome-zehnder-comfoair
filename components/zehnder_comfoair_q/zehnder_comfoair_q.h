@@ -2,6 +2,7 @@
 
 #include <esphome.h>
 #include "airflow_constraints.h"
+#include "pdo_types.h"
 #include <cmath>
 
 using namespace esphome; // needed for ESP_LOGx to work
@@ -129,26 +130,19 @@ namespace zehnder_comfoair_q
         }
 
         template <class T>
-        static void publish_state(T state_id, const std::vector<uint8_t> &can_message, bool is_unsigned = false)
+        static void publish_pdo_state(T state_id, const std::vector<uint8_t> &can_message,
+                                      uint16_t pdo_id)
         {
-            const auto size = can_message.size();
-            if (size != 1 && size != 2 && size != 4)
+            PdoValue value;
+            if (!decode_pdo(pdo_id, can_message, value))
             {
-                ESP_LOGW("comfoair", "Unable to infer type from can message size: %zu", size);
+                ESP_LOGW(TAG, "Invalid payload for PDO %u (length %zu)", pdo_id, can_message.size());
                 return;
             }
-            uint32_t value = 0;
-            for (size_t i = 0; i < size; i++)
-                value |= uint32_t(can_message[i]) << (8 * i);
-            if (size == 1 || is_unsigned)
-                publish_state(state_id, value);
+            if (value.is_signed)
+                publish_state(state_id, value.signed_value());
             else
-            {
-                int64_t signed_value = value;
-                if (value & (uint32_t(1) << (size * 8 - 1)))
-                    signed_value -= int64_t(1) << (size * 8);
-                publish_state(state_id, signed_value);
-            }
+                publish_state(state_id, value.raw);
         }
 
         static __attribute((always_inline)) inline uint16_t get_pdo_id_from_can_id(uint32_t can_id)
@@ -168,9 +162,9 @@ namespace zehnder_comfoair_q
             formatted->publish_state(seconds_to_human_readable(seconds));
         }
 
-        static std::string seconds_to_human_readable(int64_t seconds)
+        static std::string seconds_to_human_readable(uint32_t seconds)
         {
-            if (seconds < 0 || seconds == 0xffffffffLL)
+            if (seconds == UINT32_MAX)
                 return "n/a";
 
             std::string output;
@@ -216,7 +210,7 @@ namespace zehnder_comfoair_q
     };
 }
 
-#define comfoair_on_frame_case(pdo_id, comfoair_component, sensor_id, unsigned) \
+#define comfoair_on_frame_case(pdo_id, comfoair_component, sensor_id) \
     case pdo_id:                                                                \
-        comfoair_component->publish_state(sensor_id, x, unsigned);              \
+        comfoair_component->publish_pdo_state(sensor_id, x, pdo_id);             \
         break;

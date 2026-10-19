@@ -23,4 +23,4 @@ canbus:
         then:
           - lambda: |-
               if (x.size() == 2)
-                id(comfoair)->publish_state(id(modulated_fan_speed), x, true);
+                id(comfoair)->publish_pdo_state(id(modulated_fan_speed), x, 226);
