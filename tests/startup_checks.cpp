@@ -4,6 +4,27 @@ auto &bus = *id(test_bus);
 check(bus.sent.empty(), "setup must not write ventilation settings");
 bus.sent.clear();
 
+id(ventilation_and_preheater_power).update();
+check(std::isnan(id(ventilation_and_preheater_power).state), "missing power sources do not become zero");
+bus.receive(146, std::vector<uint8_t>{0x20, 0x03}); // 800 W
+id(ventilation_and_preheater_power).update();
+check(std::isnan(id(ventilation_and_preheater_power).state), "heater-only feedback cannot invent ventilation power");
+for (const auto &entry : std::vector<std::pair<uint16_t, sensor::Sensor *>>{
+         {144, id(pre_heater_energy_ytd)}, {145, id(pre_heater_energy_since_start)}, {146, id(pre_heater_power)}}) {
+  bus.receive(entry.first, std::vector<uint8_t>{0x40, 0x9c});
+  check(entry.second->state == 40000, "preheater UINT16 readings retain the unsigned range");
+  bus.receive(entry.first, std::vector<uint8_t>{0xff, 0xff});
+  check(entry.second->state == 65535, "preheater UINT16 maximum is not a signed or timer sentinel");
+  for (size_t width = 0; width <= 8; width++) {
+    if (width == 2) continue;
+    bus.receive(entry.first, std::vector<uint8_t>(width, 1));
+    check(entry.second->state == 65535, "preheater rejects every incorrect CAN payload width");
+  }
+  bus.receive(entry.first, std::vector<uint8_t>{0, 0});
+  check(entry.second->state == 0, "device-reported preheater zero is valid");
+}
+check(bus.sent.empty(), "preheater feedback never writes settings");
+
 // Literal payloads reconstruct through the actual component's public CAN boundary.
 uint32_t previous_sequence = 0;
 for (size_t length : {8u, 9u, 14u, 15u, 4u}) {

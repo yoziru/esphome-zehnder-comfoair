@@ -144,6 +144,46 @@ sensor:
     state_class: total_increasing
 
   - platform: template
+    id: pre_heater_energy_ytd # PDO 144
+    name: "Pre-heater Energy YTD"
+    update_interval: never
+    accuracy_decimals: 0
+    unit_of_measurement: "kWh"
+    device_class: energy
+    state_class: total_increasing
+
+  - platform: template
+    id: pre_heater_energy_since_start # PDO 145
+    name: "Pre-heater Energy Since Start"
+    update_interval: never
+    accuracy_decimals: 0
+    unit_of_measurement: "kWh"
+    device_class: energy
+    state_class: total_increasing
+
+  - platform: template
+    id: pre_heater_power # PDO 146
+    name: "Pre-heater Power"
+    update_interval: never
+    accuracy_decimals: 0
+    unit_of_measurement: "W"
+    device_class: power
+    state_class: measurement
+
+  - platform: template
+    id: ventilation_and_preheater_power
+    name: "Ventilation + Pre-heater Power"
+    update_interval: 1s
+    accuracy_decimals: 0
+    unit_of_measurement: "W"
+    device_class: power
+    state_class: measurement
+    # Missing source readings remain NaN, not an assumed zero-power load.
+    lambda: |-
+      if (!std::isfinite(id(power).state) || !std::isfinite(id(pre_heater_power).state)) return NAN;
+      return id(power).state + id(pre_heater_power).state;
+
+  - platform: template
     id: filter_replacement_remaining_days # PDO 192
     name: "Filter Replacement Remaining Days"
     icon: mdi:air-filter
