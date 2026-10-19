@@ -12,7 +12,7 @@ canbus:
         then:
           - lambda: |-
               std::string data_pretty = remote_transmission_request ? std::string("n/a") : format_hex_pretty(x);
-              if ((can_id & 0b11111000000000011111111000000) == 0b00000000000000000000001000000)
+              if (zehnder_comfoair_q::is_pdo_can_id(can_id))
               {
                 ESP_LOGD("comfoair_dump", "Node: %ld, PDO: %ld, rtr: %d, length: %d, content: %s (can_id: 0x%08lx)", can_id & 0x3f, can_id >> 14, remote_transmission_request, x.size(), data_pretty.c_str(), can_id);
               }
@@ -21,7 +21,7 @@ canbus:
                 ESP_LOGV("comfoair_dump", "can_id: 0x%08lx, rtr: %d, length: %d, content: %s", can_id, remote_transmission_request, x.size(), data_pretty.c_str());
               }
       - can_id: 0b00000000000000000000001000000
-        can_id_mask: 0b11111000000000011111111000000
+        can_id_mask: 0x1e003fc0
         use_extended_id: true
         remote_transmission_request: false
         then:
