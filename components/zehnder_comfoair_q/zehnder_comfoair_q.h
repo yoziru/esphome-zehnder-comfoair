@@ -145,21 +145,6 @@ namespace zehnder_comfoair_q
                 publish_state(state_id, value.raw);
         }
 
-        template <class T>
-        static void publish_raw_state(T state_id, const std::vector<uint8_t> &can_message, PdoType representation)
-        {
-            PdoValue value;
-            if (!decode_pdo_value(representation, can_message, value))
-            {
-                ESP_LOGW(TAG, "Invalid raw payload (length %zu)", can_message.size());
-                return;
-            }
-            if (value.is_signed)
-                publish_state(state_id, value.signed_value());
-            else
-                publish_state(state_id, value.raw);
-        }
-
         static __attribute((always_inline)) inline uint16_t get_pdo_id_from_can_id(uint32_t can_id)
         {
             return can_id >> 14;
