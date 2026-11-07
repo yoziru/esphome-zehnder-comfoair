@@ -1,5 +1,11 @@
 # Host C++ regression tests
 
+PDO type/width, integer boundary, and unknown-type checks run in the same
+`make test` host suite, including the sanitizer and iterator-bounds configurations.
+The fixture extracts routed IDs from the merged CAN handlers and checks their
+declared widths on the host, including optional exact-ID handlers. Missing table
+entries or an unreviewed route/width change fail the tests instead of freezing an entity.
+
 Protocol framing, sequence rollover and RTR scheduling are also covered. See
 `test-audit.md` for the contract inventory. Run `ESPHOME_TEST_SANITIZE=1 make test`
 for ASan/UBSan; the existing CI test job runs normal and sanitized configurations.

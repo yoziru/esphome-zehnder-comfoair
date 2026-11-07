@@ -94,7 +94,7 @@ sensor:
     filters: *throttle-filter
 
   - platform: template
-    id: supply_fan_flow # PDO 119
+    id: supply_fan_flow # PDO 120
     name: "Supply Fan Flow"
     icon: mdi:gauge
     accuracy_decimals: 0
@@ -103,7 +103,7 @@ sensor:
     filters: *throttle-filter
 
   - platform: template
-    id: exhaust_fan_flow # PDO 120
+    id: exhaust_fan_flow # PDO 119
     name: "Exhaust Fan Flow"
     icon: mdi:gauge
     accuracy_decimals: 0

@@ -2,6 +2,7 @@
 
 import os
 from pathlib import Path
+import re
 import subprocess
 import sys
 import tempfile
@@ -161,6 +162,37 @@ def run(climate):
     assert merged is not None
     assert sorted(int(pdo) for pdo in merged["zehnder_comfoair_q"]["request_ids"]) == [65, 67, 226, 230]
     assert len(merged["canbus"]) == 1
+    expected_widths = {
+        pdo: width
+        for width, pdos in (
+            (1, (16, 49, 54, 55, 56, 65, 66, 67, 117, 118, 210, 211, 225, 227, 290, 291, 292, 293, 294)),
+            (2, (119, 120, 121, 122, 128, 129, 130, 192, 209, 212, 213, 214, 215, 216, 217, 218, 220, 221,
+                 226, 274, 275, 276, 277, 278)),
+            (4, (81, 82)),
+            (8, (230,)),
+        )
+        for pdo in pdos
+    }
+    routed_ids = set()
+    for frame in merged["canbus"][0]["on_frame"]:
+        for action in frame.get("then", []):
+            if "lambda" in action:
+                code = str(action["lambda"])
+                for groups in re.findall(r"comfoair_on_frame_case\(\s*(\d+)|case\s+(\d+)\s*:", code):
+                    routed_ids.update(int(pdo) for pdo in groups if pdo)
+        if frame["can_id_mask"] & (0x7ff << 14) == (0x7ff << 14):
+            routed_ids.add(frame["can_id"] >> 14)
+    assert routed_ids == set(expected_widths), f"Routed PDO coverage differs: {routed_ids ^ set(expected_widths)}"
+    rows = ", ".join(f"{{{pdo}, {expected_widths[pdo]}}}" for pdo in sorted(routed_ids))
+    actions.insert(0, {"lambda": f'''
+        for (const auto &entry : std::vector<std::pair<uint16_t, size_t>>{{{rows}}}) {{
+            const auto *definition = zehnder_comfoair_q::find_pdo_definition(entry.first);
+            esphome::test_canbus::check(definition != nullptr &&
+                zehnder_comfoair_q::pdo_type_size(definition->type) == entry.second,
+                ("declared width for routed PDO " + std::to_string(entry.first)).c_str());
+        }}
+    '''})
+    path.write_text(yaml.safe_dump(config, sort_keys=False) + includes)
     subprocess.run([sys.executable, "-m", "esphome", "compile", str(path)], check=True)
     # Fresh preferences per run; do not inherit the workstation's host state.
     with tempfile.TemporaryDirectory(dir=BUILD) as prefs:
