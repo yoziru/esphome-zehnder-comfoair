@@ -32,6 +32,7 @@ jobs:
           - tests/firmware/airflow_constraints.yml
           - tests/firmware/filter_lifetime.yml
           - tests/firmware/temperature_profile_mode.yml
+          - tests/firmware/analog_inputs.yml
     steps:
       - uses: actions/checkout@v7.0.1
       - name: Mock secrets.yaml from example
