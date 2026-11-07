@@ -9,6 +9,9 @@ It exposes all known information and airflow control through the [ESPHome native
 ![Home Assistant screenshot](./docs/ha_screen.png)
 
 ## Hardware
+
+The standard packages include [preheater power and energy readings](docs/preheater.md).
+
 See specific guides for each device:
 - [Olimex ESP32-EVB](docs/esp32-evb.md)
 - [M5Stack AtomS3 Lite](docs/m5stack-atoms3.md)
