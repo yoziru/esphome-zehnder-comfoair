@@ -2,15 +2,15 @@
   "chipFamily": "ESP32-S3",
   "ota": {
     "path": "zehnder-comfoair-q-esp32s3.ota.bin",
-    "md5": "675192a94dd775c0b65c9049ed4ec643",
-    "sha256": "2b3d8733053ac0013f777df40f7dbe2e12626b00eef69082c3713735563fb787"
+    "md5": "51392d00a63c17e47db5f5b01a4591de",
+    "sha256": "dfa85c9fa8fe821ee161d890274e0b9fc4684de4114e6b433c2555ba5f62f061"
   },
   "parts": [
     {
       "path": "zehnder-comfoair-q-esp32s3.factory.bin",
       "offset": 0,
-      "md5": "aec1943b83d7ab26b5f87ad1f098abc6",
-      "sha256": "3b1c427e11669d725c73b8c0f62ee03ae2ecf835ec5036b1bb6e75a6bd110500"
+      "md5": "127f857fa4c038b6013ae5e9041ed79f",
+      "sha256": "af4535e93025e40245fbf2b80877d511064464be853731ceca59c8ee600e99b5"
     }
   ]
 }
