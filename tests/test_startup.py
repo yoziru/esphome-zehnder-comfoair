@@ -160,7 +160,8 @@ def run(climate):
     path.write_text(yaml.safe_dump(config, sort_keys=False) + includes)
     merged = read_config({})
     assert merged is not None
-    assert {369, 370, 371, 372} <= {int(pdo) for pdo in merged["zehnder_comfoair_q"]["request_ids"]}
+    # This fixed fixture guards missing, additional, and duplicate polls, not just analog membership.
+    assert sorted(int(pdo) for pdo in merged["zehnder_comfoair_q"]["request_ids"]) == [65, 67, 226, 230, 369, 370, 371, 372]
     assert len(merged["canbus"]) == 1
     subprocess.run([sys.executable, "-m", "esphome", "compile", str(path)], check=True)
     # Fresh preferences per run; do not inherit the workstation's host state.
