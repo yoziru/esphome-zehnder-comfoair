@@ -30,24 +30,6 @@ def run(climate):
         {"lambda": '''
             esphome::test_canbus::check(id(test_bus).sent.empty(),
                 "feedback must not leave delayed outbound commands");
-            auto &bus = *id(test_bus);
-            bus.receive(146, std::vector<uint8_t>{0x20, 0x03});
-            id(ventilation_and_preheater_power).update();
-            esphome::test_canbus::check(std::isfinite(id(power).state) &&
-                id(ventilation_and_preheater_power).state == id(power).state + 800,
-                "combined sensor uses actual ventilation and decoded heater readings");
-            id(pre_heater_power).publish_state(NAN);
-            id(ventilation_and_preheater_power).update();
-            esphome::test_canbus::check(std::isnan(id(ventilation_and_preheater_power).state),
-                "ventilation-only feedback cannot invent missing preheater power");
-            id(pre_heater_power).publish_state(INFINITY);
-            id(ventilation_and_preheater_power).update();
-            esphome::test_canbus::check(std::isnan(id(ventilation_and_preheater_power).state),
-                "non-finite source invalidates combined power");
-            bus.receive(146, std::vector<uint8_t>{0, 0});
-            id(ventilation_and_preheater_power).update();
-            esphome::test_canbus::check(id(ventilation_and_preheater_power).state == id(power).state && bus.sent.empty(),
-                "zero heater restores the sum without settings writes");
         '''},
     ]
     for mode, offset in [(1, 2), (6, 1)]:
@@ -99,7 +81,80 @@ def run(climate):
                         "thermostat after synchronization: {contract}");
                 '''},
             ])
+    # Fill the three-sample window with known zero readings before testing steps.
+    actions.append({"lambda": "id(test_bus).sent.clear();"})
+    for _ in range(4):
+        actions.extend([
+            {"lambda": "id(test_bus).receive(146, std::vector<uint8_t>{0, 0});"},
+            {"delay": "1250ms"},
+        ])
     actions.extend([
+        {"lambda": '''
+            using esphome::test_canbus::check;
+            check(id(pre_heater_power_smoothed).state == 0, "smoothed copy settles to a real zero");
+            id(test_bus).receive(146, std::vector<uint8_t>{0x20, 0x03});
+            check(id(pre_heater_power).state == 800 && id(pre_heater_power_smoothed).state == 0,
+                "reported power steps immediately without changing the smoothed history");
+            id(ventilation_and_preheater_power).update();
+            check(id(ventilation_and_preheater_power).state == id(power).state,
+                "combined sensor uses the smoothed heater, not the immediate reported step");
+        '''},
+        {"delay": "1250ms"},
+        {"lambda": '''
+            using esphome::test_canbus::check;
+            check(id(pre_heater_power).state == 800 && id(pre_heater_power_smoothed).state > 0 &&
+                id(pre_heater_power_smoothed).state < 800, "moving average delays the reported step without overwriting it");
+            id(ventilation_and_preheater_power).update();
+            check(id(ventilation_and_preheater_power).state == id(power).state + id(pre_heater_power_smoothed).state,
+                "combined power equals the two published smoothed component readings");
+            id(test_bus).receive(146, std::vector<uint8_t>{0, 0});
+            check(id(pre_heater_power).state == 0 && id(pre_heater_power_smoothed).state > 0,
+                "heater-off transition remains visible immediately on the original sensor");
+        '''},
+        {"delay": "1250ms"},
+        {"lambda": '''
+            using esphome::test_canbus::check;
+            id(test_bus).receive(146, std::vector<uint8_t>{0xf4, 0x01});
+            id(pre_heater_power).publish_state(NAN);
+            id(ventilation_and_preheater_power).update();
+            check(std::isnan(id(pre_heater_power_smoothed).state) &&
+                std::isnan(id(ventilation_and_preheater_power).state), "invalid source immediately invalidates both derived readings");
+        '''},
+        {"delay": "1250ms"},
+        {"lambda": '''
+            using esphome::test_canbus::check;
+            check(std::isnan(id(pre_heater_power_smoothed).state), "queued finite average cannot revive an invalid source");
+            id(pre_heater_power).publish_state(INFINITY);
+            check(std::isnan(id(pre_heater_power_smoothed).state), "infinite source cannot poison the averaging window");
+            id(test_bus).receive(146, std::vector<uint8_t>{0x58, 0x02});
+            check(id(pre_heater_power).state == 600 && std::isnan(id(pre_heater_power_smoothed).state),
+                "reported reading recovers immediately but averaging still waits for its interval");
+        '''},
+        {"delay": "1250ms"},
+        {"lambda": '''
+            using esphome::test_canbus::check;
+            check(std::isfinite(id(pre_heater_power_smoothed).state), "smoothed reading recovers after valid input");
+            id(power).publish_state(NAN);
+            id(ventilation_and_preheater_power).update();
+            check(std::isnan(id(ventilation_and_preheater_power).state),
+                "a filtered ventilation value cannot hide invalid raw ventilation input");
+            id(test_bus).receive(128, std::vector<uint8_t>{60, 0});
+        '''},
+    ])
+    for _ in range(4):
+        actions.extend([
+            {"lambda": "id(test_bus).receive(146, std::vector<uint8_t>{0, 0});"},
+            {"delay": "1250ms"},
+        ])
+    actions.extend([
+        {"lambda": '''
+            using esphome::test_canbus::check;
+            id(ventilation_and_preheater_power).update();
+            check(id(pre_heater_power).state == 0 && id(pre_heater_power_smoothed).state == 0 &&
+                id(ventilation_and_preheater_power).state == id(power).state,
+                "valid zero restores the reported, smoothed and combined readings");
+            check(id(test_bus).sent.empty(), "raw/copy/sum processing sends no setting writes");
+        '''},
         {"lambda": '''
             auto &bus = *id(test_bus);
             bus.requests.clear();
@@ -140,7 +195,7 @@ def run(climate):
         '''
     })
     config = {
-        "substitutions": {"filter_time": "1s", "filter_send_every": "1", "filter_window_size": "1", "comfoair_canbus_id": "test_bus"},
+        "substitutions": {"filter_time": "1s", "filter_send_every": "1", "filter_window_size": "3", "comfoair_canbus_id": "test_bus"},
         "esphome": {
             "name": name,
             "build_path": str(BUILD / name),
@@ -190,7 +245,7 @@ def run(climate):
                 [str(BUILD / name / ".pioenvs" / name / "program")],
                 env={**os.environ, "ESPHOME_PREFDIR": prefs},
                 check=True,
-                timeout=15,
+                timeout=40,
             )
 
 

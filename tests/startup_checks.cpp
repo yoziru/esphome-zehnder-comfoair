@@ -6,9 +6,12 @@ bus.sent.clear();
 
 id(ventilation_and_preheater_power).update();
 check(std::isnan(id(ventilation_and_preheater_power).state), "missing power sources do not become zero");
+check(!id(pre_heater_power_smoothed).has_state(), "smoothed copy does not invent a startup reading");
 bus.receive(146, std::vector<uint8_t>{0x20, 0x03}); // 800 W
 id(ventilation_and_preheater_power).update();
 check(std::isnan(id(ventilation_and_preheater_power).state), "heater-only feedback cannot invent ventilation power");
+check(id(pre_heater_power).state == 800 && !id(pre_heater_power_smoothed).has_state(),
+      "reported power publishes immediately while its smoothed copy waits for the interval");
 for (const auto &entry : std::vector<std::pair<uint16_t, sensor::Sensor *>>{
          {144, id(pre_heater_energy_ytd)}, {145, id(pre_heater_energy_since_start)}, {146, id(pre_heater_power)}}) {
   bus.receive(entry.first, std::vector<uint8_t>{0x40, 0x9c});

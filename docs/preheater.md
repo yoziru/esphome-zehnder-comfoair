@@ -13,11 +13,24 @@ replace the last valid reading. No response remains unknown; a device-supplied
 zero is a valid reading but does not establish whether a preheater is installed.
 No heater controls, forced heating, or installation detection are added.
 
-The existing `Power` entity remains ventilation power with the same name/ID.
-`Ventilation + Pre-heater Power` adds the two readings only when both are known;
-otherwise it is unavailable. This is not total device power: electronics,
-display, and other loads are not included. The sum uses the published ventilation
-reading (including its existing smoothing) and the latest preheater reading.
+`Pre-heater Power` preserves the latest value reported by Zehnder, without
+averaging. `Pre-heater Power (Smoothed)` is a standard ESPHome copy sensor using
+the configured averaging interval and moving-window settings used by ventilation
+power. It adds no CAN requests and does not change the source reading.
+
+Preserving the original reading matters for diagnostics and observing heater
+transitions or short peaks. Averaging delays changes and may produce a value
+that was never reported in an individual frame. It is less representative of
+the latest reading, not necessarily less accurate as an estimate of average load.
+The moving window retains recent samples; these are not synchronized measurements
+or a guaranteed fixed-duration average when PDO updates are sparse.
+
+The existing `Power` entity remains smoothed ventilation power with its same
+name/ID. `Ventilation + Pre-heater Power (Smoothed)` adds it to the smoothed
+preheater reading, not to the unsmoothed source. Missing/non-finite sources make
+the derived readings unavailable instead of becoming zero; pending averages
+cannot replace an invalidated source with a valid-looking value. This is not
+total device power: electronics, display, and other loads are not included.
 
 The energy counters retain the existing `total_increasing` convention. Year
 resets and 16-bit wraps are not converted into a synthetic lifetime accumulator.
