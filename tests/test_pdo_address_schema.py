@@ -2,6 +2,7 @@
 
 import importlib.util
 from pathlib import Path
+import re
 import unittest
 
 from esphome import config_validation as cv
@@ -14,16 +15,25 @@ spec.loader.exec_module(component)
 
 
 class AddressTests(unittest.TestCase):
+    def cpp_constant(self, name):
+        header = (ROOT / "components/zehnder_comfoair_q/pdo_address.h").read_text()
+        match = re.search(rf"\b{name}\s*=\s*(0x[0-9a-fA-F]+|[0-9]+)\s*;", header)
+        self.assertIsNotNone(match, f"Missing literal C++ constant: {name}")
+        return int(match[1], 0)
+
     def test_high_ids_and_rejection(self):
-        config = component.CONFIG_SCHEMA({"id": "comfoair", "canbus_id": "bus", "request_ids": [1024, 1304, 2047]})
-        self.assertEqual(config["request_ids"], [1024, 1304, 2047])
-        for pdo in (-1, 2048, 65535):
+        maximum = self.cpp_constant("MAX_SUPPORTED_PDO")
+        requests = [0, 1023, 1024, 1304, maximum]
+        config = component.CONFIG_SCHEMA({"id": "comfoair", "canbus_id": "bus", "request_ids": requests})
+        self.assertEqual(config["request_ids"], requests)
+        for pdo in (-1, maximum + 1, 65535):
             with self.assertRaises(cv.Invalid):
                 component.CONFIG_SCHEMA({"id": "comfoair", "canbus_id": "bus", "request_ids": [pdo]})
 
     def test_production_filter(self):
         package = yaml.safe_load((ROOT / "packages/canbus.yml").read_text())
         frame = package["canbus"][0]["on_frame"][1]
+        self.assertEqual(frame["can_id_mask"], self.cpp_constant("PDO_RECEIVE_MASK"))
         self.assertTrue(frame["use_extended_id"])
         self.assertFalse(frame["remote_transmission_request"])
         for pdo in (16, 1023, 1024, 1304, 2047):
