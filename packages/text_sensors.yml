@@ -14,7 +14,7 @@ text_sensor:
         - lambda: id(fan_level_select).publish_state(x);
 
   - platform: template
-    id: operating_mode # PDO 49
+    id: operating_mode # PDO 49, refined by the manual-mode flag in PDO 56
     name: "Operating Mode"
     filters:
       - map:
@@ -28,6 +28,13 @@ text_sensor:
           - 8 -> Bathroom Switch
           - 11 -> Away
           - 255 -> Auto
+      # PDO 49 = 1 (a fan-speed timer) is also what the unit reports when the
+      # level is changed while permanent manual mode is active.
+      - lambda: |-
+          if (x == "Manual (limited)" && id(manual_mode_raw).has_state() &&
+              int(id(manual_mode_raw).state) == 1)
+            return {"Manual (permanent)"};
+          return {x};
     on_value:
       then:
         - if:

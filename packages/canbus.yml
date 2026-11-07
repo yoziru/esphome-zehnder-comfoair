@@ -33,6 +33,7 @@ canbus:
                   comfoair_on_frame_case( 49, id(comfoair), operating_mode,                    true);
                   comfoair_on_frame_case( 54, id(comfoair), supply_fan_mode,                   true);
                   comfoair_on_frame_case( 55, id(comfoair), exhaust_fan_mode,                  true);
+                  comfoair_on_frame_case( 56, id(comfoair), manual_mode_raw,                   true);
                   comfoair_on_frame_case( 65, id(comfoair), fan_level_raw,                     true);
                   comfoair_on_frame_case( 66, id(comfoair), bypass_activation_mode,            true);
                   comfoair_on_frame_case( 67, id(comfoair), temperature_profile,                true);

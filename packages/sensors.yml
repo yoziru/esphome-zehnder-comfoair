@@ -47,6 +47,17 @@ sensor:
                   speed: !lambda "return int(x);"
 
   - platform: template
+    id: manual_mode_raw # PDO 56 (255 = auto, 1 = manual mode active)
+    internal: true
+    accuracy_decimals: 0
+    on_value:
+      then:
+        # Re-run the PDO 49 filter now that the manual-mode flag is known.
+        - lambda: |-
+            if (id(operating_mode).has_state())
+              id(operating_mode).publish_state(id(operating_mode).get_raw_state());
+
+  - platform: template
     id: next_fan_change_in_raw # PDO 81
     name: "next_fan_change_in_raw"
     accuracy_decimals: 0
