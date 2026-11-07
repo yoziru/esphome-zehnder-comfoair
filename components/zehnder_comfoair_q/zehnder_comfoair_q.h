@@ -1,6 +1,7 @@
 #pragma once
 
 #include <esphome.h>
+#include "pdo_address.h"
 #include "airflow_constraints.h"
 #include <cmath>
 

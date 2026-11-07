@@ -45,8 +45,12 @@ namespace zehnder_comfoair_q
 
     void ZehnderComfoAirQ::request_pdo(uint16_t pdo_id)
     {
-        // ZehnderComfoAirQ does not care for the data length to be set corectly on transmission requests, so there is no need to send any data
-        this->send_can_message_((pdo_id << 14) + 0x40 + this->local_node_id_, true);
+        uint32_t id;
+        if (!make_pdo_can_id(pdo_id, local_node_id_, id)) {
+            ESP_LOGW(TAG, "Unsupported PDO request: %u", pdo_id);
+            return;
+        }
+        send_can_message_(id, true);
     }
 
     void ZehnderComfoAirQ::set_level(uint8_t level)
