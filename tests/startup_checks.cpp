@@ -171,6 +171,33 @@ for (bool mode_first : {false, true}) {
   }
 }
 
+// Issue #110: changing the fan level in permanent manual mode starts preset timer 1,
+// so PDO 49 reports 1 while the manual-mode instance (PDO 56) is still active.
+bus.receive(56, 255);
+bus.receive(49, 5);
+check(id(operating_mode).state == "Manual (permanent)", "PDO 49 = 5 is permanent manual mode");
+bus.receive(56, 1);
+bus.sent.clear();
+auto issue_call = id(fan_level_select).make_call();
+issue_call.set_option("High");
+issue_call.perform();
+check(id(operating_mode).state == "Manual (permanent)" && bus.sent.size() == 2 && bus.sent[1].data[6] == 3,
+      "fan selection in permanent manual mode sends the level timer");
+bus.receive(65, 3);
+bus.receive(49, 1);
+bus.receive(81, std::vector<uint8_t>{0xff, 0xff, 0xff, 0xff});
+check(id(operating_mode).state == "Manual (permanent)" && id(next_fan_change_in).state == "n/a",
+      "PDO 49 = 1 with manual mode active and no countdown stays permanent");
+bus.receive(56, 255);
+check(id(operating_mode).state == "Manual (limited)", "PDO 49 = 1 without manual mode is limited manual");
+bus.receive(49, 1);
+bus.receive(56, 1);
+check(id(operating_mode).state == "Manual (permanent)",
+      "late manual-mode feedback refines an already-published PDO 49 = 1");
+bus.receive(56, 255);
+bus.receive(49, 255);
+bus.receive(65, 0);
+
 // Feedback suppression must not suppress genuine user controls.
 bus.sent.clear();
 auto profile_call = id(temperature_profile_select).make_call();
