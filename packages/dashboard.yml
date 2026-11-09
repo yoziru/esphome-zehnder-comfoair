@@ -6,6 +6,9 @@ substitutions:
   filter_time: 5s
   filter_send_every: "1"
   filter_window_size: "3"
+  # Network connection: "wifi" or "ethernet" (ethernet requires a board with
+  # a LAN8720 PHY, e.g. Olimex ESP32-EVB). Override in the device YAML.
+  network: wifi
 
 packages:
   binary_sensors: !include binary_sensors.yml
@@ -16,6 +19,7 @@ packages:
   comfoair: !include zehnder_comfoair_q.yml
   common: !include common.yml
   fan: !include fan.yml
+  network: !include network/${network}.dashboard.yml
   project: !include project.yml
   select: !include select.yml
   sensors: !include sensors.yml
@@ -32,13 +36,3 @@ logger:
 ota:
   - platform: esphome
     password: $ota_password
-
-# Same as CLI builds (base.yml): makes the Wi-Fi fallback AP usable.
-captive_portal:
-
-wifi:
-  # Device Builder owns ssid/password; the package only ensures the fallback
-  # AP exists so captive_portal has something to serve on (otherwise config
-  # validation warns "no WiFi AP is configured"). Open hotspot named after
-  # the device - set wifi.ap.password in the device YAML to secure it.
-  ap: {}

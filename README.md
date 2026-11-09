@@ -124,6 +124,27 @@ wifi:
 
 Secret names are local to each user's dashboard. If yours differ, keep `ota_password` on the left and change only the name after `!secret`.
 
+#### Ethernet instead of Wi-Fi
+
+Boards with a LAN8720 Ethernet PHY (Olimex ESP32-EVB) can connect over Ethernet. Set the `network` substitution to `ethernet` (default: `wifi`) and remove the `wifi:` section from the device YAML:
+
+```yaml
+substitutions:
+  name: zehnder-comfoair-q-a1b2c3
+  friendly_name: Zehnder ComfoAir Q A1B2C3
+  zehnder_comfoair_ref: main
+  ota_password: !secret ota_password
+  network: ethernet
+
+packages:
+  yoziru.esphome-zehnder-comfoair:
+    url: https://github.com/yoziru/esphome-zehnder-comfoair.git
+    ref: ${zehnder_comfoair_ref}
+    files: [zehnder-comfoair-q-esp32-evb.dashboard.yml]
+```
+
+For CLI builds, pass `-s network ethernet` to `esphome`, or set `network: ethernet` under `substitutions` in your config.
+
 ### CLI
 
 1. Copy `secrets.yaml.example` to `secrets.yaml` and fill in your Wi-Fi credentials. Generate your own `api_encryption_key` (e.g. `openssl rand -base64 32`) and set a unique `ota_password` — do not keep the example values.
