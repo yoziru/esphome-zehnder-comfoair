@@ -1,0 +1,3 @@
+# Ethernet needs no credentials, so Device Builder builds share the CLI package.
+packages:
+  ethernet: !include ethernet.yml

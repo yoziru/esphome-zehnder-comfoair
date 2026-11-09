@@ -61,3 +61,5 @@ jobs:
           .venv/bin/pip install -r requirements.txt
       - name: Validate dashboard config
         run: .venv/bin/esphome config tests/dashboard_config.yml
+      - name: Validate Ethernet dashboard config
+        run: .venv/bin/esphome config tests/dashboard_config_ethernet.yml

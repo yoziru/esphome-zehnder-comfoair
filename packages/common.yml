@@ -1,8 +1,4 @@
 sensor:
-  - platform: wifi_signal
-    name: "WiFi Signal"
-    icon: mdi:wifi
-
   - platform: uptime
     name: "Uptime"
     icon: mdi:clock-outline
@@ -15,9 +11,6 @@ text_sensor:
   - platform: version
     name: "Version"
     icon: mdi:cube-outline
-  - platform: wifi_info
-    ip_address:
-      name: "IP Address"
 
 time:
   - platform: homeassistant

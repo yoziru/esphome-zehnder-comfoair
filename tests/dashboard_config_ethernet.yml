@@ -1,0 +1,19 @@
+# Mirrors a Device Builder configuration for an ESP32-EVB connected via Ethernet.
+substitutions:
+  zehnder_comfoair_ref: ce62828bf21bcaec3a530e97740fa322cc085526
+  name: zehnder-comfoair-test
+  friendly_name: Zehnder ComfoAir Test
+  ota_password: !secret test_ota_password
+  network: ethernet
+
+packages:
+  zehnder_comfoair_q: !include ../zehnder-comfoair-q-esp32-evb.dashboard.yml
+
+esphome:
+  name: ${name}
+  name_add_mac_suffix: false
+  friendly_name: ${friendly_name}
+
+api:
+  encryption:
+    key: !secret test_api_encryption_key

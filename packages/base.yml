@@ -5,6 +5,9 @@ substitutions:
   filter_time: 5s
   filter_send_every: "1"
   filter_window_size: "3"
+  # Network connection: "wifi" or "ethernet" (ethernet requires a board with
+  # a LAN8720 PHY, e.g. Olimex ESP32-EVB). Override in your own config.
+  network: wifi
 
 packages:
   binary_sensors: !include binary_sensors.yml
@@ -15,6 +18,7 @@ packages:
   common: !include common.yml
   comfoair: !include zehnder_comfoair_q.yml
   fan: !include fan.yml
+  network: !include network/${network}.yml
   project: !include project.yml
   select: !include select.yml
   sensors: !include sensors.yml
@@ -39,18 +43,6 @@ api:
 ota:
   - platform: esphome
     password: !secret ota_password
-
-wifi:
-  ssid: !secret wifi_ssid
-  password: !secret wifi_password
-  enable_rrm: true
-  enable_btm: true
-  # Enable fallback hotspot (captive portal) in case wifi connection fails
-  ap:
-    password: !secret wifi_hotspot_password
-
-captive_portal:
-improv_serial:
 
 web_server:
   ota: false

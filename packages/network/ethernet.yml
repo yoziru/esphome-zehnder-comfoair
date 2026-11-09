@@ -1,0 +1,14 @@
+# LAN8720 PHY wiring of the Olimex ESP32-EVB.
+ethernet:
+  type: LAN8720
+  mdc_pin: GPIO23
+  mdio_pin: GPIO18
+  clk:
+    mode: CLK_EXT_IN
+    pin: GPIO0
+  phy_addr: 0
+
+text_sensor:
+  - platform: ethernet_info
+    ip_address:
+      name: "IP Address"
