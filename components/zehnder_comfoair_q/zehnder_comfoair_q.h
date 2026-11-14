@@ -156,8 +156,7 @@ namespace zehnder_comfoair_q
             return can_id >> 14;
         }
 
-        static void publish_duration_state(sensor::Sensor *raw, text_sensor::TextSensor *formatted,
-                                           const std::vector<uint8_t> &message)
+        static void publish_duration_state(sensor::Sensor *raw, const std::vector<uint8_t> &message)
         {
             if (message.size() != 4)
                 return;
@@ -165,7 +164,6 @@ namespace zehnder_comfoair_q
             for (size_t i = 0; i < 4; i++)
                 seconds |= uint32_t(message[i]) << (8 * i);
             raw->publish_state(seconds);
-            formatted->publish_state(seconds_to_human_readable(seconds));
         }
 
         static std::string seconds_to_human_readable(int64_t seconds)
